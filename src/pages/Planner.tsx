@@ -91,12 +91,26 @@ const Planner = () => {
               Planera och organisera dina träningar
             </p>
           </div>
-          <Button variant="hero" size="lg" className="gap-2" asChild>
-            <Link to="/create-training">
-              <Plus className="w-5 h-5" />
-              Ny träning
-            </Link>
-          </Button>
+          <div className="flex gap-3">
+            <Button variant="hero" size="lg" className="gap-2" asChild>
+              <Link to="/create-training">
+                <Plus className="w-5 h-5" />
+                Ny träning
+              </Link>
+            </Button>
+            <Button variant="default" size="lg" className="gap-2" asChild>
+              <Link to="/send-callup">
+                <Users className="w-5 h-5" />
+                Skicka kallelse
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" className="gap-2" asChild>
+              <Link to="/saved-trainings">
+                <Target className="w-5 h-5" />
+                Mina träningspass
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="trainings" className="w-full">

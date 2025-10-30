@@ -290,7 +290,7 @@ const Exercises = () => {
   const [showCustomSession, setShowCustomSession] = useState(false);
   const [showRecommendedSessions, setShowRecommendedSessions] = useState(true);
 
-  const allEquipment = ["Bollar", "Koner", "Mål", "Små mål", "Västar", "Koordinationsstege", "Hinder", "Ribbor", "Markörer", "Träningsdummy", "Vattendunkar", "Förbandslåda"];
+  const allEquipment = ["Bollar", "Koner", "Mål", "Små mål", "Västar", "Koordinationsstege", "Hinder", "Markörer", "Träningsdummy", "Startblock", "Agility-stegar", "Miniband", "Piloner", "Träningskoner"];
   const categories = ["Alla", "Uppvärmning", "Passning", "Teknik", "Avslut", "Taktik", "Spelform", "Kondition", "Nedvarvning"];
 
   const toggleEquipment = (equipment: string) => {
@@ -511,17 +511,21 @@ const Exercises = () => {
                     </div>
                     <div>
                       <Label htmlFor="duration">Önskad träningstid (minuter)</Label>
-                      <Input
-                        id="duration"
-                        type="number"
-                        value={customDuration === 0 ? "" : customDuration}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setCustomDuration(value === "" ? 0 : Math.max(10, parseInt(value) || 0));
-                        }}
-                        min="10"
-                        max="120"
-                      />
+                      <Select
+                        value={customDuration.toString()}
+                        onValueChange={(value) => setCustomDuration(parseInt(value))}
+                      >
+                        <SelectTrigger id="duration">
+                          <SelectValue placeholder="Välj träningstid" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                          {Array.from({ length: 23 }, (_, i) => (i + 2) * 5).map((minutes) => (
+                            <SelectItem key={minutes} value={minutes.toString()}>
+                              {minutes} minuter
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 

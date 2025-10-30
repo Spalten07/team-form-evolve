@@ -110,7 +110,7 @@ const PlayerPastActivities = () => {
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Tillbaka till kalender
+            Kommande aktiviteter
           </Button>
           <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
             Tidigare aktiviteter

@@ -14,7 +14,6 @@ export const Navigation = () => {
   }, []);
 
 const coachNavLinks = [
-  { to: "/", label: "Byt roll", icon: Home },
   { to: "/exercises", label: "Övningsbank", icon: Dumbbell },
   { to: "/theory", label: "Teoribank", icon: BookOpen },
   { to: "/planner", label: "Planering", icon: CalendarDays },
@@ -22,11 +21,10 @@ const coachNavLinks = [
 ];
 
 const playerNavLinks = [
-  { to: "/", label: "Byt roll", icon: Home },
   { to: "/exercises", label: "Övningar", icon: Dumbbell },
   { to: "/theory", label: "Teoribank", icon: BookOpen },
   { to: "/player-calendar", label: "Kalender", icon: CalendarDays },
-  { to: "/player-history", label: "Mina träningar", icon: ClipboardList },
+  { to: "/player-history", label: "Min träningshistorik", icon: ClipboardList },
 ];
 
   const navLinks = userRole === "coach" ? coachNavLinks : playerNavLinks;
@@ -37,7 +35,7 @@ const playerNavLinks = [
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to={userRole === "coach" ? "/home" : "/exercises"} className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-md">
               <span className="text-primary-foreground font-bold text-xl">FT</span>
             </div>

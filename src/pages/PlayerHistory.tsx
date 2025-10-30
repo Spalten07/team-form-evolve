@@ -1,8 +1,10 @@
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Clock, Target, PieChart } from "lucide-react";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface TrainingSession {
   id: number;
@@ -65,10 +67,10 @@ const PlayerHistory = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
-            Mina träningar
+            Min träningshistorik
           </h1>
           <p className="text-muted-foreground text-lg">
-            Här kan du se dina tidigare träningspass
+            Här kan du se dina tidigare träningspass och statistik
           </p>
         </div>
 
@@ -80,14 +82,56 @@ const PlayerHistory = () => {
               <CardDescription>Genomförda träningar</CardDescription>
             </CardHeader>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                {totalHours}h {remainingMinutes}min
-              </CardTitle>
-              <CardDescription>Total träningstid</CardDescription>
-            </CardHeader>
-          </Card>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Card className="cursor-pointer hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    {totalHours}h {remainingMinutes}min
+                    <PieChart className="w-5 h-5 text-primary" />
+                  </CardTitle>
+                  <CardDescription>Total träningstid (klicka för detaljer)</CardDescription>
+                </CardHeader>
+              </Card>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Träningsstatistik</DialogTitle>
+                <DialogDescription>
+                  Fördelning av dina träningsfokus
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-6">
+                <div className="w-64 h-64 mx-auto mb-6 relative">
+                  <svg viewBox="0 0 100 100" className="transform -rotate-90">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(var(--primary))" strokeWidth="20" strokeDasharray="75 25" strokeDashoffset="0" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(var(--accent))" strokeWidth="20" strokeDasharray="15 85" strokeDashoffset="-75" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(var(--secondary))" strokeWidth="20" strokeDasharray="10 90" strokeDashoffset="-90" />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold">{totalHours}h</div>
+                      <div className="text-sm text-muted-foreground">{remainingMinutes}min</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10">
+                    <span className="font-medium">Teknik & Ballkontroll</span>
+                    <span className="text-sm">75% ({Math.round(totalMinutes * 0.75)} min)</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-accent/10">
+                    <span className="font-medium">Passningar</span>
+                    <span className="text-sm">15% ({Math.round(totalMinutes * 0.15)} min)</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/10">
+                    <span className="font-medium">Avslut</span>
+                    <span className="text-sm">10% ({Math.round(totalMinutes * 0.10)} min)</span>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">

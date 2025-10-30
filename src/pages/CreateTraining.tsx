@@ -271,9 +271,12 @@ const equipmentOptions = [
   "Träningsdummy",
   "Markörer",
   "Hinder",
-  "Ribbor",
-  "Vattendunkar",
-  "Förbandslåda"
+  "Koordinationsstege",
+  "Startblock",
+  "Agility-stegar",
+  "Miniband",
+  "Piloner",
+  "Träningskoner"
 ];
 
 const CreateTraining = () => {

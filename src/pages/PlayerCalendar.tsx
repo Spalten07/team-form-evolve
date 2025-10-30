@@ -2,9 +2,9 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Users, History } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, History, ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface TeamEvent {
   id: number;
@@ -58,6 +58,21 @@ const mockEvents: TeamEvent[] = [
 const PlayerCalendar = () => {
   const [events] = useState<TeamEvent[]>(mockEvents);
   const navigate = useNavigate();
+  const { playerId } = useParams();
+
+  const playerName = playerId ? (() => {
+    const players = [
+      { id: 1, name: "Erik Andersson" },
+      { id: 2, name: "Sofia Nilsson" },
+      { id: 3, name: "Oscar Berg" },
+      { id: 4, name: "Anna Karlsson" },
+      { id: 5, name: "Lucas Eriksson" },
+      { id: 6, name: "Emma Johansson" },
+      { id: 7, name: "Oliver Larsson" },
+      { id: 8, name: "Maja Svensson" }
+    ];
+    return players.find(p => p.id === parseInt(playerId))?.name || "Spelaren";
+  })() : null;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -94,23 +109,39 @@ const PlayerCalendar = () => {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
+        {playerId && (
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("/players")}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Tillbaka till Mina spelare
+          </Button>
+        )}
+        
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
-              Lagets kalender
+              {playerId ? `${playerName}s kalender` : "Lagets kalender"}
             </h1>
             <p className="text-muted-foreground text-lg">
-              Se kommande träningar och matcher med laget
+              {playerId 
+                ? `Se ${playerName}s kommande träningar och matcher med laget`
+                : "Se kommande träningar och matcher med laget"
+              }
             </p>
           </div>
-          <Button
-            variant="outline"
-            className="gap-2"
-            onClick={() => navigate("/player-past-activities")}
-          >
-            <History className="w-4 h-4" />
-            Tidigare aktiviteter
-          </Button>
+          {!playerId && (
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => navigate("/player-past-activities")}
+            >
+              <History className="w-4 h-4" />
+              Tidigare aktiviteter
+            </Button>
+          )}
         </div>
 
         {/* Calendar Overview */}

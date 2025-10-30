@@ -11,8 +11,11 @@ import {
   TrendingUp, 
   Calendar,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Phone,
+  CalendarDays
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 interface Player {
@@ -23,6 +26,10 @@ interface Player {
   personalTrainingSessions: number;
   lastTraining: string;
   upcomingTrainings: number;
+  guardian: {
+    name: string;
+    phone: string;
+  };
 }
 
 const mockPlayers: Player[] = [
@@ -33,7 +40,8 @@ const mockPlayers: Player[] = [
     attendanceRate: 85,
     personalTrainingSessions: 12,
     lastTraining: "2025-10-28",
-    upcomingTrainings: 3
+    upcomingTrainings: 3,
+    guardian: { name: "Maria Andersson", phone: "070-123 45 67" }
   },
   {
     id: 2,
@@ -42,7 +50,8 @@ const mockPlayers: Player[] = [
     attendanceRate: 92,
     personalTrainingSessions: 18,
     lastTraining: "2025-10-29",
-    upcomingTrainings: 3
+    upcomingTrainings: 3,
+    guardian: { name: "Peter Nilsson", phone: "070-234 56 78" }
   },
   {
     id: 3,
@@ -51,7 +60,8 @@ const mockPlayers: Player[] = [
     attendanceRate: 78,
     personalTrainingSessions: 8,
     lastTraining: "2025-10-27",
-    upcomingTrainings: 2
+    upcomingTrainings: 2,
+    guardian: { name: "Linda Berg", phone: "070-345 67 89" }
   },
   {
     id: 4,
@@ -60,7 +70,8 @@ const mockPlayers: Player[] = [
     attendanceRate: 95,
     personalTrainingSessions: 22,
     lastTraining: "2025-10-29",
-    upcomingTrainings: 3
+    upcomingTrainings: 3,
+    guardian: { name: "Johan Karlsson", phone: "070-456 78 90" }
   },
   {
     id: 5,
@@ -69,7 +80,8 @@ const mockPlayers: Player[] = [
     attendanceRate: 88,
     personalTrainingSessions: 15,
     lastTraining: "2025-10-28",
-    upcomingTrainings: 3
+    upcomingTrainings: 3,
+    guardian: { name: "Emma Eriksson", phone: "070-567 89 01" }
   },
   {
     id: 6,
@@ -78,7 +90,8 @@ const mockPlayers: Player[] = [
     attendanceRate: 82,
     personalTrainingSessions: 10,
     lastTraining: "2025-10-27",
-    upcomingTrainings: 2
+    upcomingTrainings: 2,
+    guardian: { name: "Anders Johansson", phone: "070-678 90 12" }
   },
   {
     id: 7,
@@ -87,7 +100,8 @@ const mockPlayers: Player[] = [
     attendanceRate: 90,
     personalTrainingSessions: 16,
     lastTraining: "2025-10-29",
-    upcomingTrainings: 3
+    upcomingTrainings: 3,
+    guardian: { name: "Karin Larsson", phone: "070-789 01 23" }
   },
   {
     id: 8,
@@ -96,11 +110,13 @@ const mockPlayers: Player[] = [
     attendanceRate: 87,
     personalTrainingSessions: 14,
     lastTraining: "2025-10-28",
-    upcomingTrainings: 3
+    upcomingTrainings: 3,
+    guardian: { name: "Stefan Svensson", phone: "070-890 12 34" }
   }
 ];
 
 const Players = () => {
+  const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<"name" | "attendance">("name");
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]);
   
@@ -158,7 +174,7 @@ const Players = () => {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">{players.length}</CardTitle>
@@ -179,12 +195,45 @@ const Players = () => {
               <CardDescription>Personliga träningar totalt</CardDescription>
             </CardHeader>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">{selectedPlayers.length}</CardTitle>
-              <CardDescription>Valda spelare</CardDescription>
-            </CardHeader>
-          </Card>
+        </div>
+
+        {/* Action Buttons */}
+        {selectedPlayers.length > 0 && (
+          <div className="mb-6 flex gap-3">
+            <Button 
+              variant="default" 
+              className="gap-2"
+              onClick={() => navigate('/send-callup', { state: { selectedPlayers } })}
+            >
+              <Send className="w-4 h-4" />
+              Skicka kallelse ({selectedPlayers.length})
+            </Button>
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => setSelectedPlayers([])}
+            >
+              Avmarkera alla
+            </Button>
+          </div>
+        )}
+
+        {/* Sort Options */}
+        <div className="flex gap-2 mb-4">
+          <Button
+            variant={sortBy === "name" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSortBy("name")}
+          >
+            Sortera efter efternamn
+          </Button>
+          <Button
+            variant={sortBy === "attendance" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setSortBy("attendance")}
+          >
+            Sortera efter högst närvaro
+          </Button>
         </div>
 
         <Tabs defaultValue="overview" className="w-full">
@@ -192,24 +241,6 @@ const Players = () => {
             <TabsTrigger value="overview">Översikt</TabsTrigger>
             <TabsTrigger value="communication">Kommunikation</TabsTrigger>
           </TabsList>
-          
-          {/* Sort Options */}
-          <div className="flex gap-2 mb-4">
-            <Button
-              variant={sortBy === "name" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSortBy("name")}
-            >
-              Sortera efter efternamn
-            </Button>
-            <Button
-              variant={sortBy === "attendance" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSortBy("attendance")}
-            >
-              Sortera efter högst närvaro
-            </Button>
-          </div>
           
           <TabsContent value="overview">
             <div className="space-y-4">
@@ -234,15 +265,39 @@ const Players = () => {
                               <CheckCircle2 className="w-5 h-5 text-primary" />
                             )}
                           </CardTitle>
-                          <CardDescription className="flex items-center gap-2">
-                            <Mail className="w-4 h-4" />
-                            {player.email}
+                          <CardDescription className="flex flex-col gap-1">
+                            <span className="flex items-center gap-2">
+                              <Mail className="w-4 h-4" />
+                              {player.email}
+                            </span>
+                            <span className="flex items-center gap-2">
+                              <User className="w-4 h-4" />
+                              Vårdnadshavare: {player.guardian.name}
+                            </span>
+                            <span className="flex items-center gap-2">
+                              <Phone className="w-4 h-4" />
+                              {player.guardian.phone}
+                            </span>
                           </CardDescription>
                         </div>
                       </div>
-                      <Badge className={`${getAttendanceColor(player.attendanceRate)}`}>
-                        {player.attendanceRate}% närvaro
-                      </Badge>
+                      <div className="flex flex-col gap-2">
+                        <Badge className={`${getAttendanceColor(player.attendanceRate)}`}>
+                          {player.attendanceRate}% närvaro
+                        </Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/player-calendar/${player.id}`);
+                          }}
+                        >
+                          <CalendarDays className="w-4 h-4" />
+                          Kalender
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -303,11 +358,19 @@ const Players = () => {
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Button variant="default" className="gap-2">
+                      <Button 
+                        variant="default" 
+                        className="gap-2"
+                        onClick={() => navigate('/send-callup', { state: { selectedPlayers } })}
+                      >
                         <Mail className="w-4 h-4" />
                         Skicka träningskallelse
                       </Button>
-                      <Button variant="outline" className="gap-2">
+                      <Button 
+                        variant="outline" 
+                        className="gap-2"
+                        onClick={() => navigate('/theory')}
+                      >
                         <ClipboardList className="w-4 h-4" />
                         Skicka teoripass
                       </Button>
