@@ -30,63 +30,63 @@ const quizData: Record<string, QuizData> = {
     questions: [
       {
         id: 1,
-        question: "Var ska en back placera sig när laget har bollen?",
+        question: "Var ska en back placera sig?",
         options: [
-          "Längst fram nära motståndarens mål",
+          "Framför motståndarens mål",
           "I mitten av planen",
-          "Bakom bollen för att ge stöd",
+          "Nära eget mål",
           "Utanför planen"
         ],
         correctAnswer: 2,
-        explanation: "Backen ska vara bakom bollen för att ge stöd och kunna försvara om laget förlorar bollen."
+        explanation: "Backen ska vara nära eget mål för att försvara."
       },
       {
         id: 2,
-        question: "Vad är forwardens huvuduppgift?",
+        question: "Vad är forwardens uppgift?",
         options: [
           "Stå i mål",
-          "Försöka göra mål",
+          "Göra mål",
           "Bara försvara",
           "Stå still"
         ],
         correctAnswer: 1,
-        explanation: "Forwardens huvuduppgift är att anfalla och försöka göra mål för sitt lag."
+        explanation: "Forwarden anfaller och försöker göra mål."
       },
       {
         id: 3,
-        question: "Hur lång är en halva i 5-manna fotboll?",
+        question: "Hur lång är en halva i 5-manna?",
         options: [
-          "10 minuter",
-          "15 minuter",
-          "20 minuter",
-          "45 minuter"
+          "10 min",
+          "15 min",
+          "20 min",
+          "45 min"
         ],
         correctAnswer: 1,
-        explanation: "I 5-manna fotboll är varje halva 15 minuter lång."
+        explanation: "I 5-manna är varje halva 15 minuter."
       },
       {
         id: 4,
         question: "Vad händer när bollen går ut över sidlinjen?",
         options: [
-          "Man får göra mål direkt",
-          "Det blir inkast",
-          "Det blir frispark",
-          "Matchen startar om"
+          "Mål direkt",
+          "Inkast",
+          "Frispark",
+          "Omstart"
         ],
         correctAnswer: 1,
-        explanation: "När bollen går ut över sidlinjen blir det inkast för motståndarlaget."
+        explanation: "Bollen över sidlinjen = inkast för motståndarlaget."
       },
       {
         id: 5,
-        question: "Hur gör man ett korrekt inkast?",
+        question: "Hur gör man inkast?",
         options: [
-          "Kasta med en hand",
-          "Sparka in bollen",
-          "Kasta med båda händerna bakom huvudet",
-          "Rulla in bollen"
+          "Med en hand",
+          "Sparka bollen",
+          "Båda händer bakom huvud",
+          "Rulla bollen"
         ],
         correctAnswer: 2,
-        explanation: "Ett korrekt inkast görs med båda händerna bakom huvudet och båda fötterna på marken."
+        explanation: "Inkast: båda händer bakom huvud, båda fötter i mark."
       }
     ]
   },
@@ -97,55 +97,55 @@ const quizData: Record<string, QuizData> = {
     questions: [
       {
         id: 1,
-        question: "Vad betyder 'krossboll'?",
+        question: "Vad är kryssboll?",
         options: [
-          "En boll som studsar",
-          "En hög boll från sidan mot målet",
-          "En boll som går baklänges",
-          "En boll på marken"
+          "Studsande boll",
+          "Hög boll från kant mot mål",
+          "Passning bakåt",
+          "Boll på marken"
         ],
         correctAnswer: 1,
-        explanation: "En krossboll är en passning, ofta hög, från kanten av planen in mot målet där forwards kan nicka eller skjuta."
+        explanation: "Kryssboll = hög passning från kant in mot mål."
       },
       {
         id: 2,
-        question: "Vad är en 'djupledslöpning'?",
+        question: "Vad är djupledslöpning?",
         options: [
-          "Att springa tillbaka mot eget mål",
-          "Att springa i sidled",
-          "Att springa djupt bakom motståndarnas försvar",
-          "Att stå still"
+          "Spring mot eget mål",
+          "Spring i sidled",
+          "Spring bakom försvar",
+          "Stå still"
         ],
         correctAnswer: 2,
-        explanation: "En djupledslöpning är när en spelare springer bakom motståndarnas försvarslinje för att ta emot en passning."
+        explanation: "Djupled = spring bakom motståndarnas försvar."
       },
       {
         id: 3,
-        question: "Vad betyder 'bredsida'?",
+        question: "Vad betyder bredsida?",
         options: [
-          "Att spela bollen åt sidan",
-          "En bred spelare",
-          "Ett brett mål",
-          "En bred plan"
+          "Spela bollen åt sidan",
+          "Bred spelare",
+          "Brett mål",
+          "Bred plan"
         ],
         correctAnswer: 0,
-        explanation: "Bredsida betyder att man spelar bollen åt sidan, ofta för att skapa mer utrymme och variera spelet."
+        explanation: "Bredsida = spela bollen åt sidan för mer utrymme."
       },
       {
         id: 4,
-        question: "Vad är ett 'överstegsfint'?",
+        question: "Vad är överstegsfint?",
         options: [
-          "Att kliva över bollen för att lura motståndare",
-          "Att hoppa över bollen",
-          "Att sparka bollen högt",
-          "Att falla över bollen"
+          "Kliv över boll för att lura",
+          "Hoppa över boll",
+          "Sparka högt",
+          "Falla över boll"
         ],
         correctAnswer: 0,
-        explanation: "Ett överstegsfint är en dribblingsteknik där man låtsas gå åt ett håll genom att kliva över bollen, men sedan går åt andra hållet."
+        explanation: "Översteg = kliv över boll för att lura motståndare."
       },
       {
         id: 5,
-        question: "Vilket år anordnades det första fotbolls-VM?",
+        question: "Vilket år var första VM?",
         options: [
           "1900",
           "1920",
@@ -153,7 +153,7 @@ const quizData: Record<string, QuizData> = {
           "1950"
         ],
         correctAnswer: 2,
-        explanation: "Det första fotbolls-VM anordnades 1930 i Uruguay, och Uruguay vann turneringen."
+        explanation: "Första VM var 1930 i Uruguay."
       }
     ]
   },
@@ -164,55 +164,55 @@ const quizData: Record<string, QuizData> = {
     questions: [
       {
         id: 1,
-        question: "När är en spelare i offside?",
+        question: "När är man offside?",
         options: [
-          "När spelaren springer för fort",
-          "När spelaren är närmare motståndarens mållinje än både bollen och näst sista motståndarspelaren",
-          "När spelaren står i eget straffområde",
-          "När spelaren har bollen"
+          "Spring för fort",
+          "Närmare mål än boll OCH näst sista motspelare",
+          "I eget straffområde",
+          "Har bollen"
         ],
         correctAnswer: 1,
-        explanation: "En spelare är i offside när hen är närmare motståndarens mållinje än både bollen och näst sista motståndarspelaren när bollen spelas framåt."
+        explanation: "Offside = närmare mål än boll och näst sista motspelare vid passning."
       },
       {
         id: 2,
-        question: "Kan man vara offside på egen planhalva?",
+        question: "Kan man vara offside på egen halva?",
         options: [
           "Ja, alltid",
           "Nej, aldrig",
           "Bara ibland",
-          "Bara om domaren säger det"
+          "Om domaren säger"
         ],
         correctAnswer: 1,
-        explanation: "Man kan aldrig vara offside på egen planhalva. Offsideregeln gäller bara på motståndarens planhalva."
+        explanation: "Man kan aldrig vara offside på egen halva."
       },
       {
         id: 3,
-        question: "Kan man vara offside vid ett inkast?",
+        question: "Kan man vara offside vid inkast?",
         options: [
           "Ja, alltid",
           "Nej, aldrig",
-          "Bara om man springer fort",
-          "Bara i första halvlek"
+          "Om man springer fort",
+          "I första halvlek"
         ],
         correctAnswer: 1,
-        explanation: "Man kan inte vara offside direkt från ett inkast. Offsideregeln gäller inte vid inkast."
+        explanation: "Offsideregeln gäller inte vid inkast."
       },
       {
         id: 4,
-        question: "Vad betyder formationen 4-3-3?",
+        question: "Vad betyder 4-3-3?",
         options: [
-          "4 forwards, 3 mittfältare, 3 backar",
-          "4 backar, 3 mittfältare, 3 forwards",
-          "3 backar, 4 mittfältare, 3 forwards",
-          "Det är ett telefonnummer"
+          "4 forwards, 3 mittfält, 3 backar",
+          "4 backar, 3 mittfält, 3 forwards",
+          "3 backar, 4 mittfält, 3 forwards",
+          "Ett telefonnummer"
         ],
         correctAnswer: 1,
-        explanation: "4-3-3 betyder 4 backar, 3 mittfältare och 3 forwards. Formationen räknas från försvaret framåt."
+        explanation: "4-3-3 = 4 backar, 3 mittfält, 3 forwards (bakifrån räknat)."
       },
       {
         id: 5,
-        question: "Vilket nummer har traditionellt en mittback?",
+        question: "Vilket nummer har mittback?",
         options: [
           "Nummer 1",
           "Nummer 4 eller 5",
@@ -220,7 +220,7 @@ const quizData: Record<string, QuizData> = {
           "Nummer 11"
         ],
         correctAnswer: 1,
-        explanation: "Mittbackar har traditionellt nummer 4 eller 5. Nummer 9 är ofta en forward och nummer 1 är målvakten."
+        explanation: "Mittbackar har nummer 4 eller 5."
       }
     ]
   },
@@ -231,7 +231,7 @@ const quizData: Record<string, QuizData> = {
     questions: [
       {
         id: 1,
-        question: "Vilket land brukar kallas fotbollens 'moderland'?",
+        question: "Vilket land är fotbollens 'moderland'?",
         options: [
           "Brasilien",
           "England",
@@ -239,11 +239,11 @@ const quizData: Record<string, QuizData> = {
           "Tyskland"
         ],
         correctAnswer: 1,
-        explanation: "England kallas ofta fotbollens moderland eftersom de moderna fotbollsreglerna skapades där 1863."
+        explanation: "England kallas moderland - reglerna skapades där 1863."
       },
       {
         id: 2,
-        question: "Vem är Sveriges mest kända fotbollsspelare genom tiderna?",
+        question: "Vem är Sveriges mest kända fotbollsspelare?",
         options: [
           "Henrik Larsson",
           "Zlatan Ibrahimović",
@@ -251,11 +251,11 @@ const quizData: Record<string, QuizData> = {
           "Tomas Brolin"
         ],
         correctAnswer: 1,
-        explanation: "Zlatan Ibrahimović är Sveriges mest kända fotbollsspelare med en fantastisk karriär i världens största klubbar."
+        explanation: "Zlatan är Sveriges mest kända spelare genom tiderna."
       },
       {
         id: 3,
-        question: "Hur många spelare finns på planen från varje lag i 7-manna?",
+        question: "Hur många spelare på planen i 7-manna?",
         options: [
           "5 spelare",
           "7 spelare",
@@ -263,11 +263,11 @@ const quizData: Record<string, QuizData> = {
           "11 spelare"
         ],
         correctAnswer: 1,
-        explanation: "I 7-manna fotboll spelar 7 spelare från varje lag samtidigt på planen, inklusive målvakten."
+        explanation: "7-manna = 7 spelare per lag, inklusive målvakt."
       },
       {
         id: 4,
-        question: "Vilket land har vunnit flest VM-guld?",
+        question: "Vilket land har flest VM-guld?",
         options: [
           "Argentina",
           "Tyskland",
@@ -275,11 +275,11 @@ const quizData: Record<string, QuizData> = {
           "Italien"
         ],
         correctAnswer: 2,
-        explanation: "Brasilien har vunnit flest VM-guld med 5 titlar (1958, 1962, 1970, 1994, 2002)."
+        explanation: "Brasilien har 5 VM-guld (1958, 1962, 1970, 1994, 2002)."
       },
       {
         id: 5,
-        question: "Vad heter Sveriges högsta fotbollsliga?",
+        question: "Vad heter Sveriges högsta liga?",
         options: [
           "Premier League",
           "Allsvenskan",
@@ -287,7 +287,7 @@ const quizData: Record<string, QuizData> = {
           "La Liga"
         ],
         correctAnswer: 1,
-        explanation: "Allsvenskan är Sveriges högsta fotbollsliga för herrar. För damer heter den Damallsvenskan."
+        explanation: "Allsvenskan är Sveriges högsta liga för herrar."
       }
     ]
   },
@@ -298,63 +298,63 @@ const quizData: Record<string, QuizData> = {
     questions: [
       {
         id: 1,
-        question: "Vad betyder 'pressing'?",
+        question: "Vad betyder pressing?",
         options: [
-          "Att pressa citroner",
-          "Att aktivt jaga och störa motståndaren när de har bollen",
-          "Att stå stilla",
-          "Att ligga lågt i försvaret"
+          "Pressa citroner",
+          "Jaga och störa motståndare",
+          "Stå still",
+          "Ligga lågt i försvar"
         ],
         correctAnswer: 1,
-        explanation: "Pressing betyder att man aktivt jagar och trycker upp motståndaren för att vinna tillbaka bollen snabbt."
+        explanation: "Pressing = aktivt jaga motståndare för att vinna boll."
       },
       {
         id: 2,
-        question: "Vad är en 'falsk nia'?",
+        question: "Vad är falsk nia?",
         options: [
           "En spelare som ljuger",
-          "En forward som drar djupt för att ta emot boll",
+          "Forward som droppar ner",
           "Ett fel nummer",
-          "En målvakt som springer fram"
+          "Målvakt som springer fram"
         ],
         correctAnswer: 1,
-        explanation: "En falsk nia är en forward (traditionellt nummer 9) som ofta drar djupt istället för att stå högt, vilket skapar utrymme."
+        explanation: "Falsk nia = forward som droppar ner istället för att stå högt."
       },
       {
         id: 3,
-        question: "Vad betyder 'kontraanfall'?",
+        question: "Vad är kontraanfall?",
         options: [
-          "Att anfalla mot klockan",
-          "Ett snabbt anfall direkt efter att ha vunnit bollen",
-          "Att anfalla bakåt",
-          "Att inte anfalla alls"
+          "Anfalla mot klockan",
+          "Snabbt anfall efter bollvinst",
+          "Anfalla bakåt",
+          "Inte anfalla"
         ],
         correctAnswer: 1,
-        explanation: "Kontraanfall är när man snabbt anfaller direkt efter att ha vunnit bollen, ofta när motståndaren är oorganiserad."
+        explanation: "Kontra = snabbt anfall direkt efter bollvinst."
       },
       {
         id: 4,
-        question: "Vad är 'zonmarkering'?",
+        question: "Vad är zonmarkering?",
         options: [
-          "Att markera en specifik zon på planen istället för en spelare",
-          "Att rita zoner på planen",
-          "Att bara springa i en zon",
-          "Att sätta upp zoner med koner"
+          "Markera zon istället för spelare",
+          "Rita zoner",
+          "Spring i en zon",
+          "Sätt upp koner"
         ],
         correctAnswer: 0,
-        explanation: "Zonmarkering betyder att försvaret markerar specifika zoner på planen istället för att följa enskilda motspelare."
+        explanation: "Zonmarkering = försvara specifika zoner, inte enskilda spelare."
       },
       {
         id: 5,
-        question: "Vad betyder 'att hålla bredden'?",
+        question: "Vad betyder 'hålla bredden'?",
         options: [
-          "Att stå bred",
-          "Att sprida ut sig över hela planens bredd",
-          "Att ha breda skor",
-          "Att bara spela i mitten"
+          "Stå bred",
+          "Sprida ut sig över planens bredd",
+          "Breda skor",
+          "Spela i mitten"
         ],
         correctAnswer: 1,
-        explanation: "Att hålla bredden betyder att laget sprider ut sig över planens bredd för att skapa mer utrymme och fler passningsalternativ."
+        explanation: "Hålla bredden = sprida ut sig för mer utrymme."
       }
     ]
   }

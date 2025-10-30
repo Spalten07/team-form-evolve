@@ -48,17 +48,198 @@ interface TrainingSession {
   notes: string;
 }
 
-const exerciseBank = [
-  { id: "1", title: "Joggning & stretch", category: "Uppvärmning", defaultDuration: 10 },
-  { id: "2", title: "Passningstriangel", category: "Passning", defaultDuration: 15 },
-  { id: "3", title: "1v1 Dribbling", category: "Teknik", defaultDuration: 15 },
-  { id: "4", title: "Skottövning", category: "Avslut", defaultDuration: 20 },
-  { id: "5", title: "Positionsspel 4v4+1", category: "Taktik", defaultDuration: 20 },
-  { id: "6", title: "Matchspel", category: "Spelform", defaultDuration: 20 },
-  { id: "7", title: "Stretch & nedvarvning", category: "Nedvarvning", defaultDuration: 10 },
-  { id: "8", title: "Koordinationsstege", category: "Uppvärmning", defaultDuration: 10 },
-  { id: "9", title: "Fyrkantspassning", category: "Passning", defaultDuration: 15 },
-  { id: "10", title: "Huvudspel", category: "Teknik", defaultDuration: 15 },
+interface ExerciseBankItem {
+  id: string;
+  title: string;
+  category: string;
+  defaultDuration: number;
+  description: string;
+}
+
+const exerciseBank: ExerciseBankItem[] = [
+  // Uppvärmning
+  { 
+    id: "1", 
+    title: "Joggning & dynamisk stretch", 
+    category: "Uppvärmning", 
+    defaultDuration: 10,
+    description: "Börja med lätt joggning 3-4 varv. Följ med dynamisk stretch: bensvingar, armcirklar, höftrotationer. Fokus på rörlighet och värmeupp av muskler."
+  },
+  { 
+    id: "8", 
+    title: "Koordinationsstege", 
+    category: "Uppvärmning", 
+    defaultDuration: 10,
+    description: "Placera koordinationsstege på marken. Övningar: snabba fötter, sidosteg, hopp på ett ben. Utvecklar fotarbete och koordination."
+  },
+  { 
+    id: "11", 
+    title: "Rondo 4v1", 
+    category: "Uppvärmning", 
+    defaultDuration: 10,
+    description: "Fyra spelare bildar kvadrat, en i mitten försöker ta bollen. Snabba passningar, konstant rörelse. Byt mittspelare var 60:e sekund."
+  },
+  { 
+    id: "12", 
+    title: "Bollkänsla par", 
+    category: "Uppvärmning", 
+    defaultDuration: 10,
+    description: "Par står 5m från varandra. Passa med insida, utsida, trampa bollen, rullar. Öka tempo gradvis för att värma upp."
+  },
+  
+  // Passning
+  { 
+    id: "2", 
+    title: "Passningstriangel", 
+    category: "Passning", 
+    defaultDuration: 15,
+    description: "Tre spelare i triangel 10m mellanrum. Passa och följ bollen till nästa position. Variera: 1-touch, 2-touch, olika fötter. Fokus på precision."
+  },
+  { 
+    id: "9", 
+    title: "Fyrkantspassning", 
+    category: "Passning", 
+    defaultDuration: 15,
+    description: "Fyra koner i kvadrat, spelare i varje hörn. Passa diagonalt och rakt, följ passningen. Öka tempo, lägg till extra bollar för utmaning."
+  },
+  { 
+    id: "13", 
+    title: "Långpassning parvis", 
+    category: "Passning", 
+    defaultDuration: 15,
+    description: "Par står 20-30m från varandra. Öva långa passningar i luften och längs mark. Fokus på teknik: stå över bollen, träffa rätt på foten."
+  },
+  
+  // Teknik
+  { 
+    id: "3", 
+    title: "1v1 Dribbling", 
+    category: "Teknik", 
+    defaultDuration: 15,
+    description: "Par i zon 10x10m. En dribblar, en försvarar. Försök ta sig förbi motståndare med finter. Byt roller var 2:a minut. Fokus på kroppsfinter."
+  },
+  { 
+    id: "10", 
+    title: "Huvudspel", 
+    category: "Teknik", 
+    defaultDuration: 15,
+    description: "Par kastar boll till varandra för nick. Fokus: ögon på boll, panna mot boll, nicka nedåt. Öka avstånd gradvis. Kan lägga till mål."
+  },
+  { 
+    id: "14", 
+    title: "Jongleringsutmaning", 
+    category: "Teknik", 
+    defaultDuration: 10,
+    description: "Spelare jonglerar själva eller tävlar parvis. Räkna träffar: fot, lår, huvud. Tävling: vem når 50 träffar först?"
+  },
+  { 
+    id: "15", 
+    title: "Vändningar med boll", 
+    category: "Teknik", 
+    defaultDuration: 15,
+    description: "Koner i rad 5m mellanrum. Dribbla till kon, vänd med insida/utsida/sula. Olika vändningstekniker: Cruyff, drag-back, step-over."
+  },
+  
+  // Avslut
+  { 
+    id: "4", 
+    title: "Skottövning", 
+    category: "Avslut", 
+    defaultDuration: 20,
+    description: "Spelare i kö 16-18m från mål. En passare lägger till, skjut direkt eller efter touch. Rotera: passare, skytt, hämta boll. Fokus: precision före kraft."
+  },
+  { 
+    id: "16", 
+    title: "Avslut efter löpning", 
+    category: "Avslut", 
+    defaultDuration: 20,
+    description: "Spelare springer från kant, får passning i löpbana, avslutar. Variera: från höger/vänster, låga/höga passningar. Träna både fötter."
+  },
+  { 
+    id: "17", 
+    title: "Skott i rörelse", 
+    category: "Avslut", 
+    defaultDuration: 20,
+    description: "Dribbla genom koner, avsluta på mål. Kombinera teknik och avslut. Tidsbegränsa: måste skjuta inom 10 sek. Tävling: flest mål på 10 försök."
+  },
+  
+  // Taktik
+  { 
+    id: "5", 
+    title: "Positionsspel 4v4+1", 
+    category: "Taktik", 
+    defaultDuration: 20,
+    description: "Fyra mot fyra plus en joker som spelar med bollinnehavare. Zon 20x20m. Mål: håll bollen 10 passningar = 1 poäng. Lägg till små mål senare."
+  },
+  { 
+    id: "18", 
+    title: "Överspel till zon", 
+    category: "Taktik", 
+    defaultDuration: 20,
+    description: "Dela plan i tre zoner. Lag ska spela bollen från egen zon till sista zonen genom mittzon. Motståndare försöker ta boll. Fokus: tålmodigt uppspel."
+  },
+  { 
+    id: "19", 
+    title: "Snabbväxling", 
+    category: "Taktik", 
+    defaultDuration: 15,
+    description: "Vid bolltapp ska laget direkt pressa för att vinna tillbaka. Vid bollvinst snabb övergång till anfall. Fokus: intensitet i växling."
+  },
+  
+  // Spelform
+  { 
+    id: "6", 
+    title: "Matchspel", 
+    category: "Spelform", 
+    defaultDuration: 20,
+    description: "Vanligt matchspel, anpassad planstorlek. Låt spelarna använda det de tränat. Tränare coachar från sidan. Rotera lag för jämna matcher."
+  },
+  { 
+    id: "20", 
+    title: "Små mål 4v4", 
+    category: "Spelform", 
+    defaultDuration: 20,
+    description: "Fyra mot fyra, små mål utan målvakter. Plan 30x20m. Tvingar spelarna till precision. Byt lag var 5:e minut för att hålla intensitet."
+  },
+  { 
+    id: "21", 
+    title: "Zonfotboll", 
+    category: "Spelform", 
+    defaultDuration: 20,
+    description: "Spelare måste stanna i tilldelad zon. Utvecklar positionsspel och förståelse för position. Byt zoner mellan omgångar."
+  },
+  
+  // Kondition
+  { 
+    id: "22", 
+    title: "Intervalllöpning", 
+    category: "Kondition", 
+    defaultDuration: 15,
+    description: "Spring 30 sek högt tempo, vila 30 sek. Upprepa 8-10 gånger. Kan göras med boll: dribbla snabbt mellan koner."
+  },
+  { 
+    id: "23", 
+    title: "Shuttleruns", 
+    category: "Kondition", 
+    defaultDuration: 15,
+    description: "Koner 10m, 20m, 30m från start. Spring till första, tillbaka, till andra, tillbaka osv. 3-4 set med paus mellan."
+  },
+  
+  // Nedvarvning
+  { 
+    id: "7", 
+    title: "Stretch & nedvarvning", 
+    category: "Nedvarvning", 
+    defaultDuration: 10,
+    description: "Lugn joggning 2-3 varv. Statisk stretch: vadmuskler, lår, höftböjare, rygg. Håll varje stretch 20-30 sek. Samla laget för avslutande prat."
+  },
+  { 
+    id: "24", 
+    title: "Cirkelpass & stretch", 
+    category: "Nedvarvning", 
+    defaultDuration: 10,
+    description: "Lugna passningar i cirkel, låg intensitet. Därefter stretch i par: hjälp varandra med stretch. Avrunda med gruppsamtal om träningen."
+  }
 ];
 
 const focusAreas = [
@@ -198,25 +379,32 @@ const CreateTraining = () => {
         {showExerciseMenu === section ? (
           <div className="border-2 border-dashed border-border rounded-lg p-4 space-y-2">
             <p className="text-sm font-medium mb-3">Välj övning från banken:</p>
-            <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto">
+            <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto">
               {exerciseBank.map((exercise) => (
-                <Button
-                  key={exercise.id}
-                  variant="outline"
-                  className="justify-start"
-                  onClick={() => addExercise(section, exercise.id)}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  <span className="flex-1 text-left">{exercise.title}</span>
-                  <Badge variant="secondary" className="ml-2">
-                    {exercise.category}
-                  </Badge>
-                </Button>
+                <div key={exercise.id} className="border rounded-lg p-3 hover:bg-secondary/50 transition-colors">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm mb-1">{exercise.title}</h4>
+                      <Badge variant="secondary" className="text-xs">
+                        {exercise.category}
+                      </Badge>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => addExercise(section, exercise.id)}
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Lägg till
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">{exercise.description}</p>
+                </div>
               ))}
             </div>
             <Button
               variant="ghost"
-              className="w-full"
+              className="w-full mt-2"
               onClick={() => setShowExerciseMenu(null)}
             >
               <X className="w-4 h-4 mr-2" />
