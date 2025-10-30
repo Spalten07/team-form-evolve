@@ -243,85 +243,58 @@ const Players = () => {
           </TabsList>
           
           <TabsContent value="overview">
-            <div className="space-y-4">
+            <div className="space-y-3">
               {players.map((player) => (
                 <Card 
                   key={player.id} 
-                  className={`hover:shadow-lg transition-all cursor-pointer ${
+                  className={`hover:shadow-md transition-all cursor-pointer ${
                     selectedPlayers.includes(player.id) ? 'border-primary border-2' : ''
                   }`}
                   onClick={() => togglePlayerSelection(player.id)}
                 >
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center">
-                          <User className="w-6 h-6 text-primary-foreground" />
+                  <CardHeader className="py-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
+                          <User className="w-5 h-5 text-primary-foreground" />
                         </div>
                         <div>
-                          <CardTitle className="text-xl mb-1 flex items-center gap-2">
+                          <CardTitle className="text-base mb-1 flex items-center gap-2">
                             {player.name}
                             {selectedPlayers.includes(player.id) && (
-                              <CheckCircle2 className="w-5 h-5 text-primary" />
+                              <CheckCircle2 className="w-4 h-4 text-primary" />
                             )}
                           </CardTitle>
-                          <CardDescription className="flex flex-col gap-1">
-                            <span className="flex items-center gap-2">
-                              <Mail className="w-4 h-4" />
-                              {player.email}
+                          <CardDescription className="text-xs flex items-center gap-3">
+                            <span className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              {player.guardian.name}
                             </span>
-                            <span className="flex items-center gap-2">
-                              <User className="w-4 h-4" />
-                              Vårdnadshavare: {player.guardian.name}
-                            </span>
-                            <span className="flex items-center gap-2">
-                              <Phone className="w-4 h-4" />
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3" />
                               {player.guardian.phone}
                             </span>
                           </CardDescription>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <Badge className={`${getAttendanceColor(player.attendanceRate)}`}>
-                          {player.attendanceRate}% närvaro
+                      <div className="flex items-center gap-2">
+                        <Badge className={`${getAttendanceColor(player.attendanceRate)} text-xs`}>
+                          {player.attendanceRate}%
                         </Badge>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="gap-2"
+                          className="gap-1 h-8 px-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/player-calendar/${player.id}`);
                           }}
                         >
-                          <CalendarDays className="w-4 h-4" />
-                          Kalender
+                          <CalendarDays className="w-3 h-3" />
                         </Button>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="flex items-center gap-2 text-sm">
-                        <ClipboardList className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">
-                          {player.personalTrainingSessions} egna träningar
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">
-                          Senaste: {formatDate(player.lastTraining)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">
-                          {player.upcomingTrainings} kommande träningar
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
                 </Card>
               ))}
             </div>

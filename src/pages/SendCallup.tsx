@@ -133,9 +133,14 @@ const SendCallup = () => {
   const [callupData, setCallupData] = useState({
     date: new Date().toISOString().split('T')[0],
     time: "18:00",
+    gatherTime: "",
     location: "",
     type: "training",
-    message: ""
+    customType: "",
+    message: "",
+    reminderTime: "1day",
+    scheduled: false,
+    sendBefore: "1day"
   });
   
   const players = [...mockPlayers].sort((a, b) => {
@@ -215,9 +220,21 @@ const SendCallup = () => {
                   <SelectContent>
                     <SelectItem value="training">Träning</SelectItem>
                     <SelectItem value="match">Match</SelectItem>
+                    <SelectItem value="other">Övrigt</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              {callupData.type === "other" && (
+                <div>
+                  <Label htmlFor="customType">Namn på aktivitet</Label>
+                  <Input
+                    id="customType"
+                    value={callupData.customType}
+                    onChange={(e) => setCallupData({ ...callupData, customType: e.target.value })}
+                    placeholder="T.ex. Lagmöte"
+                  />
+                </div>
+              )}
               <div>
                 <Label htmlFor="date">Datum</Label>
                 <Input
@@ -237,11 +254,34 @@ const SendCallup = () => {
                     <SelectValue placeholder="Välj tid" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
-                    {Array.from({ length: 48 }, (_, i) => {
-                      const hour = Math.floor(i / 2) + 6;
-                      const minute = (i % 2) * 30;
-                      if (hour >= 22) return null;
-                      return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    {Array.from({ length: 192 }, (_, i) => {
+                      const hours = Math.floor((i * 5) / 60);
+                      const minutes = (i * 5) % 60;
+                      if (hours >= 24) return null;
+                      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    }).filter(Boolean).map((time) => (
+                      <SelectItem key={time} value={time!}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="gatherTime">Samlingstid (valfritt)</Label>
+                <Select
+                  value={callupData.gatherTime}
+                  onValueChange={(value) => setCallupData({ ...callupData, gatherTime: value })}
+                >
+                  <SelectTrigger id="gatherTime">
+                    <SelectValue placeholder="Välj samlingstid" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {Array.from({ length: 192 }, (_, i) => {
+                      const hours = Math.floor((i * 5) / 60);
+                      const minutes = (i * 5) % 60;
+                      if (hours >= 24) return null;
+                      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
                     }).filter(Boolean).map((time) => (
                       <SelectItem key={time} value={time!}>
                         {time}
@@ -260,6 +300,58 @@ const SendCallup = () => {
                 />
               </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="reminder">Påminnelse</Label>
+                <Select
+                  value={callupData.reminderTime}
+                  onValueChange={(value) => setCallupData({ ...callupData, reminderTime: value })}
+                >
+                  <SelectTrigger id="reminder">
+                    <SelectValue placeholder="Välj påminnelsetid" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2days">2 dagar innan</SelectItem>
+                    <SelectItem value="1day">1 dag innan</SelectItem>
+                    <SelectItem value="12hours">12 timmar innan</SelectItem>
+                    <SelectItem value="6hours">6 timmar innan</SelectItem>
+                    <SelectItem value="3hours">3 timmar innan</SelectItem>
+                    <SelectItem value="none">Ingen påminnelse</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2 pt-6">
+                <input
+                  type="checkbox"
+                  id="scheduled"
+                  checked={callupData.scheduled}
+                  onChange={(e) => setCallupData({ ...callupData, scheduled: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <Label htmlFor="scheduled" className="cursor-pointer">
+                  Schemalägg kallelse
+                </Label>
+              </div>
+            </div>
+            {callupData.scheduled && (
+              <div>
+                <Label htmlFor="sendBefore">Skicka kallelse innan</Label>
+                <Select
+                  value={callupData.sendBefore}
+                  onValueChange={(value) => setCallupData({ ...callupData, sendBefore: value })}
+                >
+                  <SelectTrigger id="sendBefore">
+                    <SelectValue placeholder="Välj tid" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1week">1 vecka innan</SelectItem>
+                    <SelectItem value="3days">3 dagar innan</SelectItem>
+                    <SelectItem value="2days">2 dagar innan</SelectItem>
+                    <SelectItem value="1day">1 dag innan</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div>
               <Label htmlFor="message">Meddelande (valfritt)</Label>
               <Textarea
@@ -328,6 +420,15 @@ const SendCallup = () => {
           >
             Välj alla spelare
           </Button>
+          {selectedPlayers.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedPlayers([])}
+            >
+              Ta bort alla markerade
+            </Button>
+          )}
         </div>
 
         {/* Player Selection */}
@@ -337,42 +438,32 @@ const SendCallup = () => {
           {players.map((player) => (
             <Card 
               key={player.id} 
-              className={`hover:shadow-lg transition-all cursor-pointer ${
+              className={`hover:shadow-md transition-all cursor-pointer ${
                 selectedPlayers.includes(player.id) ? 'border-primary border-2' : ''
               }`}
               onClick={() => togglePlayerSelection(player.id)}
             >
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center">
-                      <User className="w-6 h-6 text-primary-foreground" />
+              <CardHeader className="py-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
+                      <User className="w-5 h-5 text-primary-foreground" />
                     </div>
                     <div>
-                      <CardTitle className="text-xl mb-1 flex items-center gap-2">
+                      <CardTitle className="text-base mb-1 flex items-center gap-2">
                         {player.name}
                         {selectedPlayers.includes(player.id) && (
-                          <CheckCircle2 className="w-5 h-5 text-primary" />
+                          <CheckCircle2 className="w-4 h-4 text-primary" />
                         )}
                       </CardTitle>
-                      <CardDescription className="flex flex-col gap-1">
-                        <span className="flex items-center gap-2">
-                          <Mail className="w-4 h-4" />
-                          {player.email}
-                        </span>
-                        <span className="flex items-center gap-2">
-                          <User className="w-4 h-4" />
-                          Vårdnadshavare: {player.guardian.name}
-                        </span>
-                        <span className="flex items-center gap-2">
-                          <Phone className="w-4 h-4" />
-                          {player.guardian.phone}
-                        </span>
+                      <CardDescription className="text-xs flex items-center gap-2">
+                        <Phone className="w-3 h-3" />
+                        {player.guardian.phone}
                       </CardDescription>
                     </div>
                   </div>
-                  <Badge className={`${getAttendanceColor(player.attendanceRate)}`}>
-                    {player.attendanceRate}% närvaro
+                  <Badge className={`${getAttendanceColor(player.attendanceRate)} text-xs`}>
+                    {player.attendanceRate}%
                   </Badge>
                 </div>
               </CardHeader>

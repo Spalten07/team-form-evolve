@@ -252,7 +252,7 @@ const exerciseBank: ExerciseBankItem[] = [
 ];
 
 const focusAreas = [
-  "Teknik & Ballkontroll",
+  "Teknik & Bollkontroll",
   "Passning & Mottagning",
   "Avslut & Skott",
   "Taktik & Positionsspel",
@@ -437,7 +437,7 @@ const CreateTraining = () => {
     // Filtrera också baserat på fokusområde om ett är valt
     if (session.focus) {
       const focusMapping: Record<string, string[]> = {
-        "Teknik & Ballkontroll": ["Teknik", "Uppvärmning"],
+        "Teknik & Bollkontroll": ["Teknik", "Uppvärmning"],
         "Passning & Mottagning": ["Passning", "Uppvärmning"],
         "Avslut & Skott": ["Avslut"],
         "Taktik & Positionsspel": ["Taktik"],
@@ -637,7 +637,7 @@ const CreateTraining = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="time">Starttid (välj var 5:e minut)</Label>
+                  <Label htmlFor="time">Starttid</Label>
                   <Select 
                     value={session.time} 
                     onValueChange={(value) => setSession({ ...session, time: value })}
@@ -662,18 +662,22 @@ const CreateTraining = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="duration">Önskad träningstid (minuter)</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    value={session.duration === 0 ? "" : session.duration}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setSession({ ...session, duration: value === "" ? 0 : Math.max(10, parseInt(value) || 0) });
-                    }}
-                    min="10"
-                    step="5"
-                  />
+                  <Label htmlFor="duration">Önskad träningstid</Label>
+                  <Select
+                    value={session.duration.toString()}
+                    onValueChange={(value) => setSession({ ...session, duration: parseInt(value) })}
+                  >
+                    <SelectTrigger id="duration">
+                      <SelectValue placeholder="Välj träningstid" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {Array.from({ length: 23 }, (_, i) => (i + 2) * 5).map((minutes) => (
+                        <SelectItem key={minutes} value={minutes.toString()}>
+                          {minutes} minuter
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="players">Antal spelare</Label>

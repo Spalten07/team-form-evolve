@@ -13,7 +13,7 @@ const RoleSelection = () => {
 
   const selectRole = (role: "coach" | "player") => {
     localStorage.setItem("userRole", role);
-    navigate(role === "coach" ? "/home" : "/exercises");
+    navigate(role === "coach" ? "/coach-dashboard" : "/player-dashboard");
   };
 
   return (

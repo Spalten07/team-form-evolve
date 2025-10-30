@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users, Target, Edit, Trash2, Copy } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface SavedTraining {
@@ -56,6 +57,7 @@ const mockSavedTrainings: SavedTraining[] = [
 ];
 
 const SavedTrainings = () => {
+  const navigate = useNavigate();
   const [trainings, setTrainings] = useState<SavedTraining[]>(mockSavedTrainings);
 
   const formatDate = (dateString: string) => {
@@ -173,7 +175,13 @@ const SavedTrainings = () => {
                   </div>
                   
                   <div className="flex gap-2">
-                    <Button variant="default" className="flex-1 gap-2">
+                    <Button 
+                      variant="default" 
+                      className="flex-1 gap-2"
+                      onClick={() => {
+                        navigate('/create-training', { state: { editingTraining: training } });
+                      }}
+                    >
                       <Edit className="w-4 h-4" />
                       Redigera
                     </Button>

@@ -20,7 +20,7 @@ const mockSessions: TrainingSession[] = [
     id: 1,
     date: "2025-10-28",
     duration: 45,
-    focus: "Teknik & Ballkontroll",
+    focus: "Teknik & Bollkontroll",
     exercises: 4,
     completed: true
   },
@@ -117,7 +117,7 @@ const PlayerHistory = () => {
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10">
-                    <span className="font-medium">Teknik & Ballkontroll</span>
+                    <span className="font-medium">Teknik & Bollkontroll</span>
                     <span className="text-sm">75% ({Math.round(totalMinutes * 0.75)} min)</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-accent/10">

@@ -151,50 +151,27 @@ const Planner = () => {
             </Card>
 
             {/* Training Sessions List */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Planerade träningar</h2>
+            <div className="space-y-3">
+              <h2 className="text-xl font-bold">Planerade träningar</h2>
               
               {sessions.map((session) => (
-                <Card key={session.id} className="hover:shadow-lg transition-all">
-              <CardHeader>
-                <div className="flex items-start justify-between">
+                <Card key={session.id} className="hover:shadow-md transition-all">
+              <CardHeader className="py-3">
+                <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
                       {getStatusBadge(session.status)}
-                      <span className="text-sm text-muted-foreground">
-                        {formatDate(session.date)}
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(session.date)} • {session.time}
                       </span>
                     </div>
-                    <CardTitle className="text-xl mb-1">{session.title}</CardTitle>
-                    <CardDescription>{session.focus}</CardDescription>
+                    <CardTitle className="text-base">{session.title}</CardTitle>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">Detaljer</Button>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    {session.time} - {session.duration}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Users className="w-4 h-4" />
-                    {session.players} spelare
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Target className="w-4 h-4" />
-                    {session.focus}
-                  </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button variant="default" className="flex-1">
-                    Visa detaljer
-                  </Button>
-                  <Button variant="outline">
-                    Redigera
-                  </Button>
-                </div>
-              </CardContent>
             </Card>
           ))}
             </div>
@@ -203,21 +180,64 @@ const Planner = () => {
           <TabsContent value="calendar">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CalendarDays className="w-6 h-6" />
-                  Lagets kalender
-                </CardTitle>
-                <CardDescription>
-                  Här kommer du kunna synka matcher och träningar med lagets kalender
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <CalendarDays className="w-6 h-6" />
+                      Lagets kalender
+                    </CardTitle>
+                    <CardDescription>Veckoschema för träningar och matcher</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">← Föregående vecka</Button>
+                    <Button variant="outline" size="sm">Denna vecka</Button>
+                    <Button variant="outline" size="sm">Nästa vecka →</Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <CalendarDays className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground text-lg mb-4">Kalenderfunktion kommer snart</p>
-                  <p className="text-sm text-muted-foreground">
-                    Du kommer kunna synka matcher, träningar och evenemang i en gemensam kalender för laget
-                  </p>
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="grid grid-cols-8 bg-secondary">
+                    <div className="p-2 text-xs font-semibold border-r">Tid</div>
+                    <div className="p-2 text-xs font-semibold border-r text-center">Mån</div>
+                    <div className="p-2 text-xs font-semibold border-r text-center">Tis</div>
+                    <div className="p-2 text-xs font-semibold border-r text-center">Ons</div>
+                    <div className="p-2 text-xs font-semibold border-r text-center">Tor</div>
+                    <div className="p-2 text-xs font-semibold border-r text-center">Fre</div>
+                    <div className="p-2 text-xs font-semibold border-r text-center">Lör</div>
+                    <div className="p-2 text-xs font-semibold text-center">Sön</div>
+                  </div>
+                  
+                  {["16:00", "17:00", "18:00", "19:00"].map((time) => (
+                    <div key={time} className="grid grid-cols-8 border-t">
+                      <div className="p-2 text-xs text-muted-foreground border-r bg-secondary/50">{time}</div>
+                      <div className="p-1 border-r"></div>
+                      <div className="p-1 border-r">
+                        {time === "18:00" && (
+                          <div className="bg-primary/10 border border-primary/20 rounded p-1">
+                            <p className="text-xs font-medium text-primary">Träning</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-1 border-r"></div>
+                      <div className="p-1 border-r">
+                        {time === "18:00" && (
+                          <div className="bg-primary/10 border border-primary/20 rounded p-1">
+                            <p className="text-xs font-medium text-primary">Träning</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-1 border-r"></div>
+                      <div className="p-1 border-r">
+                        {time === "17:00" && (
+                          <div className="bg-accent/10 border border-accent/20 rounded p-1">
+                            <p className="text-xs font-medium text-accent">Match</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-1"></div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -228,20 +248,57 @@ const Planner = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="w-6 h-6" />
-                  Schemalägg kallelser
+                  Schemalagda kallelser
                 </CardTitle>
                 <CardDescription>
-                  Planera och schemalägg träningskallelser och matchkallelser i förväg
+                  Automatiska kallelser som skickas i förväg
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground text-lg mb-4">Schemaläggningsfunktion kommer snart</p>
-                  <p className="text-sm text-muted-foreground">
-                    Du kommer kunna schemalägga och automatiskt skicka kallelser till träningar och matcher
-                  </p>
-                </div>
+              <CardContent className="space-y-3">
+                {/* Scheduled Callup 1 */}
+                <Card className="border-primary/20">
+                  <CardHeader className="py-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-sm">Träningskallelse - Tisdagar</CardTitle>
+                        <CardDescription className="text-xs mt-1">
+                          Skickas 2 dagar innan • Till: Alla spelare (8)
+                        </CardDescription>
+                      </div>
+                      <Badge variant="outline">Aktiv</Badge>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                {/* Scheduled Callup 2 */}
+                <Card className="border-primary/20">
+                  <CardHeader className="py-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-sm">Matchkallelse - Lördagar</CardTitle>
+                        <CardDescription className="text-xs mt-1">
+                          Skickas 3 dagar innan • Till: Alla spelare (8)
+                        </CardDescription>
+                      </div>
+                      <Badge variant="outline">Aktiv</Badge>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                {/* Scheduled Callup 3 */}
+                <Card className="border-primary/20">
+                  <CardHeader className="py-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-sm">Träningskallelse - Torsdagar</CardTitle>
+                        <CardDescription className="text-xs mt-1">
+                          Skickas 1 dag innan • Till: Alla spelare (8)
+                        </CardDescription>
+                      </div>
+                      <Badge variant="outline">Aktiv</Badge>
+                    </div>
+                  </CardHeader>
+                </Card>
               </CardContent>
             </Card>
           </TabsContent>

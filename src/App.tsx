@@ -16,6 +16,8 @@ import PlayerCalendar from "./pages/PlayerCalendar";
 import PlayerPastActivities from "./pages/PlayerPastActivities";
 import SendCallup from "./pages/SendCallup";
 import SavedTrainings from "./pages/SavedTrainings";
+import CoachDashboard from "./pages/CoachDashboard";
+import PlayerDashboard from "./pages/PlayerDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<RoleSelection />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/coach-dashboard" element={<CoachDashboard />} />
+          <Route path="/player-dashboard" element={<PlayerDashboard />} />
           <Route path="/exercises" element={<Exercises />} />
           <Route path="/theory" element={<Theory />} />
           <Route path="/quiz/:quizId" element={<Quiz />} />
