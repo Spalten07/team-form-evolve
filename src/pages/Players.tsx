@@ -52,12 +52,67 @@ const mockPlayers: Player[] = [
     personalTrainingSessions: 8,
     lastTraining: "2025-10-27",
     upcomingTrainings: 2
+  },
+  {
+    id: 4,
+    name: "Anna Karlsson",
+    email: "anna.karlsson@email.se",
+    attendanceRate: 95,
+    personalTrainingSessions: 22,
+    lastTraining: "2025-10-29",
+    upcomingTrainings: 3
+  },
+  {
+    id: 5,
+    name: "Lucas Eriksson",
+    email: "lucas.eriksson@email.se",
+    attendanceRate: 88,
+    personalTrainingSessions: 15,
+    lastTraining: "2025-10-28",
+    upcomingTrainings: 3
+  },
+  {
+    id: 6,
+    name: "Emma Johansson",
+    email: "emma.johansson@email.se",
+    attendanceRate: 82,
+    personalTrainingSessions: 10,
+    lastTraining: "2025-10-27",
+    upcomingTrainings: 2
+  },
+  {
+    id: 7,
+    name: "Oliver Larsson",
+    email: "oliver.larsson@email.se",
+    attendanceRate: 90,
+    personalTrainingSessions: 16,
+    lastTraining: "2025-10-29",
+    upcomingTrainings: 3
+  },
+  {
+    id: 8,
+    name: "Maja Svensson",
+    email: "maja.svensson@email.se",
+    attendanceRate: 87,
+    personalTrainingSessions: 14,
+    lastTraining: "2025-10-28",
+    upcomingTrainings: 3
   }
 ];
 
 const Players = () => {
-  const [players] = useState<Player[]>(mockPlayers);
+  const [sortBy, setSortBy] = useState<"name" | "attendance">("name");
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]);
+  
+  const players = [...mockPlayers].sort((a, b) => {
+    if (sortBy === "name") {
+      const lastNameA = a.name.split(" ")[1] || a.name;
+      const lastNameB = b.name.split(" ")[1] || b.name;
+      return lastNameA.localeCompare(lastNameB);
+    } else {
+      return b.attendanceRate - a.attendanceRate;
+    }
+  });
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -69,9 +124,9 @@ const Players = () => {
   };
 
   const getAttendanceColor = (rate: number) => {
-    if (rate >= 90) return "text-success";
-    if (rate >= 75) return "text-warning";
-    return "text-destructive";
+    if (rate >= 90) return "bg-success/20 text-success";
+    if (rate >= 75) return "bg-warning/20 text-warning";
+    return "bg-destructive/20 text-destructive";
   };
 
   const togglePlayerSelection = (playerId: number) => {
@@ -137,6 +192,24 @@ const Players = () => {
             <TabsTrigger value="overview">Översikt</TabsTrigger>
             <TabsTrigger value="communication">Kommunikation</TabsTrigger>
           </TabsList>
+          
+          {/* Sort Options */}
+          <div className="flex gap-2 mb-4">
+            <Button
+              variant={sortBy === "name" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSortBy("name")}
+            >
+              Sortera efter efternamn
+            </Button>
+            <Button
+              variant={sortBy === "attendance" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSortBy("attendance")}
+            >
+              Sortera efter högst närvaro
+            </Button>
+          </div>
           
           <TabsContent value="overview">
             <div className="space-y-4">
@@ -229,14 +302,22 @@ const Players = () => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <Button variant="default" className="gap-2">
                         <Mail className="w-4 h-4" />
                         Skicka träningskallelse
                       </Button>
                       <Button variant="outline" className="gap-2">
                         <ClipboardList className="w-4 h-4" />
-                        Skicka quiz
+                        Skicka teoripass
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="gap-2"
+                        onClick={() => setSelectedPlayers(players.map(p => p.id))}
+                      >
+                        <Mail className="w-4 h-4" />
+                        Välj alla spelare
                       </Button>
                     </div>
                   </>

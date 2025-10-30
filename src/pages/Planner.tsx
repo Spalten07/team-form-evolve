@@ -100,9 +100,10 @@ const Planner = () => {
         </div>
 
         <Tabs defaultValue="trainings" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
             <TabsTrigger value="trainings">Träningar</TabsTrigger>
             <TabsTrigger value="calendar">Lagets kalender</TabsTrigger>
+            <TabsTrigger value="scheduling">Schemaläggning</TabsTrigger>
           </TabsList>
           
           <TabsContent value="trainings">
@@ -202,6 +203,29 @@ const Planner = () => {
                   <p className="text-muted-foreground text-lg mb-4">Kalenderfunktion kommer snart</p>
                   <p className="text-sm text-muted-foreground">
                     Du kommer kunna synka matcher, träningar och evenemang i en gemensam kalender för laget
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="scheduling">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="w-6 h-6" />
+                  Schemalägg kallelser
+                </CardTitle>
+                <CardDescription>
+                  Planera och schemalägg träningskallelser och matchkallelser i förväg
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground text-lg mb-4">Schemaläggningsfunktion kommer snart</p>
+                  <p className="text-sm text-muted-foreground">
+                    Du kommer kunna schemalägga och automatiskt skicka kallelser till träningar och matcher
                   </p>
                 </div>
               </CardContent>

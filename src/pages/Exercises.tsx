@@ -290,7 +290,7 @@ const Exercises = () => {
   const [showCustomSession, setShowCustomSession] = useState(false);
   const [showRecommendedSessions, setShowRecommendedSessions] = useState(true);
 
-  const allEquipment = ["Bollar", "Koner", "Mål", "Små mål", "Västar", "Koordinationsstege", "Hinder", "Ribbor", "Startblock", "Agility-stegar", "Koordinationsringar", "Markörer", "Träningsdummy", "Miniband"];
+  const allEquipment = ["Bollar", "Koner", "Mål", "Små mål", "Västar", "Koordinationsstege", "Hinder", "Ribbor", "Markörer", "Träningsdummy", "Vattendunkar", "Förbandslåda"];
   const categories = ["Alla", "Uppvärmning", "Passning", "Teknik", "Avslut", "Taktik", "Spelform", "Kondition", "Nedvarvning"];
 
   const toggleEquipment = (equipment: string) => {
@@ -514,8 +514,11 @@ const Exercises = () => {
                       <Input
                         id="duration"
                         type="number"
-                        value={customDuration}
-                        onChange={(e) => setCustomDuration(parseInt(e.target.value) || 60)}
+                        value={customDuration === 0 ? "" : customDuration}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setCustomDuration(value === "" ? 0 : Math.max(10, parseInt(value) || 0));
+                        }}
                         min="10"
                         max="120"
                       />

@@ -266,16 +266,14 @@ const focusAreas = [
 const equipmentOptions = [
   "Bollar",
   "Koner",
+  "Mål",
+  "Västar",
+  "Träningsdummy",
+  "Markörer",
   "Hinder",
   "Ribbor",
-  "Västar",
-  "Mål",
-  "Startblock",
-  "Agility-stegar",
-  "Koordinationsringar",
-  "Markörer",
-  "Träningsdummy",
-  "Miniband"
+  "Vattendunkar",
+  "Förbandslåda"
 ];
 
 const CreateTraining = () => {
@@ -471,11 +469,11 @@ const CreateTraining = () => {
     
     return (
       <Accordion type="single" collapsible defaultValue="item-1">
-        <AccordionItem value="item-1">
-          <AccordionTrigger className="hover:no-underline">
+        <AccordionItem value="item-1" className="border-2 border-border rounded-lg px-4">
+          <AccordionTrigger className="hover:no-underline py-4">
             <div className="flex items-center justify-between w-full pr-4">
               <span className="text-xl font-semibold">{title}</span>
-              <Badge variant="outline">
+              <Badge variant="default" className="text-base px-3 py-1">
                 {exercises.reduce((sum, e) => sum + e.duration, 0)} min
               </Badge>
             </div>
@@ -636,13 +634,26 @@ const CreateTraining = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="time">Starttid</Label>
-                  <Input
-                    id="time"
-                    type="time"
-                    value={session.time}
-                    onChange={(e) => setSession({ ...session, time: e.target.value })}
-                  />
+                  <Label htmlFor="time">Starttid (välj var 5:e minut)</Label>
+                  <Select 
+                    value={session.time} 
+                    onValueChange={(value) => setSession({ ...session, time: value })}
+                  >
+                    <SelectTrigger id="time">
+                      <SelectValue placeholder="Välj starttid" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {Array.from({ length: 288 }, (_, i) => {
+                        const hours = Math.floor((i * 5) / 60);
+                        const minutes = (i * 5) % 60;
+                        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                      }).map((time) => (
+                        <SelectItem key={time} value={time}>
+                          {time}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -806,6 +817,21 @@ const CreateTraining = () => {
               onClick={() => navigate("/planner")}
             >
               Avbryt
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="flex-1"
+              onClick={() => {
+                if (!session.title || !session.focus) {
+                  toast.error("Vänligen fyll i titel och fokusområde");
+                  return;
+                }
+                toast.success("Träning tillagd på befintlig kallelse!");
+                setTimeout(() => navigate("/planner"), 1000);
+              }}
+            >
+              Lägg till på kallelse
             </Button>
             <Button
               variant="hero"

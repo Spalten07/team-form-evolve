@@ -1,8 +1,10 @@
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Clock, MapPin, Users, History } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface TeamEvent {
   id: number;
@@ -55,6 +57,7 @@ const mockEvents: TeamEvent[] = [
 
 const PlayerCalendar = () => {
   const [events] = useState<TeamEvent[]>(mockEvents);
+  const navigate = useNavigate();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -91,13 +94,23 @@ const PlayerCalendar = () => {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
-            Lagets kalender
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Se kommande träningar och matcher med laget
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
+              Lagets kalender
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Se kommande träningar och matcher med laget
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => navigate("/player-past-activities")}
+          >
+            <History className="w-4 h-4" />
+            Tidigare aktiviteter
+          </Button>
         </div>
 
         {/* Calendar Overview */}
@@ -135,40 +148,41 @@ const PlayerCalendar = () => {
           </CardContent>
         </Card>
 
-        {/* Events List */}
-        <div className="space-y-4">
+        {/* Events List - Komprimerad vy */}
+        <div className="space-y-3">
           <h2 className="text-2xl font-bold">Kommande aktiviteter</h2>
           
           {events.map((event) => (
             <Card key={event.id} className="hover:shadow-lg transition-all">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      {getTypeBadge(event.type)}
-                      {getAttendanceBadge(event.attendance)}
-                      <span className="text-sm text-muted-foreground">
-                        {formatDate(event.date)}
-                      </span>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="flex flex-col items-center justify-center bg-primary/10 rounded-lg p-3 min-w-[60px]">
+                      <div className="text-2xl font-bold text-primary">
+                        {new Date(event.date).getDate()}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(event.date).toLocaleDateString('sv-SE', { month: 'short' })}
+                      </div>
                     </div>
-                    <CardTitle className="text-xl mb-1">{event.title}</CardTitle>
-                    <CardDescription>{event.location}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    {event.time}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4" />
-                    {event.location}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Users className="w-4 h-4" />
-                    Lagaktivitet
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        {getTypeBadge(event.type)}
+                        {getAttendanceBadge(event.attendance)}
+                      </div>
+                      <h3 className="font-semibold text-lg">{event.title}</h3>
+                      <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {event.time}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {event.location}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
