@@ -38,7 +38,7 @@ const quizData: Record<string, QuizData> = {
           "Utanför planen"
         ],
         correctAnswer: 2,
-        explanation: "Backen ska vara nära eget mål för att försvara."
+        explanation: "Backen ska vara nära eget mål för att försvara och hjälpa målvakten."
       },
       {
         id: 2,
@@ -50,11 +50,11 @@ const quizData: Record<string, QuizData> = {
           "Stå still"
         ],
         correctAnswer: 1,
-        explanation: "Forwarden anfaller och försöker göra mål."
+        explanation: "Forwarden anfaller och försöker göra mål, men hjälper också till i försvar."
       },
       {
         id: 3,
-        question: "Hur lång är en halva i 5-manna?",
+        question: "Hur lång är en halvlek i 5-manna?",
         options: [
           "10 min",
           "15 min",
@@ -62,7 +62,7 @@ const quizData: Record<string, QuizData> = {
           "45 min"
         ],
         correctAnswer: 1,
-        explanation: "I 5-manna är varje halva 15 minuter."
+        explanation: "I 5-manna är varje halvlek 15 minuter lång."
       },
       {
         id: 4,
@@ -74,7 +74,7 @@ const quizData: Record<string, QuizData> = {
           "Omstart"
         ],
         correctAnswer: 1,
-        explanation: "Bollen över sidlinjen = inkast för motståndarlaget."
+        explanation: "När bollen går ut över sidlinjen blir det inkast för motståndarlaget."
       },
       {
         id: 5,
@@ -86,7 +86,43 @@ const quizData: Record<string, QuizData> = {
           "Rulla bollen"
         ],
         correctAnswer: 2,
-        explanation: "Inkast: båda händer bakom huvud, båda fötter i mark."
+        explanation: "Inkast görs med båda händer bakom huvudet, och båda fötterna måste vara i marken."
+      },
+      {
+        id: 6,
+        question: "Vad är en mittfältares uppgift?",
+        options: [
+          "Bara försvara",
+          "Bara anfalla",
+          "Både försvara och anfalla",
+          "Stå stilla"
+        ],
+        correctAnswer: 2,
+        explanation: "Mittfältaren både försvarar och anfaller - länkar ihop backar och forwards."
+      },
+      {
+        id: 7,
+        question: "Vad ska målvakten göra?",
+        options: [
+          "Spring runt planen",
+          "Stoppa skott och organisera försvar",
+          "Göra mål",
+          "Bara titta"
+        ],
+        correctAnswer: 1,
+        explanation: "Målvaktens huvuduppgift är att stoppa skott och dirigera försvarsspelet."
+      },
+      {
+        id: 8,
+        question: "När får målvakten ta bollen med händerna?",
+        options: [
+          "Alltid",
+          "Aldrig",
+          "Bara i straffområdet",
+          "När som helst utanför planen"
+        ],
+        correctAnswer: 2,
+        explanation: "Målvakten får ta bollen med händerna endast i eget straffområde."
       }
     ]
   },
@@ -97,7 +133,7 @@ const quizData: Record<string, QuizData> = {
     questions: [
       {
         id: 1,
-        question: "Vad är kryssboll?",
+        question: "Vad är inlägg?",
         options: [
           "Studsande boll",
           "Hög boll från kant mot mål",
@@ -105,7 +141,7 @@ const quizData: Record<string, QuizData> = {
           "Boll på marken"
         ],
         correctAnswer: 1,
-        explanation: "Kryssboll = hög passning från kant in mot mål."
+        explanation: "Inlägg = hög passning från kant in mot målområdet, ofta från ytterkant."
       },
       {
         id: 2,
@@ -117,7 +153,7 @@ const quizData: Record<string, QuizData> = {
           "Stå still"
         ],
         correctAnswer: 2,
-        explanation: "Djupled = spring bakom motståndarnas försvar."
+        explanation: "Djupled = spring bakom motståndarnas försvar för att få passning."
       },
       {
         id: 3,
@@ -129,7 +165,7 @@ const quizData: Record<string, QuizData> = {
           "Bred plan"
         ],
         correctAnswer: 0,
-        explanation: "Bredsida = spela bollen åt sidan för mer utrymme."
+        explanation: "Bredsida = spela bollen åt sidan för att skapa mer utrymme och få upp bredden."
       },
       {
         id: 4,
@@ -141,11 +177,126 @@ const quizData: Record<string, QuizData> = {
           "Falla över boll"
         ],
         correctAnswer: 0,
-        explanation: "Översteg = kliv över boll för att lura motståndare."
+        explanation: "Översteg = kliv över bollen för att lura motståndare att tro du går åt ett håll."
       },
       {
         id: 5,
-        question: "Vilket år var första VM?",
+        question: "Vad är en framspel?",
+        options: [
+          "Spela bakåt",
+          "Spela framåt mot mål",
+          "Spela utanför",
+          "Inte spela alls"
+        ],
+        correctAnswer: 1,
+        explanation: "Framspel = passning framåt mot motståndarens mål, för att skapa målchanser."
+      },
+      {
+        id: 6,
+        question: "Vad betyder att 'vända med bollen'?",
+        options: [
+          "Springa bakåt",
+          "Ta emot boll och vända mot mål",
+          "Kasta bollen",
+          "Ligga ner"
+        ],
+        correctAnswer: 1,
+        explanation: "Att vända med bollen innebär att ta emot passning och vända sig mot motståndarens mål."
+      },
+      {
+        id: 7,
+        question: "Vad är ett lågt inlägg?",
+        options: [
+          "Inlägg längs marken",
+          "Inlägg högt i luften",
+          "Inlägg bakåt",
+          "Inlägg med huvudet"
+        ],
+        correctAnswer: 0,
+        explanation: "Lågt inlägg är en passning längs marken från kant in mot målområdet."
+      },
+      {
+        id: 8,
+        question: "Vad betyder 'möta bollen'?",
+        options: [
+          "Spring iväg från bollen",
+          "Spring mot bollen för att ta emot",
+          "Stå still",
+          "Hoppa över bollen"
+        ],
+        correctAnswer: 1,
+        explanation: "Att möta bollen innebär att springa mot den när den kommer för att ta emot säkert."
+      }
+    ]
+  },
+  "7-manna-historia": {
+    id: "7-manna-historia",
+    title: "Fotbollshistoria",
+    level: "7-manna",
+    questions: [
+      {
+        id: 1,
+        question: "Vilket land är fotbollens 'moderland'?",
+        options: [
+          "Brasilien",
+          "England",
+          "Sverige",
+          "Tyskland"
+        ],
+        correctAnswer: 1,
+        explanation: "England kallas moderland - de moderna fotbollsreglerna skapades där 1863."
+      },
+      {
+        id: 2,
+        question: "Vem är Sveriges mest kända fotbollsspelare?",
+        options: [
+          "Henrik Larsson",
+          "Zlatan Ibrahimović",
+          "Gunnar Nordahl",
+          "Tomas Brolin"
+        ],
+        correctAnswer: 1,
+        explanation: "Zlatan Ibrahimović är Sveriges mest kända spelare genom tiderna."
+      },
+      {
+        id: 3,
+        question: "Hur många spelare på planen i 7-manna?",
+        options: [
+          "5 spelare",
+          "7 spelare",
+          "9 spelare",
+          "11 spelare"
+        ],
+        correctAnswer: 1,
+        explanation: "7-manna = 7 spelare per lag på planen, inklusive målvakt."
+      },
+      {
+        id: 4,
+        question: "Vilket land har flest VM-guld?",
+        options: [
+          "Argentina",
+          "Tyskland",
+          "Brasilien",
+          "Italien"
+        ],
+        correctAnswer: 2,
+        explanation: "Brasilien har 5 VM-guld (1958, 1962, 1970, 1994, 2002)."
+      },
+      {
+        id: 5,
+        question: "Vad heter Sveriges högsta liga?",
+        options: [
+          "Premier League",
+          "Allsvenskan",
+          "Superettan",
+          "La Liga"
+        ],
+        correctAnswer: 1,
+        explanation: "Allsvenskan är Sveriges högsta fotbollsliga för herrar."
+      },
+      {
+        id: 6,
+        question: "Vilket år var första fotbolls-VM?",
         options: [
           "1900",
           "1920",
@@ -153,7 +304,134 @@ const quizData: Record<string, QuizData> = {
           "1950"
         ],
         correctAnswer: 2,
-        explanation: "Första VM var 1930 i Uruguay."
+        explanation: "Första fotbolls-VM hölls 1930 i Uruguay."
+      },
+      {
+        id: 7,
+        question: "Vilket svenskt lag har flest svenska mästerskap?",
+        options: [
+          "AIK",
+          "Malmö FF",
+          "IFK Göteborg",
+          "Djurgården"
+        ],
+        correctAnswer: 1,
+        explanation: "Malmö FF har flest svenska mästerskap i herrfotboll."
+      },
+      {
+        id: 8,
+        question: "Vad heter fotbollens internationella förbund?",
+        options: [
+          "UEFA",
+          "FIFA",
+          "FIBA",
+          "IOC"
+        ],
+        correctAnswer: 1,
+        explanation: "FIFA (Fédération Internationale de Football Association) är fotbollens världsförbund."
+      }
+    ]
+  },
+  "7-manna-taktik": {
+    id: "7-manna-taktik",
+    title: "Taktiska grunder",
+    level: "7-manna",
+    questions: [
+      {
+        id: 1,
+        question: "Varför är det viktigt att sprida ut sig på planen?",
+        options: [
+          "För att springa mindre",
+          "För att skapa mer utrymme",
+          "För att vila",
+          "Det är inte viktigt"
+        ],
+        correctAnswer: 1,
+        explanation: "Att sprida ut sig skapar mer utrymme och gör det svårare för motståndare att försvara."
+      },
+      {
+        id: 2,
+        question: "Vad ska man göra när laget inte har bollen?",
+        options: [
+          "Vila",
+          "Titta på",
+          "Försvara och positionera sig",
+          "Gå hem"
+        ],
+        correctAnswer: 2,
+        explanation: "När laget inte har bollen ska alla försvara och positionera sig rätt."
+      },
+      {
+        id: 3,
+        question: "Varför ska man kommunicera på planen?",
+        options: [
+          "För att prata",
+          "För att hjälpa lagkamrater se fara och möjligheter",
+          "För att domaren ska höra",
+          "Det behövs inte"
+        ],
+        correctAnswer: 1,
+        explanation: "Kommunikation hjälper lagkamrater att upptäcka fara och möjligheter de inte ser."
+      },
+      {
+        id: 4,
+        question: "Vad betyder att 'erbjuda sig'?",
+        options: [
+          "Spring iväg",
+          "Positionera sig för att ta emot passning",
+          "Stå still",
+          "Sätta sig ner"
+        ],
+        correctAnswer: 1,
+        explanation: "Att erbjuda sig betyder att positionera sig där lagkamrat kan passa bollen till dig."
+      },
+      {
+        id: 5,
+        question: "När ska man passa bakåt?",
+        options: [
+          "Aldrig",
+          "När det inte finns bra alternativ framåt",
+          "Alltid",
+          "Bara i första halvleken"
+        ],
+        correctAnswer: 1,
+        explanation: "Pass bakåt är smart när inga bra alternativ finns framåt - håller bollinnehav."
+      },
+      {
+        id: 6,
+        question: "Varför är det viktigt att ha god första touch?",
+        options: [
+          "Ser coolt ut",
+          "Ger tid och kontroll på bollen",
+          "Gör ingenting",
+          "Domaren gillar det"
+        ],
+        correctAnswer: 1,
+        explanation: "En god första touch ger dig tid och kontroll för nästa handling."
+      },
+      {
+        id: 7,
+        question: "Vad ska backar göra när laget anfaller?",
+        options: [
+          "Vila",
+          "Stanna i försvar men stötta uppåt",
+          "Spring framåt till motståndarens mål",
+          "Gå av planen"
+        ],
+        correctAnswer: 1,
+        explanation: "Backar ska stanna i försvar men positionera sig för att stötta anfallet."
+      },
+      {
+        id: 8,
+        question: "Varför är det viktigt med lagbalans?",
+        options: [
+          "För att alla ska få spring lika mycket",
+          "För att täcka hela planen och inte lämna luckor",
+          "Det är inte viktigt",
+          "För att domaren kräver det"
+        ],
+        correctAnswer: 1,
+        explanation: "Lagbalans innebär att täcka hela planen utan luckor som motståndare kan utnyttja."
       }
     ]
   },
@@ -184,7 +462,7 @@ const quizData: Record<string, QuizData> = {
           "Om domaren säger"
         ],
         correctAnswer: 1,
-        explanation: "Man kan aldrig vara offside på egen halva."
+        explanation: "Man kan aldrig vara offside på egen planhalva."
       },
       {
         id: 3,
@@ -193,14 +471,14 @@ const quizData: Record<string, QuizData> = {
           "Ja, alltid",
           "Nej, aldrig",
           "Om man springer fort",
-          "I första halvlek"
+          "I första halvleken"
         ],
         correctAnswer: 1,
-        explanation: "Offsideregeln gäller inte vid inkast."
+        explanation: "Offsideregeln gäller inte vid inkast, hörnor eller inkasten."
       },
       {
         id: 4,
-        question: "Vad betyder 4-3-3?",
+        question: "Vad betyder 4-3-3 formationen?",
         options: [
           "4 forwards, 3 mittfält, 3 backar",
           "4 backar, 3 mittfält, 3 forwards",
@@ -208,11 +486,11 @@ const quizData: Record<string, QuizData> = {
           "Ett telefonnummer"
         ],
         correctAnswer: 1,
-        explanation: "4-3-3 = 4 backar, 3 mittfält, 3 forwards (bakifrån räknat)."
+        explanation: "4-3-3 = 4 backar, 3 mittfältare, 3 forwards (räknat bakifrån)."
       },
       {
         id: 5,
-        question: "Vilket nummer har mittback?",
+        question: "Vilket nummer har mittback traditionellt?",
         options: [
           "Nummer 1",
           "Nummer 4 eller 5",
@@ -220,74 +498,43 @@ const quizData: Record<string, QuizData> = {
           "Nummer 11"
         ],
         correctAnswer: 1,
-        explanation: "Mittbackar har nummer 4 eller 5."
-      }
-    ]
-  },
-  "7-manna-historia": {
-    id: "7-manna-historia",
-    title: "Fotbollshistoria",
-    level: "7-manna",
-    questions: [
-      {
-        id: 1,
-        question: "Vilket land är fotbollens 'moderland'?",
-        options: [
-          "Brasilien",
-          "England",
-          "Sverige",
-          "Tyskland"
-        ],
-        correctAnswer: 1,
-        explanation: "England kallas moderland - reglerna skapades där 1863."
+        explanation: "Mittbackar har traditionellt nummer 4 eller 5."
       },
       {
-        id: 2,
-        question: "Vem är Sveriges mest kända fotbollsspelare?",
+        id: 6,
+        question: "Kan man vara offside vid målspark?",
         options: [
-          "Henrik Larsson",
-          "Zlatan Ibrahimović",
-          "Gunnar Nordahl",
-          "Tomas Brolin"
+          "Ja, alltid",
+          "Nej, aldrig",
+          "Bara om målvakten sparkar långt",
+          "I andra halvleken"
         ],
         correctAnswer: 1,
-        explanation: "Zlatan är Sveriges mest kända spelare genom tiderna."
+        explanation: "Man kan inte vara offside direkt från målspark."
       },
       {
-        id: 3,
-        question: "Hur många spelare på planen i 7-manna?",
+        id: 7,
+        question: "Vad är 4-4-2 formationen?",
         options: [
-          "5 spelare",
-          "7 spelare",
-          "9 spelare",
-          "11 spelare"
+          "4 backar, 4 mittfält, 2 forwards",
+          "4 forwards, 4 mittfält, 2 backar",
+          "2 backar, 4 mittfält, 4 forwards",
+          "4 målvakter, 4 backar, 2 forwards"
         ],
-        correctAnswer: 1,
-        explanation: "7-manna = 7 spelare per lag, inklusive målvakt."
+        correctAnswer: 0,
+        explanation: "4-4-2 = 4 backar, 4 mittfältare och 2 forwards."
       },
       {
-        id: 4,
-        question: "Vilket land har flest VM-guld?",
+        id: 8,
+        question: "Vilket nummer har en traditionell målvakt?",
         options: [
-          "Argentina",
-          "Tyskland",
-          "Brasilien",
-          "Italien"
+          "Nummer 1",
+          "Nummer 9",
+          "Nummer 10",
+          "Nummer 11"
         ],
-        correctAnswer: 2,
-        explanation: "Brasilien har 5 VM-guld (1958, 1962, 1970, 1994, 2002)."
-      },
-      {
-        id: 5,
-        question: "Vad heter Sveriges högsta liga?",
-        options: [
-          "Premier League",
-          "Allsvenskan",
-          "Superettan",
-          "La Liga"
-        ],
-        correctAnswer: 1,
-        explanation: "Allsvenskan är Sveriges högsta liga för herrar."
+        correctAnswer: 0,
+        explanation: "Målvakten har traditionellt nummer 1."
       }
     ]
   },
@@ -306,7 +553,7 @@ const quizData: Record<string, QuizData> = {
           "Ligga lågt i försvar"
         ],
         correctAnswer: 1,
-        explanation: "Pressing = aktivt jaga motståndare för att vinna boll."
+        explanation: "Pressing = aktivt jaga och störa motståndare för att vinna tillbaka bollen."
       },
       {
         id: 2,
@@ -318,7 +565,7 @@ const quizData: Record<string, QuizData> = {
           "Målvakt som springer fram"
         ],
         correctAnswer: 1,
-        explanation: "Falsk nia = forward som droppar ner istället för att stå högt."
+        explanation: "Falsk nia = forward som droppar ner istället för att stå högt, skapar utrymme."
       },
       {
         id: 3,
@@ -330,7 +577,7 @@ const quizData: Record<string, QuizData> = {
           "Inte anfalla"
         ],
         correctAnswer: 1,
-        explanation: "Kontra = snabbt anfall direkt efter bollvinst."
+        explanation: "Kontra = snabbt anfall direkt efter bollvinst när motståndare är oorganiserade."
       },
       {
         id: 4,
@@ -342,19 +589,158 @@ const quizData: Record<string, QuizData> = {
           "Sätt upp koner"
         ],
         correctAnswer: 0,
-        explanation: "Zonmarkering = försvara specifika zoner, inte enskilda spelare."
+        explanation: "Zonmarkering = försvara specifika områden, inte enskilda spelare."
       },
       {
         id: 5,
         question: "Vad betyder 'hålla bredden'?",
         options: [
-          "Stå bred",
-          "Sprida ut sig över planens bredd",
-          "Breda skor",
-          "Spela i mitten"
+          "Spring brett",
+          "Sprida ut sig över hela planens bredd",
+          "Ha breda fötter",
+          "Gå bredvid"
         ],
         correctAnswer: 1,
-        explanation: "Hålla bredden = sprida ut sig för mer utrymme."
+        explanation: "Hålla bredden = sprida ut sig över hela planen för att skapa utrymme."
+      },
+      {
+        id: 6,
+        question: "Vad är uppbyggnadsspel?",
+        options: [
+          "Bygga hus",
+          "Lugnt spela upp bollen från försvar",
+          "Spring snabbt framåt",
+          "Sparka långt"
+        ],
+        correctAnswer: 1,
+        explanation: "Uppbyggnadsspel = lugnt och kontrollerat spela bollen från försvar till anfall."
+      },
+      {
+        id: 7,
+        question: "Vad betyder 'kompakt försvar'?",
+        options: [
+          "Hålla ihop försvarslinjerna",
+          "Spring långt ifrån varandra",
+          "Ligga och vila",
+          "Spring framåt"
+        ],
+        correctAnswer: 0,
+        explanation: "Kompakt försvar = hålla ihop försvarslinjerna utan stora luckor emellan."
+      },
+      {
+        id: 8,
+        question: "Vad är en offensiv mittfältare?",
+        options: [
+          "Mittfältare som bara försvarar",
+          "Mittfältare som spelar högt och skapar chanser",
+          "Mittfältare som är arg",
+          "Målvakt"
+        ],
+        correctAnswer: 1,
+        explanation: "Offensiv mittfältare spelar högt upp och fokuserar på att skapa målchanser."
+      }
+    ]
+  },
+  "9-manna-avancerat": {
+    id: "9-manna-avancerat",
+    title: "Avancerade begrepp",
+    level: "9-manna",
+    questions: [
+      {
+        id: 1,
+        question: "Vad är ett överlappningslöp?",
+        options: [
+          "Spring förbi lagkamrat på utsidan",
+          "Hoppa över bollen",
+          "Spring bakåt",
+          "Stå still"
+        ],
+        correctAnswer: 0,
+        explanation: "Överlappningslöp = back eller ytter springer förbi lagkamrat utanför för att ge breddalternativ."
+      },
+      {
+        id: 2,
+        question: "Vad är en dubbelpassning (ett-två)?",
+        options: [
+          "Passa två gånger bakåt",
+          "Passa, spring förbi, få direkt retur",
+          "Passa till två spelare",
+          "Sparka bollen två gånger"
+        ],
+        correctAnswer: 1,
+        explanation: "Ett-två = passa till lagkamrat, spring förbi motståndare, få direktretur."
+      },
+      {
+        id: 3,
+        question: "Vad betyder att 'spela på djupet'?",
+        options: [
+          "Spela i djup lera",
+          "Passa bakom motståndarnas försvarslinje",
+          "Spela långsamt",
+          "Spela bakåt"
+        ],
+        correctAnswer: 1,
+        explanation: "Spela på djupet = passa bakom motståndarnas försvarslinje till löpande lagkamrat."
+      },
+      {
+        id: 4,
+        question: "Vad är en fyrbackslinje?",
+        options: [
+          "Fyra backar i en linje tvärs över plan",
+          "Fyra forward",
+          "Fyra målvakter",
+          "Fyra koner"
+        ],
+        correctAnswer: 0,
+        explanation: "Fyrbackslinje = fyra försvarare (ofta 2 yttrar + 2 mittbackar) i linje."
+      },
+      {
+        id: 5,
+        question: "Vad är en libbero?",
+        options: [
+          "En italiensk maträtt",
+          "Fri back bakom försvarslinje",
+          "Forward",
+          "Domare"
+        ],
+        correctAnswer: 1,
+        explanation: "Libbero = fri back som spelar bakom försvarslinje och kan gå fram fritt."
+      },
+      {
+        id: 6,
+        question: "Vad betyder 'första stolpen'?",
+        options: [
+          "Målstolpen närmast inlägget",
+          "Första spelaren",
+          "Målvaktens stolpe",
+          "Hörnflaggan"
+        ],
+        correctAnswer: 0,
+        explanation: "Första stolpen = målstolpen närmast där inlägget kommer ifrån."
+      },
+      {
+        id: 7,
+        question: "Vad är en målvaktsutkast?",
+        options: [
+          "Kasta ut målvakten",
+          "Målvakt kastar bollen snabbt för kontra",
+          "Målvakt sparkar långt",
+          "Målvakt lämnar planen"
+        ],
+        correctAnswer: 1,
+        explanation: "Målvaktsutkast = målvakt kastar ut bollen snabbt för att starta kontraanfall."
+      },
+      {
+        id: 8,
+        question: "Vad är en skymmande spelare?",
+        options: [
+          "Spelare som inte syns",
+          "Spelare som skymmer målvaktens sikt",
+          "Spelare i dimma",
+          "Inbytare"
+        ],
+        correctAnswer: 1,
+        explanation: "Skymmande spelare står framför målvakt för att blockera sikten vid skott."
       }
     ]
   }
@@ -363,13 +749,13 @@ const quizData: Record<string, QuizData> = {
 const Quiz = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
+  const quiz = quizId ? quizData[quizId] : null;
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState(false);
+  const [showExplanation, setShowExplanation] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [answeredQuestions, setAnsweredQuestions] = useState<boolean[]>([]);
-
-  const quiz = quizId ? quizData[quizId] : null;
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
   if (!quiz) {
     return (
@@ -377,9 +763,11 @@ const Quiz = () => {
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <Card>
-            <CardContent className="p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4">Quiz hittades inte</h2>
-              <Button onClick={() => navigate("/theory")}>Tillbaka till Teoribank</Button>
+            <CardContent className="pt-6">
+              <p className="text-center text-muted-foreground">Quiz hittades inte</p>
+              <Button onClick={() => navigate("/theory")} className="mt-4 mx-auto block">
+                Tillbaka till Teoribank
+              </Button>
             </CardContent>
           </Card>
         </main>
@@ -391,96 +779,86 @@ const Quiz = () => {
   const progress = ((currentQuestion + 1) / quiz.questions.length) * 100;
 
   const handleAnswerSelect = (answerIndex: number) => {
-    if (answeredQuestions[currentQuestion]) return;
-    
+    if (showExplanation) return;
     setSelectedAnswer(answerIndex);
-    const isCorrect = answerIndex === question.correctAnswer;
+  };
+
+  const handleCheckAnswer = () => {
+    if (selectedAnswer === null) return;
     
-    if (isCorrect) {
-      setCorrectAnswers(correctAnswers + 1);
+    setShowExplanation(true);
+    if (selectedAnswer === question.correctAnswer) {
+      setCorrectAnswers(prev => prev + 1);
     }
-    
-    const newAnswered = [...answeredQuestions];
-    newAnswered[currentQuestion] = true;
-    setAnsweredQuestions(newAnswered);
   };
 
   const handleNext = () => {
     if (currentQuestion < quiz.questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(prev => prev + 1);
       setSelectedAnswer(null);
+      setShowExplanation(false);
     } else {
-      setShowResult(true);
+      setQuizCompleted(true);
     }
   };
 
   const handleRestart = () => {
     setCurrentQuestion(0);
     setSelectedAnswer(null);
-    setShowResult(false);
+    setShowExplanation(false);
     setCorrectAnswers(0);
-    setAnsweredQuestions([]);
+    setQuizCompleted(false);
   };
 
-  const getScoreColor = () => {
-    const percentage = (correctAnswers / quiz.questions.length) * 100;
-    if (percentage >= 80) return "text-success";
-    if (percentage >= 60) return "text-warning";
-    return "text-destructive";
-  };
-
-  if (showResult) {
+  if (quizCompleted) {
     const percentage = Math.round((correctAnswers / quiz.questions.length) * 100);
-    
+    const passed = percentage >= 60;
+
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
-          <Card className="max-w-2xl mx-auto">
-            <CardHeader className="text-center">
-              <Trophy className="w-16 h-16 mx-auto mb-4 text-accent" />
-              <CardTitle className="text-3xl">Quiz Genomfört!</CardTitle>
-              <CardDescription>Här är ditt resultat</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="text-center">
-                <div className={`text-6xl font-bold mb-2 ${getScoreColor()}`}>
-                  {percentage}%
+          <div className="max-w-2xl mx-auto">
+            <Card className={`border-2 ${passed ? 'border-success' : 'border-warning'}`}>
+              <CardHeader className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Trophy className={`w-16 h-16 ${passed ? 'text-success' : 'text-warning'}`} />
                 </div>
-                <p className="text-muted-foreground text-lg">
-                  {correctAnswers} av {quiz.questions.length} rätt
-                </p>
-              </div>
+                <CardTitle className="text-3xl">
+                  {passed ? 'Grattis! 🎉' : 'Bra försök!'}
+                </CardTitle>
+                <CardDescription className="text-lg">
+                  {quiz.title} - {quiz.level}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center">
+                  <div className="text-5xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
+                    {correctAnswers}/{quiz.questions.length}
+                  </div>
+                  <p className="text-muted-foreground">Rätt svar ({percentage}%)</p>
+                </div>
 
-              <div className="space-y-2">
-                {percentage >= 80 && (
-                  <div className="bg-success/10 border border-success/20 rounded-lg p-4 text-center">
-                    <p className="font-semibold text-success">Utmärkt! Du har riktigt bra koll!</p>
-                  </div>
-                )}
-                {percentage >= 60 && percentage < 80 && (
-                  <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 text-center">
-                    <p className="font-semibold text-warning">Bra jobbat! Fortsätt öva så blir det ännu bättre!</p>
-                  </div>
-                )}
-                {percentage < 60 && (
-                  <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center">
-                    <p className="font-semibold text-destructive">Fortsätt träna! Varje quiz gör dig bättre!</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex gap-3">
-                <Button variant="default" className="flex-1" onClick={handleRestart}>
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Gör om quiz
-                </Button>
-                <Button variant="outline" className="flex-1" onClick={() => navigate("/theory")}>
-                  Tillbaka
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="space-y-3">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleRestart}
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Testa igen
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    onClick={() => navigate("/theory")}
+                  >
+                    Tillbaka till Teoribank
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </main>
       </div>
     );
@@ -491,7 +869,7 @@ const Quiz = () => {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           {/* Header */}
           <div className="mb-6">
             <Button 
@@ -502,104 +880,86 @@ const Quiz = () => {
               ← Tillbaka till Teoribank
             </Button>
             <div className="flex items-center justify-between mb-2">
-              <Badge className="bg-primary">{quiz.level}</Badge>
+              <Badge variant="outline">{quiz.level}</Badge>
               <span className="text-sm text-muted-foreground">
                 Fråga {currentQuestion + 1} av {quiz.questions.length}
               </span>
             </div>
-            <h1 className="text-3xl font-bold mb-2">{quiz.title}</h1>
+            <h1 className="text-2xl font-bold mb-2">{quiz.title}</h1>
             <Progress value={progress} className="h-2" />
           </div>
 
           {/* Question Card */}
-          <Card className="mb-6">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">{question.question}</CardTitle>
+              <CardTitle className="text-xl">{question.question}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {question.options.map((option, index) => {
                 const isSelected = selectedAnswer === index;
                 const isCorrect = index === question.correctAnswer;
-                const showAnswer = answeredQuestions[currentQuestion];
-                
-                let buttonVariant: "outline" | "default" | "destructive" = "outline";
-                let buttonClass = "";
-                
-                if (showAnswer) {
-                  if (isCorrect) {
-                    buttonVariant = "default";
-                    buttonClass = "bg-success hover:bg-success/90 text-primary-foreground border-success";
-                  } else if (isSelected && !isCorrect) {
-                    buttonVariant = "destructive";
-                  }
-                }
-                
+                const showAsCorrect = showExplanation && isCorrect;
+                const showAsWrong = showExplanation && isSelected && !isCorrect;
+
                 return (
                   <Button
                     key={index}
-                    variant={buttonVariant}
-                    className={`w-full justify-start text-left h-auto py-4 px-6 ${buttonClass}`}
+                    variant={showAsCorrect ? "default" : showAsWrong ? "destructive" : isSelected ? "secondary" : "outline"}
+                    className="w-full justify-start text-left h-auto py-4 px-6"
                     onClick={() => handleAnswerSelect(index)}
-                    disabled={answeredQuestions[currentQuestion]}
+                    disabled={showExplanation}
                   >
-                    <span className="flex items-center gap-3 flex-1">
-                      <span className="font-semibold">{String.fromCharCode(65 + index)}.</span>
-                      <span>{option}</span>
-                      {showAnswer && isCorrect && <CheckCircle2 className="ml-auto w-5 h-5" />}
-                      {showAnswer && isSelected && !isCorrect && <XCircle className="ml-auto w-5 h-5" />}
-                    </span>
+                    <div className="flex items-center gap-3 w-full">
+                      {showExplanation && (
+                        <>
+                          {isCorrect && <CheckCircle2 className="w-5 h-5 flex-shrink-0" />}
+                          {showAsWrong && <XCircle className="w-5 h-5 flex-shrink-0" />}
+                        </>
+                      )}
+                      <span className="flex-1">{option}</span>
+                    </div>
                   </Button>
                 );
               })}
+
+              {showExplanation && (
+                <Card className="bg-secondary/50 border-0 mt-4">
+                  <CardContent className="pt-4">
+                    <p className="text-sm">
+                      <strong className="text-foreground">Förklaring: </strong>
+                      <span className="text-muted-foreground">{question.explanation}</span>
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              <div className="flex gap-3 pt-4">
+                {!showExplanation ? (
+                  <Button
+                    className="w-full"
+                    onClick={handleCheckAnswer}
+                    disabled={selectedAnswer === null}
+                  >
+                    Kontrollera svar
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full"
+                    onClick={handleNext}
+                  >
+                    {currentQuestion < quiz.questions.length - 1 ? (
+                      <>
+                        Nästa fråga
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </>
+                    ) : (
+                      'Se resultat'
+                    )}
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
-
-          {/* Explanation */}
-          {answeredQuestions[currentQuestion] && (
-            <Card className="mb-6 bg-muted/50 border-2">
-              <CardContent className="pt-6">
-                <div className="flex gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    selectedAnswer === question.correctAnswer ? "bg-success" : "bg-destructive"
-                  }`}>
-                    {selectedAnswer === question.correctAnswer ? (
-                      <CheckCircle2 className="w-5 h-5 text-primary-foreground" />
-                    ) : (
-                      <XCircle className="w-5 h-5 text-primary-foreground" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-semibold mb-2">
-                      {selectedAnswer === question.correctAnswer ? "Rätt svar!" : "Fel svar"}
-                    </p>
-                    <p className="text-muted-foreground">{question.explanation}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Navigation */}
-          {answeredQuestions[currentQuestion] && (
-            <Button 
-              variant="hero" 
-              size="lg" 
-              className="w-full"
-              onClick={handleNext}
-            >
-              {currentQuestion < quiz.questions.length - 1 ? (
-                <>
-                  Nästa fråga
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </>
-              ) : (
-                <>
-                  Se resultat
-                  <Trophy className="ml-2 w-5 h-5" />
-                </>
-              )}
-            </Button>
-          )}
         </div>
       </main>
     </div>

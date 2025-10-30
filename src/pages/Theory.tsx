@@ -39,10 +39,11 @@ const theoryLevels: TheoryLevel[] = [
     level: "7-manna",
     title: "Utvecklad kunskap",
     description: "Mer avancerade positioner och fotbollsbegrepp",
-    topics: ["Krossboll", "Djupledslöpning", "Bredsida", "Överstegsfint", "Fotbollshistoria"],
+    topics: ["Inlägg", "Djupledslöpning", "Bredsida", "Överstegsfint", "Fotbollshistoria", "Framspel", "Positionering"],
     quizzes: [
-      { id: "7-manna-begrepp", title: "Fotbollsbegrepp", questions: 5, completed: false },
-      { id: "7-manna-historia", title: "Fotbollshistoria", questions: 5, completed: false }
+      { id: "7-manna-begrepp", title: "Fotbollsbegrepp", questions: 8, completed: false },
+      { id: "7-manna-historia", title: "Fotbollshistoria", questions: 8, completed: false },
+      { id: "7-manna-taktik", title: "Taktiska grunder", questions: 8, completed: false }
     ],
     color: "bg-warning"
   },
@@ -51,10 +52,11 @@ const theoryLevels: TheoryLevel[] = [
     level: "9-manna",
     title: "Avancerad taktik",
     description: "Offsideregeln, formationer och spelidéer",
-    topics: ["Offside", "Formationer", "Positionsnummer", "Spelidéer", "Fotbollshistoria"],
+    topics: ["Offside", "Formationer", "Positionsnummer", "Spelidéer", "Fotbollshistoria", "Pressfotboll", "Uppbyggnadsspel"],
     quizzes: [
-      { id: "9-manna-offside", title: "Offsideregeln & Formationer", questions: 5, completed: false },
-      { id: "9-manna-taktik", title: "Taktik och Spelidéer", questions: 5, completed: false }
+      { id: "9-manna-offside", title: "Offsideregeln & Formationer", questions: 8, completed: false },
+      { id: "9-manna-taktik", title: "Taktik och Spelidéer", questions: 8, completed: false },
+      { id: "9-manna-avancerat", title: "Avancerade begrepp", questions: 8, completed: false }
     ],
     color: "bg-primary"
   }

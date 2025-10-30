@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Select,
   SelectContent,
@@ -11,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Users, Target, Clock, Lightbulb, Play } from "lucide-react";
+import { Search, Users, Target, Clock, Lightbulb, Play, Plus, X, Trash2, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 interface Exercise {
@@ -23,6 +24,10 @@ interface Exercise {
   duration: number;
   equipment: string[];
   description: string;
+}
+
+interface SelectedExercise extends Exercise {
+  customDuration: number;
 }
 
 const exercises: Exercise[] = [
@@ -274,7 +279,9 @@ const Exercises = () => {
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("Alla");
   const [customDuration, setCustomDuration] = useState<number>(60);
-  const [recommendedSession, setRecommendedSession] = useState<Exercise[] | null>(null);
+  const [recommendedSessions, setRecommendedSessions] = useState<Exercise[][] | null>(null);
+  const [selectedExercises, setSelectedExercises] = useState<SelectedExercise[]>([]);
+  const [showCustomSession, setShowCustomSession] = useState(false);
 
   const allEquipment = ["Bollar", "Koner", "Mål", "Små mål", "Västar", "Koordinationsstege"];
   const categories = ["Alla", "Uppvärmning", "Passning", "Teknik", "Avslut", "Taktik", "Spelform", "Kondition", "Nedvarvning"];
@@ -287,7 +294,22 @@ const Exercises = () => {
     );
   };
 
-  const generateRecommendation = () => {
+  const addToCustomSession = (exercise: Exercise) => {
+    setSelectedExercises(prev => [...prev, { ...exercise, customDuration: exercise.duration }]);
+    setShowCustomSession(true);
+  };
+
+  const removeFromCustomSession = (index: number) => {
+    setSelectedExercises(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateCustomDuration = (index: number, duration: number) => {
+    setSelectedExercises(prev => prev.map((ex, i) => 
+      i === index ? { ...ex, customDuration: duration } : ex
+    ));
+  };
+
+  const generateMultipleSessions = () => {
     if (playerCount === 0) return;
 
     let filteredExercises = exercises.filter(ex => 
@@ -300,42 +322,66 @@ const Exercises = () => {
       );
     }
 
-    // Bygg ett träningspass
-    const warmup = filteredExercises.filter(ex => ex.category === "Uppvärmning");
-    const main = filteredExercises.filter(ex => 
-      ["Passning", "Teknik", "Avslut", "Taktik", "Spelform"].includes(ex.category)
-    );
-    const cooldown = filteredExercises.filter(ex => ex.category === "Nedvarvning");
-
-    const session: Exercise[] = [];
-    let totalDuration = 0;
-
-    // Lägg till uppvärmning (10 min)
-    if (warmup.length > 0) {
-      const randomWarmup = warmup[Math.floor(Math.random() * warmup.length)];
-      session.push(randomWarmup);
-      totalDuration += randomWarmup.duration;
+    if (filteredExercises.length < 3) {
+      setRecommendedSessions([]);
+      return;
     }
 
-    // Lägg till huvudpass (tills vi når önskad tid - 10 min för nedvarvning)
-    const targetMainDuration = customDuration - totalDuration - 10;
-    while (main.length > 0 && totalDuration < customDuration - 10) {
-      const randomMain = main[Math.floor(Math.random() * main.length)];
-      if (totalDuration + randomMain.duration <= customDuration - 10) {
-        session.push(randomMain);
-        totalDuration += randomMain.duration;
+    // Generera 3 olika träningspass
+    const sessions: Exercise[][] = [];
+    for (let sessionNum = 0; sessionNum < 3; sessionNum++) {
+      const session: Exercise[] = [];
+      let totalDuration = 0;
+      const usedExercises = new Set<string>();
+
+      // Välj olika övningar för varje pass
+      const warmup = filteredExercises.filter(ex => 
+        ex.category === "Uppvärmning" && !usedExercises.has(ex.id)
+      );
+      const main = filteredExercises.filter(ex => 
+        ["Passning", "Teknik", "Avslut", "Taktik", "Spelform"].includes(ex.category) && !usedExercises.has(ex.id)
+      );
+      const cooldown = filteredExercises.filter(ex => 
+        ex.category === "Nedvarvning" && !usedExercises.has(ex.id)
+      );
+
+      // Lägg till uppvärmning
+      if (warmup.length > 0) {
+        const warmupIndex = (sessionNum * 2) % warmup.length;
+        const selectedWarmup = warmup[warmupIndex];
+        session.push(selectedWarmup);
+        totalDuration += selectedWarmup.duration;
+        usedExercises.add(selectedWarmup.id);
       }
-      main.splice(main.indexOf(randomMain), 1);
+
+      // Lägg till huvudövningar
+      const targetMainDuration = customDuration - totalDuration - 10;
+      const shuffledMain = [...main].sort(() => Math.random() - 0.5);
+      
+      for (const exercise of shuffledMain) {
+        if (totalDuration >= customDuration - 10) break;
+        if (totalDuration + exercise.duration <= customDuration - 10) {
+          session.push(exercise);
+          totalDuration += exercise.duration;
+          usedExercises.add(exercise.id);
+        }
+      }
+
+      // Lägg till nedvarvning
+      if (cooldown.length > 0) {
+        const cooldownIndex = sessionNum % cooldown.length;
+        const selectedCooldown = cooldown[cooldownIndex];
+        session.push(selectedCooldown);
+        totalDuration += selectedCooldown.duration;
+        usedExercises.add(selectedCooldown.id);
+      }
+
+      if (session.length >= 3) {
+        sessions.push(session);
+      }
     }
 
-    // Lägg till nedvarvning
-    if (cooldown.length > 0) {
-      const randomCooldown = cooldown[Math.floor(Math.random() * cooldown.length)];
-      session.push(randomCooldown);
-      totalDuration += randomCooldown.duration;
-    }
-
-    setRecommendedSession(session);
+    setRecommendedSessions(sessions.length > 0 ? sessions : []);
   };
 
   const filteredExercises = exercises.filter(exercise => {
@@ -364,15 +410,66 @@ const Exercises = () => {
           </p>
         </div>
 
-        {/* Recommendation Generator */}
+        {/* Custom Session Builder */}
+        {showCustomSession && selectedExercises.length > 0 && (
+          <Card className="mb-8 border-2 border-primary">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  Ditt anpassade träningspass
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowCustomSession(false)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <CardDescription>
+                Totalt: {selectedExercises.reduce((sum, ex) => sum + ex.customDuration, 0)} minuter
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {selectedExercises.map((exercise, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
+                  <div className="flex-1">
+                    <p className="font-medium">{exercise.title}</p>
+                    <p className="text-sm text-muted-foreground">{exercise.category}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      value={exercise.customDuration}
+                      onChange={(e) => updateCustomDuration(index, parseInt(e.target.value) || 0)}
+                      className="w-20 text-center"
+                      min="1"
+                    />
+                    <span className="text-sm text-muted-foreground">min</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeFromCustomSession(index)}
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* AI Generator */}
         <Card className="mb-8 border-2 border-primary/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="w-5 h-5" />
-              Få träningsförslag
+              <Sparkles className="w-5 h-5" />
+              Generera träningsförslag
             </CardTitle>
             <CardDescription>
-              Ställ in dina förutsättningar så genererar vi ett träningspass åt dig
+              Få tre olika träningspass baserade på dina förutsättningar
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -418,35 +515,48 @@ const Exercises = () => {
             </div>
 
             <Button 
-              onClick={generateRecommendation} 
+              onClick={generateMultipleSessions} 
               className="w-full"
               disabled={playerCount === 0}
             >
-              <Play className="w-4 h-4 mr-2" />
-              Generera träningspass
+              <Sparkles className="w-4 h-4 mr-2" />
+              Generera 3 träningsförslag
             </Button>
 
-            {recommendedSession && (
-              <div className="mt-6 p-4 bg-secondary/50 rounded-lg space-y-3">
-                <h3 className="font-semibold text-lg mb-3">Ditt träningsförslag:</h3>
-                {recommendedSession.map((exercise, index) => (
-                  <div key={exercise.id + index} className="flex items-start gap-3 p-3 bg-background rounded-lg">
-                    <Badge variant="outline" className="mt-1">
-                      {exercise.duration} min
-                    </Badge>
-                    <div className="flex-1">
-                      <p className="font-medium">{exercise.title}</p>
-                      <p className="text-sm text-muted-foreground">{exercise.category}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
-                    </div>
-                  </div>
+            {recommendedSessions && recommendedSessions.length > 0 && (
+              <div className="space-y-6 mt-6">
+                <h3 className="font-semibold text-lg">Dina träningsförslag:</h3>
+                {recommendedSessions.map((session, sessionIndex) => (
+                  <Card key={sessionIndex} className="bg-secondary/30">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Alternativ {sessionIndex + 1}</CardTitle>
+                      <CardDescription>
+                        Total tid: {session.reduce((sum, ex) => sum + ex.duration, 0)} minuter
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {session.map((exercise, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-background rounded-lg">
+                          <Badge variant="outline" className="mt-1">
+                            {exercise.duration} min
+                          </Badge>
+                          <div className="flex-1">
+                            <p className="font-medium">{exercise.title}</p>
+                            <p className="text-sm text-muted-foreground">{exercise.category}</p>
+                            <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
                 ))}
-                <div className="text-center pt-2 border-t">
-                  <p className="text-sm font-medium">
-                    Total tid: {recommendedSession.reduce((sum, ex) => sum + ex.duration, 0)} minuter
-                  </p>
-                </div>
               </div>
+            )}
+
+            {recommendedSessions && recommendedSessions.length === 0 && (
+              <p className="text-center text-muted-foreground text-sm mt-4">
+                Kunde inte generera träningspass med valda förutsättningar. Försök justera antalet spelare eller utrustning.
+              </p>
             )}
           </CardContent>
         </Card>
@@ -491,17 +601,28 @@ const Exercises = () => {
                 <CardDescription>{exercise.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Users className="w-4 h-4" />
-                    {exercise.minPlayers === exercise.maxPlayers 
-                      ? `${exercise.minPlayers} spelare`
-                      : `${exercise.minPlayers}-${exercise.maxPlayers} spelare`}
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Users className="w-4 h-4" />
+                      {exercise.minPlayers === exercise.maxPlayers 
+                        ? `${exercise.minPlayers} spelare`
+                        : `${exercise.minPlayers}-${exercise.maxPlayers} spelare`}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Target className="w-4 h-4" />
+                      {exercise.equipment.length > 0 ? exercise.equipment.join(", ") : "Ingen utrustning behövs"}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Target className="w-4 h-4" />
-                    {exercise.equipment.length > 0 ? exercise.equipment.join(", ") : "Ingen utrustning behövs"}
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => addToCustomSession(exercise)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Lägg till i pass
+                  </Button>
                 </div>
               </CardContent>
             </Card>

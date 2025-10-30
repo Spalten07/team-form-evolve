@@ -333,7 +333,30 @@ const CreateTraining = () => {
       main: ["Passning", "Teknik", "Avslut", "Taktik", "Spelform", "Kondition"],
       cooldown: ["Nedvarvning"]
     };
-    return exerciseBank.filter(ex => categoryMap[section].includes(ex.category));
+    
+    let filtered = exerciseBank.filter(ex => categoryMap[section].includes(ex.category));
+    
+    // Filtrera också baserat på fokusområde om ett är valt
+    if (session.focus) {
+      const focusMapping: Record<string, string[]> = {
+        "Teknik & Ballkontroll": ["Teknik", "Uppvärmning"],
+        "Passning & Mottagning": ["Passning", "Uppvärmning"],
+        "Avslut & Skott": ["Avslut"],
+        "Taktik & Positionsspel": ["Taktik"],
+        "Kondition & Uthållighet": ["Kondition"],
+        "1v1 Situationer": ["Teknik"],
+        "Spelförståelse": ["Taktik", "Spelform"],
+        "Anfallsspel": ["Avslut", "Passning", "Spelform"],
+        "Försvarsspel": ["Taktik"]
+      };
+      
+      const relevantCategories = focusMapping[session.focus];
+      if (relevantCategories && section === "main") {
+        filtered = filtered.filter(ex => relevantCategories.includes(ex.category));
+      }
+    }
+    
+    return filtered;
   };
 
   const ExerciseSection = ({ 
