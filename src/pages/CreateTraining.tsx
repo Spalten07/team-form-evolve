@@ -271,6 +271,10 @@ const CreateTraining = () => {
 
   const [showExerciseMenu, setShowExerciseMenu] = useState<"warmup" | "main" | "cooldown" | null>(null);
 
+  const isExerciseInSection = (section: "warmup" | "main" | "cooldown", exerciseId: string) => {
+    return session[section].some(ex => ex.id.startsWith(exerciseId));
+  };
+
   const addExercise = (section: "warmup" | "main" | "cooldown", exerciseId: string) => {
     const exercise = exerciseBank.find(e => e.id === exerciseId);
     if (!exercise) return;
@@ -286,7 +290,21 @@ const CreateTraining = () => {
       ...prev,
       [section]: [...prev[section], newExercise]
     }));
-    setShowExerciseMenu(null);
+  };
+
+  const toggleExercise = (section: "warmup" | "main" | "cooldown", exerciseId: string) => {
+    const isInSection = isExerciseInSection(section, exerciseId);
+    
+    if (isInSection) {
+      // Ta bort övningen
+      setSession(prev => ({
+        ...prev,
+        [section]: prev[section].filter(e => !e.id.startsWith(exerciseId))
+      }));
+    } else {
+      // Lägg till övningen
+      addExercise(section, exerciseId);
+    }
   };
 
   const removeExercise = (section: "warmup" | "main" | "cooldown", exerciseId: string) => {
@@ -415,27 +433,46 @@ const CreateTraining = () => {
             <div className="border-2 border-dashed border-border rounded-lg p-4 space-y-2">
               <p className="text-sm font-medium mb-3">Välj övning från banken:</p>
               <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto">
-                {filteredExercises.map((exercise) => (
-                  <div key={exercise.id} className="border rounded-lg p-3 hover:bg-secondary/50 transition-colors">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm mb-1">{exercise.title}</h4>
-                        <Badge variant="secondary" className="text-xs">
-                          {exercise.category}
-                        </Badge>
+                {filteredExercises.map((exercise) => {
+                  const isInSection = isExerciseInSection(section, exercise.id);
+                  return (
+                    <div 
+                      key={exercise.id} 
+                      className={`border rounded-lg p-3 hover:bg-secondary/50 transition-colors cursor-pointer ${isInSection ? 'border-2 border-primary bg-primary/5' : ''}`}
+                      onClick={() => toggleExercise(section, exercise.id)}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-sm mb-1">{exercise.title}</h4>
+                          <Badge variant="secondary" className="text-xs">
+                            {exercise.category}
+                          </Badge>
+                        </div>
+                        <Button
+                          variant={isInSection ? "destructive" : "outline"}
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleExercise(section, exercise.id);
+                          }}
+                        >
+                          {isInSection ? (
+                            <>
+                              <X className="w-4 h-4 mr-1" />
+                              Ta bort
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-4 h-4 mr-1" />
+                              Lägg till
+                            </>
+                          )}
+                        </Button>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => addExercise(section, exercise.id)}
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Lägg till
-                      </Button>
+                      <p className="text-xs text-muted-foreground mt-2">{exercise.description}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">{exercise.description}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <Button
                 variant="ghost"
@@ -528,8 +565,11 @@ const CreateTraining = () => {
                   <Input
                     id="players"
                     type="number"
-                    value={session.players}
-                    onChange={(e) => setSession({ ...session, players: parseInt(e.target.value) || 0 })}
+                    value={session.players === 0 ? "" : session.players}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSession({ ...session, players: value === "" ? 0 : Math.max(1, parseInt(value) || 0) });
+                    }}
                     min="1"
                   />
                 </div>

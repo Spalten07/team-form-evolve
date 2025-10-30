@@ -38,12 +38,15 @@ const RoleSelection = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Coach Card */}
-            <Card className="hover:shadow-2xl transition-all hover:-translate-y-2 border-2 bg-card/95 backdrop-blur">
+            <Card 
+              className="hover:shadow-2xl transition-all hover:-translate-y-2 border-2 bg-card/95 backdrop-blur cursor-pointer"
+              onClick={() => selectRole("coach")}
+            >
               <CardHeader className="text-center pb-4">
                 <div className="w-20 h-20 rounded-full bg-gradient-primary flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Clipboard className="w-10 h-10 text-primary-foreground" />
                 </div>
-                <CardTitle className="text-3xl">Jag är Tränare</CardTitle>
+                <CardTitle className="text-3xl">Tränare</CardTitle>
                 <CardDescription className="text-base">
                   Planera träningar, skapa övningar och följ lagets utveckling
                 </CardDescription>
@@ -67,25 +70,19 @@ const RoleSelection = () => {
                     <span>Kalenderöversikt</span>
                   </li>
                 </ul>
-                <Button 
-                  variant="default" 
-                  size="lg" 
-                  className="w-full"
-                  onClick={() => selectRole("coach")}
-                >
-                  Fortsätt som Tränare
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
               </CardContent>
             </Card>
 
             {/* Player Card */}
-            <Card className="hover:shadow-2xl transition-all hover:-translate-y-2 border-2 bg-card/95 backdrop-blur">
+            <Card 
+              className="hover:shadow-2xl transition-all hover:-translate-y-2 border-2 bg-card/95 backdrop-blur cursor-pointer"
+              onClick={() => selectRole("player")}
+            >
               <CardHeader className="text-center pb-4">
                 <div className="w-20 h-20 rounded-full bg-gradient-accent flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Dumbbell className="w-10 h-10 text-accent-foreground" />
                 </div>
-                <CardTitle className="text-3xl">Jag är Spelare</CardTitle>
+                <CardTitle className="text-3xl">Spelare</CardTitle>
                 <CardDescription className="text-base">
                   Träna självständigt, lär dig teori och följ din utveckling
                 </CardDescription>
@@ -109,15 +106,6 @@ const RoleSelection = () => {
                     <span>Följ din utveckling</span>
                   </li>
                 </ul>
-                <Button 
-                  variant="default" 
-                  size="lg" 
-                  className="w-full"
-                  onClick={() => selectRole("player")}
-                >
-                  Fortsätt som Spelare
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
               </CardContent>
             </Card>
           </div>

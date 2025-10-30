@@ -12,7 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Users, Target, Clock, Lightbulb, Play, Plus, X, Trash2, Sparkles } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Search, Users, Target, Clock, Lightbulb, Play, Plus, X, Trash2, Sparkles, Check } from "lucide-react";
 import { useState } from "react";
 
 interface Exercise {
@@ -282,6 +288,7 @@ const Exercises = () => {
   const [recommendedSessions, setRecommendedSessions] = useState<Exercise[][] | null>(null);
   const [selectedExercises, setSelectedExercises] = useState<SelectedExercise[]>([]);
   const [showCustomSession, setShowCustomSession] = useState(false);
+  const [showRecommendedSessions, setShowRecommendedSessions] = useState(true);
 
   const allEquipment = ["Bollar", "Koner", "Mål", "Små mål", "Västar", "Koordinationsstege"];
   const categories = ["Alla", "Uppvärmning", "Passning", "Teknik", "Avslut", "Taktik", "Spelform", "Kondition", "Nedvarvning"];
@@ -295,8 +302,17 @@ const Exercises = () => {
   };
 
   const addToCustomSession = (exercise: Exercise) => {
-    setSelectedExercises(prev => [...prev, { ...exercise, customDuration: exercise.duration }]);
-    setShowCustomSession(true);
+    const isAlreadySelected = selectedExercises.some(ex => ex.id === exercise.id);
+    if (isAlreadySelected) {
+      setSelectedExercises(prev => prev.filter(ex => ex.id !== exercise.id));
+    } else {
+      setSelectedExercises(prev => [...prev, { ...exercise, customDuration: exercise.duration }]);
+      setShowCustomSession(true);
+    }
+  };
+
+  const isExerciseSelected = (exerciseId: string) => {
+    return selectedExercises.some(ex => ex.id === exerciseId);
   };
 
   const removeFromCustomSession = (index: number) => {
@@ -480,8 +496,11 @@ const Exercises = () => {
                   id="players"
                   type="number"
                   placeholder="T.ex. 10"
-                  value={playerCount || ""}
-                  onChange={(e) => setPlayerCount(parseInt(e.target.value) || 0)}
+                  value={playerCount === 0 ? "" : playerCount}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setPlayerCount(value === "" ? 0 : Math.max(1, parseInt(value) || 0));
+                  }}
                   min="1"
                 />
               </div>
@@ -524,33 +543,41 @@ const Exercises = () => {
             </Button>
 
             {recommendedSessions && recommendedSessions.length > 0 && (
-              <div className="space-y-6 mt-6">
-                <h3 className="font-semibold text-lg">Dina träningsförslag:</h3>
-                {recommendedSessions.map((session, sessionIndex) => (
-                  <Card key={sessionIndex} className="bg-secondary/30">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Alternativ {sessionIndex + 1}</CardTitle>
-                      <CardDescription>
-                        Total tid: {session.reduce((sum, ex) => sum + ex.duration, 0)} minuter
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      {session.map((exercise, index) => (
-                        <div key={index} className="flex items-start gap-3 p-3 bg-background rounded-lg">
-                          <Badge variant="outline" className="mt-1">
-                            {exercise.duration} min
-                          </Badge>
-                          <div className="flex-1">
-                            <p className="font-medium">{exercise.title}</p>
-                            <p className="text-sm text-muted-foreground">{exercise.category}</p>
-                            <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
-                          </div>
-                        </div>
+              <Accordion type="single" collapsible value={showRecommendedSessions ? "suggestions" : ""} onValueChange={(value) => setShowRecommendedSessions(value === "suggestions")}>
+                <AccordionItem value="suggestions" className="border-0">
+                  <AccordionTrigger className="hover:no-underline">
+                    <h3 className="font-semibold text-lg">Mina träningsförslag ({recommendedSessions.length})</h3>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-6 mt-2">
+                      {recommendedSessions.map((session, sessionIndex) => (
+                        <Card key={sessionIndex} className="bg-secondary/30">
+                          <CardHeader>
+                            <CardTitle className="text-lg">Alternativ {sessionIndex + 1}</CardTitle>
+                            <CardDescription>
+                              Total tid: {session.reduce((sum, ex) => sum + ex.duration, 0)} minuter
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {session.map((exercise, index) => (
+                              <div key={index} className="flex items-start gap-3 p-3 bg-background rounded-lg">
+                                <Badge variant="outline" className="mt-1">
+                                  {exercise.duration} min
+                                </Badge>
+                                <div className="flex-1">
+                                  <p className="font-medium">{exercise.title}</p>
+                                  <p className="text-sm text-muted-foreground">{exercise.category}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
                       ))}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             )}
 
             {recommendedSessions && recommendedSessions.length === 0 && (
@@ -590,18 +617,30 @@ const Exercises = () => {
 
         {/* Exercise Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredExercises.map((exercise) => (
-            <Card key={exercise.id} className="hover:shadow-lg transition-all hover:-translate-y-1">
-              <CardHeader>
-                <div className="flex items-start justify-between mb-2">
-                  <Badge variant="outline">{exercise.category}</Badge>
-                  <Badge variant="secondary">{exercise.duration} min</Badge>
-                </div>
-                <CardTitle className="text-xl">{exercise.title}</CardTitle>
-                <CardDescription>{exercise.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+          {filteredExercises.map((exercise) => {
+            const isSelected = isExerciseSelected(exercise.id);
+            return (
+              <Card 
+                key={exercise.id} 
+                className={`hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer ${isSelected ? 'border-2 border-primary' : ''}`}
+                onClick={() => addToCustomSession(exercise)}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between mb-2">
+                    <Badge variant="outline">{exercise.category}</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">{exercise.duration} min</Badge>
+                      {isSelected && (
+                        <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                          <Check className="w-4 h-4 text-primary-foreground" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <CardTitle className="text-xl">{exercise.title}</CardTitle>
+                  <CardDescription>{exercise.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Users className="w-4 h-4" />
@@ -614,19 +653,10 @@ const Exercises = () => {
                       {exercise.equipment.length > 0 ? exercise.equipment.join(", ") : "Ingen utrustning behövs"}
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => addToCustomSession(exercise)}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Lägg till i pass
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {filteredExercises.length === 0 && (

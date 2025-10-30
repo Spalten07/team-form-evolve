@@ -2,7 +2,8 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Plus, Users, Target } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, Clock, Plus, Users, Target, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -98,41 +99,48 @@ const Planner = () => {
           </Button>
         </div>
 
-        {/* Calendar View Card */}
-        <Card className="mb-8 bg-gradient-primary text-primary-foreground border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <Calendar className="w-6 h-6" />
-              November 2025
-            </CardTitle>
-            <CardDescription className="text-primary-foreground/80">
-              Översikt över planerade träningar
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                <div className="text-3xl font-bold">8</div>
-                <div className="text-sm opacity-90">Träningar denna månad</div>
-              </div>
-              <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                <div className="text-3xl font-bold">3</div>
-                <div className="text-sm opacity-90">Kommande träningar</div>
-              </div>
-              <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                <div className="text-3xl font-bold">18</div>
-                <div className="text-sm opacity-90">Genomsnittligt antal spelare</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Training Sessions List */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Planerade träningar</h2>
+        <Tabs defaultValue="trainings" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
+            <TabsTrigger value="trainings">Träningar</TabsTrigger>
+            <TabsTrigger value="calendar">Lagets kalender</TabsTrigger>
+          </TabsList>
           
-          {sessions.map((session) => (
-            <Card key={session.id} className="hover:shadow-lg transition-all">
+          <TabsContent value="trainings">
+            {/* Calendar View Card */}
+            <Card className="mb-8 bg-gradient-primary text-primary-foreground border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Calendar className="w-6 h-6" />
+                  November 2025
+                </CardTitle>
+                <CardDescription className="text-primary-foreground/80">
+                  Översikt över planerade träningar
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
+                    <div className="text-3xl font-bold">8</div>
+                    <div className="text-sm opacity-90">Träningar denna månad</div>
+                  </div>
+                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
+                    <div className="text-3xl font-bold">3</div>
+                    <div className="text-sm opacity-90">Kommande träningar</div>
+                  </div>
+                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
+                    <div className="text-3xl font-bold">18</div>
+                    <div className="text-sm opacity-90">Genomsnittligt antal spelare</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Training Sessions List */}
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Planerade träningar</h2>
+              
+              {sessions.map((session) => (
+                <Card key={session.id} className="hover:shadow-lg transition-all">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -174,7 +182,32 @@ const Planner = () => {
               </CardContent>
             </Card>
           ))}
-        </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="calendar">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CalendarDays className="w-6 h-6" />
+                  Lagets kalender
+                </CardTitle>
+                <CardDescription>
+                  Här kommer du kunna synka matcher och träningar med lagets kalender
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <CalendarDays className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground text-lg mb-4">Kalenderfunktion kommer snart</p>
+                  <p className="text-sm text-muted-foreground">
+                    Du kommer kunna synka matcher, träningar och evenemang i en gemensam kalender för laget
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
