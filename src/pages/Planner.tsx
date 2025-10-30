@@ -134,7 +134,7 @@ const Planner = () => {
             <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
               Träningsplanering
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-sm">
               Planera och organisera dina träningar
             </p>
           </div>
@@ -175,7 +175,7 @@ const Planner = () => {
                   <Calendar className="w-6 h-6" />
                   November 2025
                 </CardTitle>
-                <CardDescription className="text-primary-foreground/80">
+                <CardDescription className="text-primary-foreground/80 text-xs">
                   Översikt över planerade träningar
                 </CardDescription>
               </CardHeader>
@@ -264,7 +264,7 @@ const Planner = () => {
                         <CalendarDays className="w-6 h-6" />
                         Lagets kalender
                       </CardTitle>
-                      <CardDescription>Veckoschema för träningar och matcher</CardDescription>
+                      <CardDescription className="text-xs">Veckoschema för träningar och matcher</CardDescription>
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm">← Föregående</Button>
@@ -372,7 +372,7 @@ const Planner = () => {
                   <Calendar className="w-6 h-6" />
                   Schemalagda kallelser
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs">
                   Automatiska kallelser som skickas i förväg
                 </CardDescription>
               </CardHeader>

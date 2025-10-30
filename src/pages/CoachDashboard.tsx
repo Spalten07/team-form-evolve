@@ -20,65 +20,105 @@ const CoachDashboard = () => {
           <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
             Översikt
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-sm">
             Lagets statistik och resultat
           </p>
         </div>
 
-        {/* Team Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Spelare
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">18</div>
-              <p className="text-xs text-muted-foreground mt-1">Aktiva spelare</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
-                <Activity className="w-4 h-4" />
-                Närvaro
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">87%</div>
-              <p className="text-xs text-muted-foreground mt-1">Genomsnitt senaste 3 månaderna</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Träningar
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground mt-1">Denna månad</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
-                <Trophy className="w-4 h-4" />
-                Matcher
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">8</div>
-              <p className="text-xs text-muted-foreground mt-1">5 vinster, 2 oavgjort, 1 förlust</p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* League Table */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="w-5 h-5" />
+              Tabellställning
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Division 3 Norra - Aktuell ställning
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 px-2">#</th>
+                    <th className="text-left py-2 px-2">Lag</th>
+                    <th className="text-center py-2 px-1">M</th>
+                    <th className="text-center py-2 px-1">V</th>
+                    <th className="text-center py-2 px-1">O</th>
+                    <th className="text-center py-2 px-1">F</th>
+                    <th className="text-center py-2 px-1">GM</th>
+                    <th className="text-center py-2 px-1">IM</th>
+                    <th className="text-center py-2 px-1">MS</th>
+                    <th className="text-center py-2 px-1 font-bold">P</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b hover:bg-secondary/50">
+                    <td className="py-2 px-2">1</td>
+                    <td className="py-2 px-2">Frösö IF</td>
+                    <td className="text-center py-2 px-1">8</td>
+                    <td className="text-center py-2 px-1">7</td>
+                    <td className="text-center py-2 px-1">0</td>
+                    <td className="text-center py-2 px-1">1</td>
+                    <td className="text-center py-2 px-1">28</td>
+                    <td className="text-center py-2 px-1">8</td>
+                    <td className="text-center py-2 px-1">+20</td>
+                    <td className="text-center py-2 px-1 font-bold">21</td>
+                  </tr>
+                  <tr className="border-b hover:bg-secondary/50 bg-primary/5">
+                    <td className="py-2 px-2 font-bold">2</td>
+                    <td className="py-2 px-2 font-bold">Vårt lag</td>
+                    <td className="text-center py-2 px-1">8</td>
+                    <td className="text-center py-2 px-1">5</td>
+                    <td className="text-center py-2 px-1">2</td>
+                    <td className="text-center py-2 px-1">1</td>
+                    <td className="text-center py-2 px-1">22</td>
+                    <td className="text-center py-2 px-1">12</td>
+                    <td className="text-center py-2 px-1">+10</td>
+                    <td className="text-center py-2 px-1 font-bold">17</td>
+                  </tr>
+                  <tr className="border-b hover:bg-secondary/50">
+                    <td className="py-2 px-2">3</td>
+                    <td className="py-2 px-2">Brunflo IK</td>
+                    <td className="text-center py-2 px-1">8</td>
+                    <td className="text-center py-2 px-1">4</td>
+                    <td className="text-center py-2 px-1">3</td>
+                    <td className="text-center py-2 px-1">1</td>
+                    <td className="text-center py-2 px-1">18</td>
+                    <td className="text-center py-2 px-1">10</td>
+                    <td className="text-center py-2 px-1">+8</td>
+                    <td className="text-center py-2 px-1 font-bold">15</td>
+                  </tr>
+                  <tr className="border-b hover:bg-secondary/50">
+                    <td className="py-2 px-2">4</td>
+                    <td className="py-2 px-2">Östersund FK</td>
+                    <td className="text-center py-2 px-1">8</td>
+                    <td className="text-center py-2 px-1">3</td>
+                    <td className="text-center py-2 px-1">2</td>
+                    <td className="text-center py-2 px-1">3</td>
+                    <td className="text-center py-2 px-1">15</td>
+                    <td className="text-center py-2 px-1">15</td>
+                    <td className="text-center py-2 px-1">0</td>
+                    <td className="text-center py-2 px-1 font-bold">11</td>
+                  </tr>
+                  <tr className="border-b hover:bg-secondary/50">
+                    <td className="py-2 px-2">5</td>
+                    <td className="py-2 px-2">Lit IF</td>
+                    <td className="text-center py-2 px-1">8</td>
+                    <td className="text-center py-2 px-1">2</td>
+                    <td className="text-center py-2 px-1">1</td>
+                    <td className="text-center py-2 px-1">5</td>
+                    <td className="text-center py-2 px-1">10</td>
+                    <td className="text-center py-2 px-1">20</td>
+                    <td className="text-center py-2 px-1">-10</td>
+                    <td className="text-center py-2 px-1 font-bold">7</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Latest Results */}
         <Card className="mb-8">
@@ -87,7 +127,7 @@ const CoachDashboard = () => {
               <Trophy className="w-5 h-5" />
               Senaste resultat
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs">
               Lagets senaste matcher i serien
             </CardDescription>
           </CardHeader>
@@ -127,6 +167,61 @@ const CoachDashboard = () => {
           </CardContent>
         </Card>
 
+        {/* Team Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Spelare
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">18</div>
+              <p className="text-xs text-muted-foreground mt-1">Aktiva spelare</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
+                <Activity className="w-4 h-4" />
+                Närvaro
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">87%</div>
+              <p className="text-xs text-muted-foreground mt-1">Senaste 3 månaderna</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Träningar
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">12</div>
+              <p className="text-xs text-muted-foreground mt-1">Denna månad</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
+                <Trophy className="w-4 h-4" />
+                Matcher
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">8</div>
+              <p className="text-xs text-muted-foreground mt-1">5V, 2O, 1F</p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Training Focus */}
         <Card>
           <CardHeader>
@@ -134,6 +229,9 @@ const CoachDashboard = () => {
               <Target className="w-5 h-5" />
               Fokusområden senaste 3 månaderna
             </CardTitle>
+            <CardDescription className="text-xs">
+              Fördelning av träningsinnehåll
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

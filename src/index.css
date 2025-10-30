@@ -121,3 +121,37 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Landscape mobile optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+  .container {
+    @apply px-2 py-2;
+  }
+  
+  h1 {
+    @apply text-2xl;
+  }
+  
+  .card {
+    @apply py-2;
+  }
+  
+  /* Reduce padding for cards in landscape */
+  [class*="CardHeader"] {
+    @apply py-2;
+  }
+  
+  [class*="CardContent"] {
+    @apply py-2;
+  }
+  
+  /* Compact buttons in landscape */
+  button {
+    @apply text-sm py-1;
+  }
+  
+  /* Reduce spacing in grids */
+  [class*="grid"] {
+    @apply gap-2;
+  }
+}

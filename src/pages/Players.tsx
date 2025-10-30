@@ -167,32 +167,32 @@ const Players = () => {
             <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
               Mina spelare
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-sm">
               Hantera dina spelare och följ deras utveckling
             </p>
           </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-8">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">{players.length}</CardTitle>
-              <CardDescription>Totalt antal spelare</CardDescription>
+            <CardHeader className="pb-2 pt-3">
+              <CardTitle className="text-xl">{players.length}</CardTitle>
+              <CardDescription className="text-xs">Totalt spelare</CardDescription>
             </CardHeader>
           </Card>
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">{avgAttendance}%</CardTitle>
-              <CardDescription>Genomsnittlig närvaro</CardDescription>
+            <CardHeader className="pb-2 pt-3">
+              <CardTitle className="text-xl">{avgAttendance}%</CardTitle>
+              <CardDescription className="text-xs">Snitt närvaro</CardDescription>
             </CardHeader>
           </Card>
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
+            <CardHeader className="pb-2 pt-3">
+              <CardTitle className="text-xl">
                 {players.reduce((sum, p) => sum + p.personalTrainingSessions, 0)}
               </CardTitle>
-              <CardDescription>Personliga träningar totalt</CardDescription>
+              <CardDescription className="text-xs">Personliga träningar</CardDescription>
             </CardHeader>
           </Card>
         </div>
@@ -307,7 +307,7 @@ const Players = () => {
                   <Send className="w-6 h-6" />
                   Skicka kallelser och quizer
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs">
                   Välj spelare i översikten och skicka sedan kallelser eller quizer till dem
                 </CardDescription>
               </CardHeader>

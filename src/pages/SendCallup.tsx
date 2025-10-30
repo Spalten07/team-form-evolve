@@ -143,7 +143,8 @@ const SendCallup = () => {
     sendBefore: "1day",
     responseDeadline: "1day",
     bringItems: "",
-    bringItemsReminder: false
+    bringItemsReminder: false,
+    bringItemsReminderTime: "1day"
   });
 
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
@@ -252,7 +253,7 @@ const SendCallup = () => {
           <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
             Skicka kallelse
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-sm">
             Välj spelare och fyll i detaljer för kallelsen
           </p>
         </div>
@@ -264,7 +265,7 @@ const SendCallup = () => {
               <Calendar className="w-6 h-6" />
               Kallelsedetaljer
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs">
               Fyll i information om träningen eller matchen
             </CardDescription>
           </CardHeader>
@@ -308,26 +309,12 @@ const SendCallup = () => {
               </div>
               <div>
                 <Label htmlFor="time">Starttid</Label>
-                <Select
+                <Input
+                  id="time"
+                  type="time"
                   value={callupData.time}
-                  onValueChange={(value) => setCallupData({ ...callupData, time: value })}
-                >
-                  <SelectTrigger id="time">
-                    <SelectValue placeholder="Välj tid" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {Array.from({ length: 192 }, (_, i) => {
-                      const hours = Math.floor((i * 5) / 60);
-                      const minutes = (i * 5) % 60;
-                      if (hours >= 24) return null;
-                      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-                    }).filter(Boolean).map((time) => (
-                      <SelectItem key={time} value={time!}>
-                        {time}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={(e) => setCallupData({ ...callupData, time: e.target.value })}
+                />
               </div>
               <div>
                 <Label htmlFor="gatherTime">Samlingstid (valfritt)</Label>
@@ -480,6 +467,28 @@ const SendCallup = () => {
                   Skicka påminnelse om vad som ska medtages
                 </Label>
               </div>
+              {callupData.bringItemsReminder && (
+                <div className="mt-2">
+                  <Label htmlFor="bringItemsReminderTime" className="text-sm">När ska påminnelsen skickas?</Label>
+                  <Select
+                    value={callupData.bringItemsReminderTime || "1day"}
+                    onValueChange={(value) => setCallupData({ ...callupData, bringItemsReminderTime: value })}
+                  >
+                    <SelectTrigger id="bringItemsReminderTime" className="mt-1">
+                      <SelectValue placeholder="Välj tid" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="4days">4 dagar innan</SelectItem>
+                      <SelectItem value="3days">3 dagar innan</SelectItem>
+                      <SelectItem value="2days">2 dagar innan</SelectItem>
+                      <SelectItem value="1day">1 dag innan</SelectItem>
+                      <SelectItem value="12hours">12 timmar innan</SelectItem>
+                      <SelectItem value="6hours">6 timmar innan</SelectItem>
+                      <SelectItem value="3hours">3 timmar innan</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
