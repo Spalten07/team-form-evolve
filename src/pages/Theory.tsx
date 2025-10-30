@@ -2,7 +2,15 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Trophy, Target, CheckCircle2 } from "lucide-react";
+import { BookOpen, Trophy, Target, CheckCircle2, Play } from "lucide-react";
+import { Link } from "react-router-dom";
+
+interface QuizItem {
+  id: string;
+  title: string;
+  questions: number;
+  completed: boolean;
+}
 
 interface TheoryLevel {
   id: number;
@@ -10,8 +18,7 @@ interface TheoryLevel {
   title: string;
   description: string;
   topics: string[];
-  quizzes: number;
-  completed: number;
+  quizzes: QuizItem[];
   color: string;
 }
 
@@ -22,8 +29,9 @@ const theoryLevels: TheoryLevel[] = [
     title: "Grundläggande regler",
     description: "Lär dig de mest grundläggande reglerna och positionerna i fotboll",
     topics: ["Positioner", "Inkast", "Matchtid", "Spelregler"],
-    quizzes: 8,
-    completed: 3,
+    quizzes: [
+      { id: "5-manna-positioner", title: "Positioner och grundregler", questions: 5, completed: true }
+    ],
     color: "bg-success"
   },
   {
@@ -32,8 +40,10 @@ const theoryLevels: TheoryLevel[] = [
     title: "Utvecklad kunskap",
     description: "Mer avancerade positioner och fotbollsbegrepp",
     topics: ["Krossboll", "Djupledslöpning", "Bredsida", "Överstegsfint", "Fotbollshistoria"],
-    quizzes: 12,
-    completed: 0,
+    quizzes: [
+      { id: "7-manna-begrepp", title: "Fotbollsbegrepp", questions: 5, completed: false },
+      { id: "7-manna-historia", title: "Fotbollshistoria", questions: 5, completed: false }
+    ],
     color: "bg-warning"
   },
   {
@@ -42,13 +52,22 @@ const theoryLevels: TheoryLevel[] = [
     title: "Avancerad taktik",
     description: "Offsideregeln, formationer och spelidéer",
     topics: ["Offside", "Formationer", "Positionsnummer", "Spelidéer", "Fotbollshistoria"],
-    quizzes: 15,
-    completed: 0,
+    quizzes: [
+      { id: "9-manna-offside", title: "Offsideregeln & Formationer", questions: 5, completed: false },
+      { id: "9-manna-taktik", title: "Taktik och Spelidéer", questions: 5, completed: false }
+    ],
     color: "bg-primary"
   }
 ];
 
 const Theory = () => {
+  const totalQuizzes = theoryLevels.reduce((sum, level) => sum + level.quizzes.length, 0);
+  const completedQuizzes = theoryLevels.reduce(
+    (sum, level) => sum + level.quizzes.filter(q => q.completed).length, 
+    0
+  );
+  const completionPercentage = totalQuizzes > 0 ? Math.round((completedQuizzes / totalQuizzes) * 100) : 0;
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -74,15 +93,15 @@ const Theory = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                <div className="text-3xl font-bold">3</div>
+                <div className="text-3xl font-bold">{completedQuizzes}</div>
                 <div className="text-sm opacity-90">Quiz genomförda</div>
               </div>
               <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                <div className="text-3xl font-bold">35</div>
+                <div className="text-3xl font-bold">{totalQuizzes}</div>
                 <div className="text-sm opacity-90">Quiz tillgängliga</div>
               </div>
               <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                <div className="text-3xl font-bold">9%</div>
+                <div className="text-3xl font-bold">{completionPercentage}%</div>
                 <div className="text-sm opacity-90">Totalt genomförda</div>
               </div>
             </div>
@@ -101,7 +120,7 @@ const Theory = () => {
                         {level.level}
                       </Badge>
                       <span className="text-sm text-muted-foreground">
-                        {level.completed}/{level.quizzes} quiz genomförda
+                        {level.quizzes.filter(q => q.completed).length}/{level.quizzes.length} quiz genomförda
                       </span>
                     </div>
                     <CardTitle className="text-2xl mb-2">{level.title}</CardTitle>
@@ -112,20 +131,30 @@ const Theory = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {/* Progress Bar */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Framsteg</span>
-                      <span className="font-medium">
-                        {Math.round((level.completed / level.quizzes) * 100)}%
-                      </span>
+                  {/* Quiz List */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Play className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">Tillgängliga quizar</span>
                     </div>
-                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${level.color} transition-all duration-300`}
-                        style={{ width: `${(level.completed / level.quizzes) * 100}%` }}
-                      />
-                    </div>
+                    {level.quizzes.map((quiz) => (
+                      <div key={quiz.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors">
+                        <div className="flex-1">
+                          <p className="font-medium">{quiz.title}</p>
+                          <p className="text-sm text-muted-foreground">{quiz.questions} frågor</p>
+                        </div>
+                        {quiz.completed ? (
+                          <Badge className="bg-success/10 text-success hover:bg-success/20">
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Klar
+                          </Badge>
+                        ) : (
+                          <Button variant="default" size="sm" asChild>
+                            <Link to={`/quiz/${quiz.id}`}>Starta</Link>
+                          </Button>
+                        )}
+                      </div>
+                    ))}
                   </div>
 
                   {/* Topics */}
@@ -143,20 +172,6 @@ const Theory = () => {
                     </div>
                   </div>
 
-                  {/* Action Button */}
-                  <Button 
-                    variant={level.completed > 0 ? "default" : "hero"}
-                    className="w-full"
-                  >
-                    {level.completed > 0 ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 mr-2" />
-                        Fortsätt
-                      </>
-                    ) : (
-                      "Börja"
-                    )}
-                  </Button>
                 </div>
               </CardContent>
             </Card>
