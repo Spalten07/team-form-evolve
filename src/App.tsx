@@ -10,6 +10,9 @@ import Theory from "./pages/Theory";
 import Quiz from "./pages/Quiz";
 import Planner from "./pages/Planner";
 import CreateTraining from "./pages/CreateTraining";
+import Players from "./pages/Players";
+import PlayerHistory from "./pages/PlayerHistory";
+import PlayerCalendar from "./pages/PlayerCalendar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,9 @@ const App = () => (
           <Route path="/quiz/:quizId" element={<Quiz />} />
           <Route path="/planner" element={<Planner />} />
           <Route path="/create-training" element={<CreateTraining />} />
+          <Route path="/players" element={<Players />} />
+          <Route path="/player-history" element={<PlayerHistory />} />
+          <Route path="/player-calendar" element={<PlayerCalendar />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

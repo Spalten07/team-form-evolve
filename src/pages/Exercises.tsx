@@ -290,7 +290,7 @@ const Exercises = () => {
   const [showCustomSession, setShowCustomSession] = useState(false);
   const [showRecommendedSessions, setShowRecommendedSessions] = useState(true);
 
-  const allEquipment = ["Bollar", "Koner", "Mål", "Små mål", "Västar", "Koordinationsstege"];
+  const allEquipment = ["Bollar", "Koner", "Mål", "Små mål", "Västar", "Koordinationsstege", "Hinder", "Ribbor", "Startblock", "Agility-stegar", "Koordinationsringar", "Markörer", "Träningsdummy", "Miniband"];
   const categories = ["Alla", "Uppvärmning", "Passning", "Teknik", "Avslut", "Taktik", "Spelform", "Kondition", "Nedvarvning"];
 
   const toggleEquipment = (equipment: string) => {
@@ -478,115 +478,123 @@ const Exercises = () => {
         )}
 
         {/* AI Generator */}
-        <Card className="mb-8 border-2 border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              Generera träningsförslag
-            </CardTitle>
-            <CardDescription>
-              Få tre olika träningspass baserade på dina förutsättningar
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="players">Antal spelare *</Label>
-                <Input
-                  id="players"
-                  type="number"
-                  placeholder="T.ex. 10"
-                  value={playerCount === 0 ? "" : playerCount}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setPlayerCount(value === "" ? 0 : Math.max(1, parseInt(value) || 0));
-                  }}
-                  min="1"
-                />
+        <Accordion type="single" collapsible defaultValue="item-1" className="mb-8">
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="hover:no-underline">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5" />
+                <span className="text-xl font-semibold">Generera träningsförslag</span>
               </div>
-              <div>
-                <Label htmlFor="duration">Önskad träningstid (minuter)</Label>
-                <Input
-                  id="duration"
-                  type="number"
-                  value={customDuration}
-                  onChange={(e) => setCustomDuration(parseInt(e.target.value) || 60)}
-                  min="20"
-                  max="120"
-                />
-              </div>
-            </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <Card className="border-2 border-primary/20">
+                <CardHeader>
+                  <CardDescription>
+                    Få tre olika träningspass baserade på dina förutsättningar
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="players">Antal spelare *</Label>
+                      <Input
+                        id="players"
+                        type="number"
+                        placeholder="T.ex. 10"
+                        value={playerCount === 0 ? "" : playerCount}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setPlayerCount(value === "" ? 0 : Math.max(1, parseInt(value) || 0));
+                        }}
+                        min="1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="duration">Önskad träningstid (minuter)</Label>
+                      <Input
+                        id="duration"
+                        type="number"
+                        value={customDuration}
+                        onChange={(e) => setCustomDuration(parseInt(e.target.value) || 60)}
+                        min="10"
+                        max="120"
+                      />
+                    </div>
+                  </div>
 
-            <div>
-              <Label className="mb-2 block">Tillgänglig utrustning</Label>
-              <div className="flex flex-wrap gap-2">
-                {allEquipment.map((equipment) => (
-                  <Badge
-                    key={equipment}
-                    variant={selectedEquipment.includes(equipment) ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => toggleEquipment(equipment)}
-                  >
-                    {equipment}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <Button 
-              onClick={generateMultipleSessions} 
-              className="w-full"
-              disabled={playerCount === 0}
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              Generera 3 träningsförslag
-            </Button>
-
-            {recommendedSessions && recommendedSessions.length > 0 && (
-              <Accordion type="single" collapsible value={showRecommendedSessions ? "suggestions" : ""} onValueChange={(value) => setShowRecommendedSessions(value === "suggestions")}>
-                <AccordionItem value="suggestions" className="border-0">
-                  <AccordionTrigger className="hover:no-underline">
-                    <h3 className="font-semibold text-lg">Mina träningsförslag ({recommendedSessions.length})</h3>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-6 mt-2">
-                      {recommendedSessions.map((session, sessionIndex) => (
-                        <Card key={sessionIndex} className="bg-secondary/30">
-                          <CardHeader>
-                            <CardTitle className="text-lg">Alternativ {sessionIndex + 1}</CardTitle>
-                            <CardDescription>
-                              Total tid: {session.reduce((sum, ex) => sum + ex.duration, 0)} minuter
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            {session.map((exercise, index) => (
-                              <div key={index} className="flex items-start gap-3 p-3 bg-background rounded-lg">
-                                <Badge variant="outline" className="mt-1">
-                                  {exercise.duration} min
-                                </Badge>
-                                <div className="flex-1">
-                                  <p className="font-medium">{exercise.title}</p>
-                                  <p className="text-sm text-muted-foreground">{exercise.category}</p>
-                                  <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
-                                </div>
-                              </div>
-                            ))}
-                          </CardContent>
-                        </Card>
+                  <div>
+                    <Label className="mb-2 block">Tillgänglig utrustning</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {allEquipment.map((equipment) => (
+                        <Badge
+                          key={equipment}
+                          variant={selectedEquipment.includes(equipment) ? "default" : "outline"}
+                          className="cursor-pointer"
+                          onClick={() => toggleEquipment(equipment)}
+                        >
+                          {equipment}
+                        </Badge>
                       ))}
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            )}
+                  </div>
 
-            {recommendedSessions && recommendedSessions.length === 0 && (
-              <p className="text-center text-muted-foreground text-sm mt-4">
-                Kunde inte generera träningspass med valda förutsättningar. Försök justera antalet spelare eller utrustning.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+                  <Button 
+                    onClick={generateMultipleSessions} 
+                    className="w-full"
+                    disabled={playerCount === 0}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generera 3 träningsförslag
+                  </Button>
+
+                  {recommendedSessions && recommendedSessions.length > 0 && (
+                    <Accordion type="single" collapsible value={showRecommendedSessions ? "suggestions" : ""} onValueChange={(value) => setShowRecommendedSessions(value === "suggestions")}>
+                      <AccordionItem value="suggestions" className="border-0">
+                        <AccordionTrigger className="hover:no-underline">
+                          <h3 className="font-semibold text-lg">Mina träningsförslag ({recommendedSessions.length})</h3>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-6 mt-2">
+                            {recommendedSessions.map((session, sessionIndex) => (
+                              <Card key={sessionIndex} className="bg-secondary/30">
+                                <CardHeader>
+                                  <CardTitle className="text-lg">Alternativ {sessionIndex + 1}</CardTitle>
+                                  <CardDescription>
+                                    Total tid: {session.reduce((sum, ex) => sum + ex.duration, 0)} minuter
+                                  </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                  {session.map((exercise, index) => (
+                                    <div key={index} className="flex items-start gap-3 p-3 bg-background rounded-lg">
+                                      <Badge variant="outline" className="mt-1">
+                                        {exercise.duration} min
+                                      </Badge>
+                                      <div className="flex-1">
+                                        <p className="font-medium">{exercise.title}</p>
+                                        <p className="text-sm text-muted-foreground">{exercise.category}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  )}
+
+                  {recommendedSessions && recommendedSessions.length === 0 && (
+                    <p className="text-center text-muted-foreground text-sm mt-4">
+                      Kunde inte generera träningspass med valda förutsättningar. Försök justera antalet spelare eller utrustning.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         {/* Search and Filter */}
         <div className="mb-8 space-y-4">

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Dumbbell, BookOpen, CalendarDays, Home } from "lucide-react";
+import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const Navigation = () => {
@@ -13,17 +13,21 @@ export const Navigation = () => {
     setUserRole(role);
   }, []);
 
-  const coachNavLinks = [
-    { to: "/home", label: "Hem", icon: Home },
-    { to: "/exercises", label: "Övningsbank", icon: Dumbbell },
-    { to: "/theory", label: "Teoribank", icon: BookOpen },
-    { to: "/planner", label: "Planering", icon: CalendarDays },
-  ];
+const coachNavLinks = [
+  { to: "/", label: "Byt roll", icon: Home },
+  { to: "/exercises", label: "Övningsbank", icon: Dumbbell },
+  { to: "/theory", label: "Teoribank", icon: BookOpen },
+  { to: "/planner", label: "Planering", icon: CalendarDays },
+  { to: "/players", label: "Mina spelare", icon: Users },
+];
 
-  const playerNavLinks = [
-    { to: "/exercises", label: "Övningar", icon: Dumbbell },
-    { to: "/theory", label: "Teoribank", icon: BookOpen },
-  ];
+const playerNavLinks = [
+  { to: "/", label: "Byt roll", icon: Home },
+  { to: "/exercises", label: "Övningar", icon: Dumbbell },
+  { to: "/theory", label: "Teoribank", icon: BookOpen },
+  { to: "/player-calendar", label: "Kalender", icon: CalendarDays },
+  { to: "/player-history", label: "Mina träningar", icon: ClipboardList },
+];
 
   const navLinks = userRole === "coach" ? coachNavLinks : playerNavLinks;
 

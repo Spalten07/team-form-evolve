@@ -5,6 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Accordion, 
+  AccordionContent, 
+  AccordionItem, 
+  AccordionTrigger 
+} from "@/components/ui/accordion";
 import { 
   Select,
   SelectContent,
@@ -23,7 +30,8 @@ import {
   Save,
   Trash2,
   GripVertical,
-  PlayCircle
+  PlayCircle,
+  Wand2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,6 +50,7 @@ interface TrainingSession {
   duration: number;
   players: number;
   focus: string;
+  equipment: string[];
   warmup: TrainingExercise[];
   main: TrainingExercise[];
   cooldown: TrainingExercise[];
@@ -254,15 +263,31 @@ const focusAreas = [
   "Försvarsspel"
 ];
 
+const equipmentOptions = [
+  "Bollar",
+  "Koner",
+  "Hinder",
+  "Ribbor",
+  "Västar",
+  "Mål",
+  "Startblock",
+  "Agility-stegar",
+  "Koordinationsringar",
+  "Markörer",
+  "Träningsdummy",
+  "Miniband"
+];
+
 const CreateTraining = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<TrainingSession>({
     title: "",
     date: new Date().toISOString().split('T')[0],
     time: "18:00",
-    duration: 90,
-    players: 16,
+    duration: 30,
+    players: 6,
     focus: "",
+    equipment: [],
     warmup: [],
     main: [],
     cooldown: [],
@@ -345,6 +370,60 @@ const CreateTraining = () => {
     setTimeout(() => navigate("/planner"), 1000);
   };
 
+  const generateTrainingSession = () => {
+    if (!session.focus) {
+      toast.error("Välj ett fokusområde först");
+      return;
+    }
+
+    const warmupExercises = getFilteredExercises("warmup");
+    const mainExercises = getFilteredExercises("main");
+    const cooldownExercises = getFilteredExercises("cooldown");
+
+    const selectedWarmup = warmupExercises.slice(0, 2);
+    const selectedMain = mainExercises.slice(0, 3);
+    const selectedCooldown = cooldownExercises.slice(0, 1);
+
+    const newWarmup: TrainingExercise[] = selectedWarmup.map(ex => ({
+      id: `${ex.id}-${Date.now()}-${Math.random()}`,
+      title: ex.title,
+      duration: ex.defaultDuration,
+      category: ex.category
+    }));
+
+    const newMain: TrainingExercise[] = selectedMain.map(ex => ({
+      id: `${ex.id}-${Date.now()}-${Math.random()}`,
+      title: ex.title,
+      duration: ex.defaultDuration,
+      category: ex.category
+    }));
+
+    const newCooldown: TrainingExercise[] = selectedCooldown.map(ex => ({
+      id: `${ex.id}-${Date.now()}-${Math.random()}`,
+      title: ex.title,
+      duration: ex.defaultDuration,
+      category: ex.category
+    }));
+
+    setSession(prev => ({
+      ...prev,
+      warmup: newWarmup,
+      main: newMain,
+      cooldown: newCooldown
+    }));
+
+    toast.success("Träningspass genererat!");
+  };
+
+  const toggleEquipment = (equipment: string) => {
+    setSession(prev => ({
+      ...prev,
+      equipment: prev.equipment.includes(equipment)
+        ? prev.equipment.filter(e => e !== equipment)
+        : [...prev.equipment, equipment]
+    }));
+  };
+
   const getFilteredExercises = (section: "warmup" | "main" | "cooldown") => {
     const categoryMap = {
       warmup: ["Uppvärmning"],
@@ -391,110 +470,118 @@ const CreateTraining = () => {
     const filteredExercises = getFilteredExercises(section);
     
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{title}</span>
-            <Badge variant="outline">
-              {exercises.reduce((sum, e) => sum + e.duration, 0)} min
-            </Badge>
-          </CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {exercises.map((exercise) => (
-            <div key={exercise.id} className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
-              <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
-              <div className="flex-1">
-                <p className="font-medium">{exercise.title}</p>
-                <p className="text-sm text-muted-foreground">{exercise.category}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  value={exercise.duration}
-                  onChange={(e) => updateExerciseDuration(section, exercise.id, parseInt(e.target.value) || 0)}
-                  className="w-20 text-center"
-                  min="1"
-                />
-                <span className="text-sm text-muted-foreground">min</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeExercise(section, exercise.id)}
-                >
-                  <Trash2 className="w-4 h-4 text-destructive" />
-                </Button>
-              </div>
+      <Accordion type="single" collapsible defaultValue="item-1">
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="hover:no-underline">
+            <div className="flex items-center justify-between w-full pr-4">
+              <span className="text-xl font-semibold">{title}</span>
+              <Badge variant="outline">
+                {exercises.reduce((sum, e) => sum + e.duration, 0)} min
+              </Badge>
             </div>
-          ))}
-
-          {showExerciseMenu === section ? (
-            <div className="border-2 border-dashed border-border rounded-lg p-4 space-y-2">
-              <p className="text-sm font-medium mb-3">Välj övning från banken:</p>
-              <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto">
-                {filteredExercises.map((exercise) => {
-                  const isInSection = isExerciseInSection(section, exercise.id);
-                  return (
-                    <div 
-                      key={exercise.id} 
-                      className={`border rounded-lg p-3 hover:bg-secondary/50 transition-colors cursor-pointer ${isInSection ? 'border-2 border-primary bg-primary/5' : ''}`}
-                      onClick={() => toggleExercise(section, exercise.id)}
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-sm mb-1">{exercise.title}</h4>
-                          <Badge variant="secondary" className="text-xs">
-                            {exercise.category}
-                          </Badge>
-                        </div>
-                        <Button
-                          variant={isInSection ? "destructive" : "outline"}
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleExercise(section, exercise.id);
-                          }}
-                        >
-                          {isInSection ? (
-                            <>
-                              <X className="w-4 h-4 mr-1" />
-                              Ta bort
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="w-4 h-4 mr-1" />
-                              Lägg till
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">{exercise.description}</p>
+          </AccordionTrigger>
+          <AccordionContent>
+            <Card>
+              <CardHeader>
+                <CardDescription>{description}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {exercises.map((exercise) => (
+                  <div key={exercise.id} className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
+                    <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
+                    <div className="flex-1">
+                      <p className="font-medium">{exercise.title}</p>
+                      <p className="text-sm text-muted-foreground">{exercise.category}</p>
                     </div>
-                  );
-                })}
-              </div>
-              <Button
-                variant="ghost"
-                className="w-full mt-2"
-                onClick={() => setShowExerciseMenu(null)}
-              >
-                <X className="w-4 h-4 mr-2" />
-                Avbryt
-              </Button>
-            </div>
-          ) : (
-            <Button
-              variant="outline"
-              className="w-full border-dashed"
-              onClick={() => setShowExerciseMenu(section)}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Lägg till övning
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={exercise.duration}
+                        onChange={(e) => updateExerciseDuration(section, exercise.id, parseInt(e.target.value) || 0)}
+                        className="w-20 text-center"
+                        min="1"
+                      />
+                      <span className="text-sm text-muted-foreground">min</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeExercise(section, exercise.id)}
+                      >
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+
+                {showExerciseMenu === section ? (
+                  <div className="border-2 border-dashed border-border rounded-lg p-4 space-y-2">
+                    <p className="text-sm font-medium mb-3">Välj övning från banken:</p>
+                    <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto">
+                      {filteredExercises.map((exercise) => {
+                        const isInSection = isExerciseInSection(section, exercise.id);
+                        return (
+                          <div 
+                            key={exercise.id} 
+                            className={`border rounded-lg p-3 hover:bg-secondary/50 transition-colors cursor-pointer ${isInSection ? 'border-2 border-primary bg-primary/5' : ''}`}
+                            onClick={() => toggleExercise(section, exercise.id)}
+                          >
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <div className="flex-1">
+                                <h4 className="font-medium text-sm mb-1">{exercise.title}</h4>
+                                <Badge variant="secondary" className="text-xs">
+                                  {exercise.category}
+                                </Badge>
+                              </div>
+                              <Button
+                                variant={isInSection ? "destructive" : "outline"}
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleExercise(section, exercise.id);
+                                }}
+                              >
+                                {isInSection ? (
+                                  <>
+                                    <X className="w-4 h-4 mr-1" />
+                                    Ta bort
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plus className="w-4 h-4 mr-1" />
+                                    Lägg till
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">{exercise.description}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      className="w-full mt-2"
+                      onClick={() => setShowExerciseMenu(null)}
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Avbryt
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="w-full border-dashed"
+                    onClick={() => setShowExerciseMenu(section)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Lägg till övning
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     );
   };
 
@@ -561,6 +648,20 @@ const CreateTraining = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
+                  <Label htmlFor="duration">Önskad träningstid (minuter)</Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    value={session.duration === 0 ? "" : session.duration}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSession({ ...session, duration: value === "" ? 0 : Math.max(10, parseInt(value) || 0) });
+                    }}
+                    min="10"
+                    step="5"
+                  />
+                </div>
+                <div>
                   <Label htmlFor="players">Antal spelare</Label>
                   <Input
                     id="players"
@@ -591,6 +692,27 @@ const CreateTraining = () => {
               </div>
 
               <div>
+                <Label>Tillgänglig utrustning</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+                  {equipmentOptions.map((equipment) => (
+                    <div key={equipment} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={equipment}
+                        checked={session.equipment.includes(equipment)}
+                        onCheckedChange={() => toggleEquipment(equipment)}
+                      />
+                      <label
+                        htmlFor={equipment}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {equipment}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
                 <Label htmlFor="notes">Anteckningar</Label>
                 <Textarea
                   id="notes"
@@ -599,6 +721,27 @@ const CreateTraining = () => {
                   onChange={(e) => setSession({ ...session, notes: e.target.value })}
                   rows={3}
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Generate Training Button */}
+          <Card className="mb-6 bg-gradient-primary text-primary-foreground border-0">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold mb-1">Behöver du hjälp?</h3>
+                  <p className="text-sm opacity-90">Generera ett komplett träningspass baserat på dina val</p>
+                </div>
+                <Button
+                  variant="hero"
+                  size="lg"
+                  onClick={generateTrainingSession}
+                  disabled={!session.focus}
+                >
+                  <Wand2 className="w-5 h-5 mr-2" />
+                  Generera
+                </Button>
               </div>
             </CardContent>
           </Card>
