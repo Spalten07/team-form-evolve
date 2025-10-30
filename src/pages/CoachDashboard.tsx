@@ -49,7 +49,7 @@ const CoachDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">87%</div>
-              <p className="text-xs text-muted-foreground mt-1">Genomsnitt senaste månaden</p>
+              <p className="text-xs text-muted-foreground mt-1">Genomsnitt senaste 3 månaderna</p>
             </CardContent>
           </Card>
 
@@ -132,7 +132,7 @@ const CoachDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="w-5 h-5" />
-              Fokusområden senaste månaden
+              Fokusområden senaste 3 månaderna
             </CardTitle>
           </CardHeader>
           <CardContent>

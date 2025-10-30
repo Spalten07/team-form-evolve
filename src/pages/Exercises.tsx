@@ -497,17 +497,21 @@ const Exercises = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="players">Antal spelare *</Label>
-                      <Input
-                        id="players"
-                        type="number"
-                        placeholder="T.ex. 10"
-                        value={playerCount === 0 ? "" : playerCount}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setPlayerCount(value === "" ? 0 : Math.max(1, parseInt(value) || 0));
-                        }}
-                        min="1"
-                      />
+                      <Select
+                        value={playerCount === 0 ? "" : playerCount.toString()}
+                        onValueChange={(value) => setPlayerCount(parseInt(value))}
+                      >
+                        <SelectTrigger id="players">
+                          <SelectValue placeholder="Välj antal spelare" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                          {Array.from({ length: 40 }, (_, i) => i + 1).map((num) => (
+                            <SelectItem key={num} value={num.toString()}>
+                              {num} spelare
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
                       <Label htmlFor="duration">Önskad träningstid (minuter)</Label>

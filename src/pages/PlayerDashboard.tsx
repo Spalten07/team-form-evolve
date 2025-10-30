@@ -79,52 +79,107 @@ const PlayerDashboard = () => {
           </Card>
         </div>
 
-        {/* Latest Results */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="w-5 h-5" />
-              Senaste resultat
-            </CardTitle>
-            <CardDescription>
-              Lagets senaste matcher i serien
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
-              <div>
-                <p className="font-semibold">Vårt lag - Motståndare A</p>
-                <p className="text-sm text-muted-foreground">2025-10-27</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          {/* Latest Results */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="w-5 h-5" />
+                Senaste resultat
+              </CardTitle>
+              <CardDescription>
+                Lagets senaste matcher i serien
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
+                <div>
+                  <p className="font-semibold">Vårt lag - Motståndare A</p>
+                  <p className="text-sm text-muted-foreground">2025-10-27</p>
+                </div>
+                <div className="text-right">
+                  <Badge className="bg-success text-success-foreground">Vinst</Badge>
+                  <p className="text-lg font-bold mt-1">3 - 1</p>
+                </div>
               </div>
-              <div className="text-right">
-                <Badge className="bg-success text-success-foreground">Vinst</Badge>
-                <p className="text-lg font-bold mt-1">3 - 1</p>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between p-3 bg-warning/10 rounded-lg border border-warning/20">
-              <div>
-                <p className="font-semibold">Motståndare B - Vårt lag</p>
-                <p className="text-sm text-muted-foreground">2025-10-20</p>
+              <div className="flex items-center justify-between p-3 bg-warning/10 rounded-lg border border-warning/20">
+                <div>
+                  <p className="font-semibold">Motståndare B - Vårt lag</p>
+                  <p className="text-sm text-muted-foreground">2025-10-20</p>
+                </div>
+                <div className="text-right">
+                  <Badge className="bg-warning text-warning-foreground">Oavgjort</Badge>
+                  <p className="text-lg font-bold mt-1">2 - 2</p>
+                </div>
               </div>
-              <div className="text-right">
-                <Badge className="bg-warning text-warning-foreground">Oavgjort</Badge>
-                <p className="text-lg font-bold mt-1">2 - 2</p>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
-              <div>
-                <p className="font-semibold">Vårt lag - Motståndare C</p>
-                <p className="text-sm text-muted-foreground">2025-10-13</p>
+              <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
+                <div>
+                  <p className="font-semibold">Vårt lag - Motståndare C</p>
+                  <p className="text-sm text-muted-foreground">2025-10-13</p>
+                </div>
+                <div className="text-right">
+                  <Badge className="bg-success text-success-foreground">Vinst</Badge>
+                  <p className="text-lg font-bold mt-1">4 - 2</p>
+                </div>
               </div>
-              <div className="text-right">
-                <Badge className="bg-success text-success-foreground">Vinst</Badge>
-                <p className="text-lg font-bold mt-1">4 - 2</p>
+            </CardContent>
+          </Card>
+
+          {/* Team Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="w-5 h-5" />
+                Tabellposition
+              </CardTitle>
+              <CardDescription>
+                Division 3 Norra
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                <div className="grid grid-cols-5 gap-2 pb-2 border-b font-semibold text-xs text-muted-foreground">
+                  <div>Pos</div>
+                  <div className="col-span-2">Lag</div>
+                  <div className="text-center">M</div>
+                  <div className="text-center">P</div>
+                </div>
+                <div className="grid grid-cols-5 gap-2 py-2 border-b text-sm">
+                  <div>1</div>
+                  <div className="col-span-2">Frösö IF</div>
+                  <div className="text-center">12</div>
+                  <div className="text-center font-bold">28</div>
+                </div>
+                <div className="grid grid-cols-5 gap-2 py-2 border-b text-sm">
+                  <div>2</div>
+                  <div className="col-span-2">IFK Östersund</div>
+                  <div className="text-center">12</div>
+                  <div className="text-center font-bold">26</div>
+                </div>
+                <div className="grid grid-cols-5 gap-2 py-2 border-b bg-primary/10 text-sm font-semibold">
+                  <div>3</div>
+                  <div className="col-span-2">Vårt lag</div>
+                  <div className="text-center">12</div>
+                  <div className="text-center">24</div>
+                </div>
+                <div className="grid grid-cols-5 gap-2 py-2 border-b text-sm">
+                  <div>4</div>
+                  <div className="col-span-2">Ånge IF</div>
+                  <div className="text-center">12</div>
+                  <div className="text-center font-bold">21</div>
+                </div>
+                <div className="grid grid-cols-5 gap-2 py-2 text-sm">
+                  <div>5</div>
+                  <div className="col-span-2">Brunflo FK</div>
+                  <div className="text-center">12</div>
+                  <div className="text-center font-bold">19</div>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Training Focus */}
         <Card>
@@ -134,7 +189,7 @@ const PlayerDashboard = () => {
               Vad jag tränat mest på
             </CardTitle>
             <CardDescription>
-              Fördelning av träningsfokus senaste månaden
+              Fördelning av träningsfokus senaste 3 månaderna
             </CardDescription>
           </CardHeader>
           <CardContent>

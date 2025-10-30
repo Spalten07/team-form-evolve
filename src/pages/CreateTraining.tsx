@@ -31,9 +31,17 @@ import {
   Trash2,
   GripVertical,
   PlayCircle,
-  Wand2
+  Wand2,
+  CalendarDays
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface TrainingExercise {
   id: string;
@@ -279,6 +287,13 @@ const equipmentOptions = [
   "Träningskoner"
 ];
 
+const upcomingTrainings = [
+  { id: 1, date: "2025-11-03", time: "18:00", title: "Tisdagsträning" },
+  { id: 2, date: "2025-11-05", time: "18:00", title: "Torsdagsträning" },
+  { id: 3, date: "2025-11-07", time: "17:00", title: "Lördagsmatch" },
+  { id: 4, date: "2025-11-10", time: "18:00", title: "Tisdagsträning" }
+];
+
 const CreateTraining = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<TrainingSession>({
@@ -296,6 +311,8 @@ const CreateTraining = () => {
   });
 
   const [showExerciseMenu, setShowExerciseMenu] = useState<"warmup" | "main" | "cooldown" | null>(null);
+  const [showTrainingSelectDialog, setShowTrainingSelectDialog] = useState(false);
+  const [selectedTrainingId, setSelectedTrainingId] = useState<number | null>(null);
 
   const isExerciseInSection = (section: "warmup" | "main" | "cooldown", exerciseId: string) => {
     return session[section].some(ex => ex.id.startsWith(exerciseId));
@@ -834,8 +851,7 @@ const CreateTraining = () => {
                   toast.error("Vänligen fyll i titel och fokusområde");
                   return;
                 }
-                toast.success("Träning tillagd på befintlig kallelse!");
-                setTimeout(() => navigate("/planner"), 1000);
+                setShowTrainingSelectDialog(true);
               }}
             >
               Lägg till på kallelse
@@ -852,6 +868,68 @@ const CreateTraining = () => {
           </div>
         </div>
       </main>
+
+      <Dialog open={showTrainingSelectDialog} onOpenChange={setShowTrainingSelectDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarDays className="w-5 h-5" />
+              Välj träning från lagets schema
+            </DialogTitle>
+            <DialogDescription>
+              Välj vilken träning du vill lägga detta träningspass på
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 mt-4">
+            {upcomingTrainings.map((training) => (
+              <Card 
+                key={training.id}
+                className={`cursor-pointer transition-all hover:shadow-md ${selectedTrainingId === training.id ? 'border-2 border-primary' : ''}`}
+                onClick={() => setSelectedTrainingId(training.id)}
+              >
+                <CardHeader className="py-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-sm">{training.title}</CardTitle>
+                      <CardDescription className="text-xs mt-1">
+                        {new Date(training.date).toLocaleDateString('sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} • {training.time}
+                      </CardDescription>
+                    </div>
+                    {selectedTrainingId === training.id && (
+                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <PlayCircle className="w-4 h-4 text-primary-foreground" />
+                      </div>
+                    )}
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+          <div className="flex gap-2 mt-4">
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={() => {
+                setShowTrainingSelectDialog(false);
+                setSelectedTrainingId(null);
+              }}
+            >
+              Avbryt
+            </Button>
+            <Button 
+              className="flex-1"
+              disabled={!selectedTrainingId}
+              onClick={() => {
+                toast.success("Träningspass tillagt på vald träning!");
+                setShowTrainingSelectDialog(false);
+                setTimeout(() => navigate("/planner"), 1000);
+              }}
+            >
+              Lägg till
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

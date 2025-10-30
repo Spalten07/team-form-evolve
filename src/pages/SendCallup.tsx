@@ -140,8 +140,70 @@ const SendCallup = () => {
     message: "",
     reminderTime: "1day",
     scheduled: false,
-    sendBefore: "1day"
+    sendBefore: "1day",
+    responseDeadline: "1day",
+    bringItems: "",
+    bringItemsReminder: false
   });
+
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+
+  const footballLocations = [
+    "Östermalms IP",
+    "Östermalms konstgräs",
+    "Östersunds fotbollsarena",
+    "Östervalls IP",
+    "Frösö IP",
+    "Storsjöhallen fotbollsplan",
+    "Brunflo IP",
+    "Lit IP"
+  ];
+
+  const locationHistory = [
+    "Östermalms IP",
+    "Frösö IP",
+    "Östersunds fotbollsarena"
+  ];
+
+  const handleLocationChange = (value: string) => {
+    setCallupData({ ...callupData, location: value });
+    if (value.length > 0) {
+      const filtered = [...new Set([...locationHistory, ...footballLocations])]
+        .filter(loc => loc.toLowerCase().includes(value.toLowerCase()))
+        .slice(0, 5);
+      setLocationSuggestions(filtered);
+      setShowLocationSuggestions(true);
+    } else {
+      setShowLocationSuggestions(false);
+    }
+  };
+
+  const selectLocation = (location: string) => {
+    setCallupData({ ...callupData, location });
+    setShowLocationSuggestions(false);
+  };
+
+  // Generate gather time options based on start time
+  const getGatherTimeOptions = () => {
+    if (!callupData.time) return [];
+    
+    const [hours, minutes] = callupData.time.split(':').map(Number);
+    const startMinutes = hours * 60 + minutes;
+    const options: string[] = [];
+    
+    // Generate times from 60 minutes before to 15 minutes before
+    for (let i = 60; i >= 15; i -= 5) {
+      const gatherMinutes = startMinutes - i;
+      if (gatherMinutes >= 0) {
+        const h = Math.floor(gatherMinutes / 60);
+        const m = gatherMinutes % 60;
+        options.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+      }
+    }
+    
+    return options;
+  };
   
   const players = [...mockPlayers].sort((a, b) => {
     if (sortBy === "name") {
@@ -277,27 +339,40 @@ const SendCallup = () => {
                     <SelectValue placeholder="Välj samlingstid" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
-                    {Array.from({ length: 192 }, (_, i) => {
-                      const hours = Math.floor((i * 5) / 60);
-                      const minutes = (i * 5) % 60;
-                      if (hours >= 24) return null;
-                      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-                    }).filter(Boolean).map((time) => (
-                      <SelectItem key={time} value={time!}>
+                    {getGatherTimeOptions().map((time) => (
+                      <SelectItem key={time} value={time}>
                         {time}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="relative">
                 <Label htmlFor="location">Plats</Label>
                 <Input
                   id="location"
                   value={callupData.location}
-                  onChange={(e) => setCallupData({ ...callupData, location: e.target.value })}
-                  placeholder="T.ex. Fotbollsplan 1"
+                  onChange={(e) => handleLocationChange(e.target.value)}
+                  onFocus={() => {
+                    if (callupData.location.length > 0) {
+                      setShowLocationSuggestions(true);
+                    }
+                  }}
+                  placeholder="T.ex. Östermalms IP"
                 />
+                {showLocationSuggestions && locationSuggestions.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md">
+                    {locationSuggestions.map((location, index) => (
+                      <div
+                        key={index}
+                        className="px-3 py-2 hover:bg-secondary cursor-pointer text-sm"
+                        onClick={() => selectLocation(location)}
+                      >
+                        {location}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -311,6 +386,8 @@ const SendCallup = () => {
                     <SelectValue placeholder="Välj påminnelsetid" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="4days">4 dagar innan</SelectItem>
+                    <SelectItem value="3days">3 dagar innan</SelectItem>
                     <SelectItem value="2days">2 dagar innan</SelectItem>
                     <SelectItem value="1day">1 dag innan</SelectItem>
                     <SelectItem value="12hours">12 timmar innan</SelectItem>
@@ -320,18 +397,38 @@ const SendCallup = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2 pt-6">
-                <input
-                  type="checkbox"
-                  id="scheduled"
-                  checked={callupData.scheduled}
-                  onChange={(e) => setCallupData({ ...callupData, scheduled: e.target.checked })}
-                  className="w-4 h-4"
-                />
-                <Label htmlFor="scheduled" className="cursor-pointer">
-                  Schemalägg kallelse
-                </Label>
+              <div>
+                <Label htmlFor="responseDeadline">Senaste svarstid</Label>
+                <Select
+                  value={callupData.responseDeadline}
+                  onValueChange={(value) => setCallupData({ ...callupData, responseDeadline: value })}
+                >
+                  <SelectTrigger id="responseDeadline">
+                    <SelectValue placeholder="Välj svarstid" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="4days">4 dagar innan</SelectItem>
+                    <SelectItem value="3days">3 dagar innan</SelectItem>
+                    <SelectItem value="2days">2 dagar innan</SelectItem>
+                    <SelectItem value="1day">1 dag innan</SelectItem>
+                    <SelectItem value="12hours">12 timmar innan</SelectItem>
+                    <SelectItem value="6hours">6 timmar innan</SelectItem>
+                    <SelectItem value="3hours">3 timmar innan</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="scheduled"
+                checked={callupData.scheduled}
+                onChange={(e) => setCallupData({ ...callupData, scheduled: e.target.checked })}
+                className="w-4 h-4"
+              />
+              <Label htmlFor="scheduled" className="cursor-pointer">
+                Schemalägg kallelse
+              </Label>
             </div>
             {callupData.scheduled && (
               <div>
@@ -361,6 +458,28 @@ const SendCallup = () => {
                 placeholder="Lägg till ett meddelande till spelarna..."
                 rows={3}
               />
+            </div>
+            <div>
+              <Label htmlFor="bringItems">Medtages (valfritt)</Label>
+              <Textarea
+                id="bringItems"
+                value={callupData.bringItems}
+                onChange={(e) => setCallupData({ ...callupData, bringItems: e.target.value })}
+                placeholder="T.ex. Vattenflaska, extra t-shirt, fotbollsskor..."
+                rows={2}
+              />
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="bringItemsReminder"
+                  checked={callupData.bringItemsReminder}
+                  onChange={(e) => setCallupData({ ...callupData, bringItemsReminder: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <Label htmlFor="bringItemsReminder" className="cursor-pointer text-sm">
+                  Skicka påminnelse om vad som ska medtages
+                </Label>
+              </div>
             </div>
           </CardContent>
         </Card>

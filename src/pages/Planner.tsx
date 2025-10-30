@@ -6,6 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Plus, Users, Target, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown, Filter } from "lucide-react";
 
 interface TrainingSession {
   id: number;
@@ -16,7 +23,24 @@ interface TrainingSession {
   duration: string;
   players: number;
   status: "planned" | "completed" | "upcoming";
+  calledPlayers?: number[];
 }
+
+interface Player {
+  id: number;
+  name: string;
+}
+
+const mockPlayers: Player[] = [
+  { id: 1, name: "Erik Andersson" },
+  { id: 2, name: "Sofia Nilsson" },
+  { id: 3, name: "Oscar Berg" },
+  { id: 4, name: "Anna Karlsson" },
+  { id: 5, name: "Lucas Eriksson" },
+  { id: 6, name: "Emma Johansson" },
+  { id: 7, name: "Oliver Larsson" },
+  { id: 8, name: "Maja Svensson" }
+];
 
 const mockSessions: TrainingSession[] = [
   {
@@ -27,7 +51,8 @@ const mockSessions: TrainingSession[] = [
     focus: "Teknik & Passning",
     duration: "90 min",
     players: 16,
-    status: "completed"
+    status: "completed",
+    calledPlayers: [1, 2, 3, 4, 5, 6, 7, 8]
   },
   {
     id: 2,
@@ -37,7 +62,8 @@ const mockSessions: TrainingSession[] = [
     focus: "Positionsspel",
     duration: "90 min",
     players: 18,
-    status: "upcoming"
+    status: "upcoming",
+    calledPlayers: [1, 2, 3, 4, 5, 6, 7, 8]
   },
   {
     id: 3,
@@ -47,12 +73,33 @@ const mockSessions: TrainingSession[] = [
     focus: "Avslut & Spelformer",
     duration: "90 min",
     players: 20,
-    status: "planned"
+    status: "planned",
+    calledPlayers: [1, 2, 4, 5, 6, 7, 8]
   }
 ];
 
 const Planner = () => {
-  const [sessions] = useState<TrainingSession[]>(mockSessions);
+  const [sessions, setSessions] = useState<TrainingSession[]>(mockSessions);
+  const [expandedSession, setExpandedSession] = useState<number | null>(null);
+  const [weekFilter, setWeekFilter] = useState("current");
+  const [monthFilter, setMonthFilter] = useState("november");
+  const [activityFilter, setActivityFilter] = useState("all");
+
+  const togglePlayerInSession = (sessionId: number, playerId: number) => {
+    setSessions(prev => prev.map(session => {
+      if (session.id === sessionId) {
+        const calledPlayers = session.calledPlayers || [];
+        const isCalledCurrently = calledPlayers.includes(playerId);
+        return {
+          ...session,
+          calledPlayers: isCalledCurrently 
+            ? calledPlayers.filter(id => id !== playerId)
+            : [...calledPlayers, playerId]
+        };
+      }
+      return session;
+    }));
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -155,89 +202,164 @@ const Planner = () => {
               <h2 className="text-xl font-bold">Planerade träningar</h2>
               
               {sessions.map((session) => (
-                <Card key={session.id} className="hover:shadow-md transition-all">
-              <CardHeader className="py-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {getStatusBadge(session.status)}
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(session.date)} • {session.time}
-                      </span>
-                    </div>
-                    <CardTitle className="text-base">{session.title}</CardTitle>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">Detaljer</Button>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-          ))}
+                <Collapsible 
+                  key={session.id}
+                  open={expandedSession === session.id}
+                  onOpenChange={(isOpen) => setExpandedSession(isOpen ? session.id : null)}
+                >
+                  <Card className="hover:shadow-md transition-all">
+                    <CollapsibleTrigger asChild>
+                      <CardHeader className="py-3 cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              {getStatusBadge(session.status)}
+                              <span className="text-xs text-muted-foreground">
+                                {formatDate(session.date)} • {session.time}
+                              </span>
+                            </div>
+                            <CardTitle className="text-base">{session.title}</CardTitle>
+                          </div>
+                          <ChevronDown className={`w-5 h-5 transition-transform ${expandedSession === session.id ? 'rotate-180' : ''}`} />
+                        </div>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <CardContent className="pt-0">
+                        <div className="border-t pt-3">
+                          <h4 className="font-semibold text-sm mb-2">Kallade spelare ({session.calledPlayers?.length || 0})</h4>
+                          <div className="grid grid-cols-2 gap-2">
+                            {mockPlayers.map(player => (
+                              <div key={player.id} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={`session-${session.id}-player-${player.id}`}
+                                  checked={session.calledPlayers?.includes(player.id)}
+                                  onCheckedChange={() => togglePlayerInSession(session.id, player.id)}
+                                />
+                                <label
+                                  htmlFor={`session-${session.id}-player-${player.id}`}
+                                  className="text-sm cursor-pointer"
+                                >
+                                  {player.name}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </Collapsible>
+              ))}
             </div>
           </TabsContent>
 
           <TabsContent value="calendar">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <CalendarDays className="w-6 h-6" />
-                      Lagets kalender
-                    </CardTitle>
-                    <CardDescription>Veckoschema för träningar och matcher</CardDescription>
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <CalendarDays className="w-6 h-6" />
+                        Lagets kalender
+                      </CardTitle>
+                      <CardDescription>Veckoschema för träningar och matcher</CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">← Föregående</Button>
+                      <Button 
+                        variant={weekFilter === "current" ? "default" : "outline"} 
+                        size="sm"
+                        onClick={() => setWeekFilter("current")}
+                      >
+                        Denna vecka
+                      </Button>
+                      <Button variant="outline" size="sm">Nästa →</Button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">← Föregående vecka</Button>
-                    <Button variant="outline" size="sm">Denna vecka</Button>
-                    <Button variant="outline" size="sm">Nästa vecka →</Button>
+                  <div className="flex gap-2 items-center">
+                    <Filter className="w-4 h-4 text-muted-foreground" />
+                    <Button
+                      variant={activityFilter === "all" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setActivityFilter("all")}
+                    >
+                      Alla
+                    </Button>
+                    <Button
+                      variant={activityFilter === "training" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setActivityFilter("training")}
+                    >
+                      Träningar
+                    </Button>
+                    <Button
+                      variant={activityFilter === "match" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setActivityFilter("match")}
+                    >
+                      Matcher
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="border rounded-lg overflow-hidden">
-                  <div className="grid grid-cols-8 bg-secondary">
-                    <div className="p-2 text-xs font-semibold border-r">Tid</div>
-                    <div className="p-2 text-xs font-semibold border-r text-center">Mån</div>
-                    <div className="p-2 text-xs font-semibold border-r text-center">Tis</div>
-                    <div className="p-2 text-xs font-semibold border-r text-center">Ons</div>
-                    <div className="p-2 text-xs font-semibold border-r text-center">Tor</div>
-                    <div className="p-2 text-xs font-semibold border-r text-center">Fre</div>
-                    <div className="p-2 text-xs font-semibold border-r text-center">Lör</div>
-                    <div className="p-2 text-xs font-semibold text-center">Sön</div>
-                  </div>
-                  
-                  {["16:00", "17:00", "18:00", "19:00"].map((time) => (
-                    <div key={time} className="grid grid-cols-8 border-t">
-                      <div className="p-2 text-xs text-muted-foreground border-r bg-secondary/50">{time}</div>
-                      <div className="p-1 border-r"></div>
-                      <div className="p-1 border-r">
-                        {time === "18:00" && (
-                          <div className="bg-primary/10 border border-primary/20 rounded p-1">
-                            <p className="text-xs font-medium text-primary">Träning</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-1 border-r"></div>
-                      <div className="p-1 border-r">
-                        {time === "18:00" && (
-                          <div className="bg-primary/10 border border-primary/20 rounded p-1">
-                            <p className="text-xs font-medium text-primary">Träning</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-1 border-r"></div>
-                      <div className="p-1 border-r">
-                        {time === "17:00" && (
-                          <div className="bg-accent/10 border border-accent/20 rounded p-1">
-                            <p className="text-xs font-medium text-accent">Match</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-1"></div>
+                <div className="border rounded-lg overflow-x-auto">
+                  <div className="min-w-[800px]">
+                    <div className="grid grid-cols-8 bg-secondary/80">
+                      <div className="p-3 text-sm font-semibold border-r">Tid</div>
+                      <div className="p-3 text-sm font-semibold border-r text-center">Mån<br/><span className="text-xs font-normal text-muted-foreground">4 nov</span></div>
+                      <div className="p-3 text-sm font-semibold border-r text-center">Tis<br/><span className="text-xs font-normal text-muted-foreground">5 nov</span></div>
+                      <div className="p-3 text-sm font-semibold border-r text-center">Ons<br/><span className="text-xs font-normal text-muted-foreground">6 nov</span></div>
+                      <div className="p-3 text-sm font-semibold border-r text-center">Tor<br/><span className="text-xs font-normal text-muted-foreground">7 nov</span></div>
+                      <div className="p-3 text-sm font-semibold border-r text-center">Fre<br/><span className="text-xs font-normal text-muted-foreground">8 nov</span></div>
+                      <div className="p-3 text-sm font-semibold border-r text-center">Lör<br/><span className="text-xs font-normal text-muted-foreground">9 nov</span></div>
+                      <div className="p-3 text-sm font-semibold text-center">Sön<br/><span className="text-xs font-normal text-muted-foreground">10 nov</span></div>
                     </div>
-                  ))}
+                    
+                    {["15:00", "16:00", "17:00", "18:00", "19:00", "20:00"].map((time) => (
+                      <div key={time} className="grid grid-cols-8 border-t hover:bg-secondary/20 transition-colors">
+                        <div className="p-3 text-sm font-medium text-muted-foreground border-r bg-secondary/30">{time}</div>
+                        <div className="p-2 border-r min-h-[80px]"></div>
+                        <div className="p-2 border-r min-h-[80px]">
+                          {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                            <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-2 h-full">
+                              <p className="text-xs font-bold text-primary">Träning</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">18:00-19:30</p>
+                              <p className="text-[10px] text-muted-foreground">Samling: 17:45</p>
+                              <p className="text-[10px] text-muted-foreground">Plan 2, Östersunds IP</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-2 border-r min-h-[80px]"></div>
+                        <div className="p-2 border-r min-h-[80px]">
+                          {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                            <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-2 h-full">
+                              <p className="text-xs font-bold text-primary">Träning</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">18:00-19:30</p>
+                              <p className="text-[10px] text-muted-foreground">Samling: 17:45</p>
+                              <p className="text-[10px] text-muted-foreground">Plan 1, Östersunds IP</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-2 border-r min-h-[80px]"></div>
+                        <div className="p-2 border-r min-h-[80px]">
+                          {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
+                            <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-2 h-full">
+                              <p className="text-xs font-bold text-accent">Match</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">17:00-18:30</p>
+                              <p className="text-[10px] text-muted-foreground">vs Frösö IF</p>
+                              <p className="text-[10px] text-muted-foreground">Division 3 Norra</p>
+                              <p className="text-[10px] text-muted-foreground">Samling: 16:30</p>
+                              <p className="text-[10px] text-muted-foreground">Frösö IP</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-2 min-h-[80px]"></div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -256,49 +378,139 @@ const Planner = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {/* Scheduled Callup 1 */}
-                <Card className="border-primary/20">
-                  <CardHeader className="py-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-sm">Träningskallelse - Tisdagar</CardTitle>
-                        <CardDescription className="text-xs mt-1">
-                          Skickas 2 dagar innan • Till: Alla spelare (8)
-                        </CardDescription>
-                      </div>
-                      <Badge variant="outline">Aktiv</Badge>
-                    </div>
-                  </CardHeader>
-                </Card>
+                <Collapsible>
+                  <Card className="border-primary/20">
+                    <CollapsibleTrigger asChild>
+                      <CardHeader className="py-3 cursor-pointer hover:bg-secondary/50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-sm">Träningskallelse - Tisdagar</CardTitle>
+                            <CardDescription className="text-xs mt-1">
+                              Skickas 2 dagar innan • Till: 8 spelare
+                            </CardDescription>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="bg-success/10 text-success">Aktiv</Badge>
+                            <ChevronDown className="w-4 h-4" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <CardContent className="pt-0 border-t">
+                        <div className="space-y-3 pt-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">Status</span>
+                            <Button variant="outline" size="sm">Inaktivera</Button>
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium block mb-2">Kallade spelare (8)</span>
+                            <div className="grid grid-cols-2 gap-2">
+                              {mockPlayers.map(player => (
+                                <div key={player.id} className="flex items-center space-x-2">
+                                  <Checkbox id={`sched1-${player.id}`} defaultChecked />
+                                  <label htmlFor={`sched1-${player.id}`} className="text-sm cursor-pointer">
+                                    {player.name}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </Collapsible>
 
                 {/* Scheduled Callup 2 */}
-                <Card className="border-primary/20">
-                  <CardHeader className="py-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-sm">Matchkallelse - Lördagar</CardTitle>
-                        <CardDescription className="text-xs mt-1">
-                          Skickas 3 dagar innan • Till: Alla spelare (8)
-                        </CardDescription>
-                      </div>
-                      <Badge variant="outline">Aktiv</Badge>
-                    </div>
-                  </CardHeader>
-                </Card>
+                <Collapsible>
+                  <Card className="border-primary/20">
+                    <CollapsibleTrigger asChild>
+                      <CardHeader className="py-3 cursor-pointer hover:bg-secondary/50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-sm">Matchkallelse - Lördagar</CardTitle>
+                            <CardDescription className="text-xs mt-1">
+                              Skickas 3 dagar innan • Till: 8 spelare
+                            </CardDescription>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="bg-success/10 text-success">Aktiv</Badge>
+                            <ChevronDown className="w-4 h-4" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <CardContent className="pt-0 border-t">
+                        <div className="space-y-3 pt-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">Status</span>
+                            <Button variant="outline" size="sm">Inaktivera</Button>
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium block mb-2">Kallade spelare (8)</span>
+                            <div className="grid grid-cols-2 gap-2">
+                              {mockPlayers.map(player => (
+                                <div key={player.id} className="flex items-center space-x-2">
+                                  <Checkbox id={`sched2-${player.id}`} defaultChecked />
+                                  <label htmlFor={`sched2-${player.id}`} className="text-sm cursor-pointer">
+                                    {player.name}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </Collapsible>
 
                 {/* Scheduled Callup 3 */}
-                <Card className="border-primary/20">
-                  <CardHeader className="py-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-sm">Träningskallelse - Torsdagar</CardTitle>
-                        <CardDescription className="text-xs mt-1">
-                          Skickas 1 dag innan • Till: Alla spelare (8)
-                        </CardDescription>
-                      </div>
-                      <Badge variant="outline">Aktiv</Badge>
-                    </div>
-                  </CardHeader>
-                </Card>
+                <Collapsible>
+                  <Card className="border-primary/20">
+                    <CollapsibleTrigger asChild>
+                      <CardHeader className="py-3 cursor-pointer hover:bg-secondary/50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-sm">Träningskallelse - Torsdagar</CardTitle>
+                            <CardDescription className="text-xs mt-1">
+                              Skickas 1 dag innan • Till: 7 spelare
+                            </CardDescription>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">Inaktiv</Badge>
+                            <ChevronDown className="w-4 h-4" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <CardContent className="pt-0 border-t">
+                        <div className="space-y-3 pt-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">Status</span>
+                            <Button variant="default" size="sm">Aktivera</Button>
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium block mb-2">Kallade spelare (7)</span>
+                            <div className="grid grid-cols-2 gap-2">
+                              {mockPlayers.map(player => (
+                                <div key={player.id} className="flex items-center space-x-2">
+                                  <Checkbox id={`sched3-${player.id}`} defaultChecked={player.id !== 3} />
+                                  <label htmlFor={`sched3-${player.id}`} className="text-sm cursor-pointer">
+                                    {player.name}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </Collapsible>
               </CardContent>
             </Card>
           </TabsContent>

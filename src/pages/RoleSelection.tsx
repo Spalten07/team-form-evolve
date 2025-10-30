@@ -79,8 +79,12 @@ const RoleSelection = () => {
               onClick={() => selectRole("player")}
             >
               <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 rounded-full bg-gradient-accent flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <Dumbbell className="w-10 h-10 text-accent-foreground" />
+                <div className="w-20 h-20 rounded-full bg-gradient-accent flex items-center justify-center mx-auto mb-4 shadow-lg relative">
+                  <svg viewBox="0 0 100 100" className="w-12 h-12">
+                    <rect x="20" y="30" width="60" height="50" fill="white" rx="5"/>
+                    <circle cx="50" cy="40" r="8" fill="currentColor" className="text-accent-foreground"/>
+                    <text x="50" y="72" fontSize="24" fontWeight="bold" textAnchor="middle" fill="currentColor" className="text-accent-foreground">10</text>
+                  </svg>
                 </div>
                 <CardTitle className="text-3xl">Spelare</CardTitle>
                 <CardDescription className="text-base">
