@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Plus, Users, Target } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 
 interface TrainingSession {
@@ -89,9 +90,11 @@ const Planner = () => {
               Planera och organisera dina träningar
             </p>
           </div>
-          <Button variant="hero" size="lg" className="gap-2">
-            <Plus className="w-5 h-5" />
-            Ny träning
+          <Button variant="hero" size="lg" className="gap-2" asChild>
+            <Link to="/create-training">
+              <Plus className="w-5 h-5" />
+              Ny träning
+            </Link>
           </Button>
         </div>
 
