@@ -327,6 +327,15 @@ const CreateTraining = () => {
     setTimeout(() => navigate("/planner"), 1000);
   };
 
+  const getFilteredExercises = (section: "warmup" | "main" | "cooldown") => {
+    const categoryMap = {
+      warmup: ["Uppvärmning"],
+      main: ["Passning", "Teknik", "Avslut", "Taktik", "Spelform", "Kondition"],
+      cooldown: ["Nedvarvning"]
+    };
+    return exerciseBank.filter(ex => categoryMap[section].includes(ex.category));
+  };
+
   const ExerciseSection = ({ 
     title, 
     section, 
@@ -337,93 +346,97 @@ const CreateTraining = () => {
     section: "warmup" | "main" | "cooldown"; 
     exercises: TrainingExercise[];
     description: string;
-  }) => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>{title}</span>
-          <Badge variant="outline">
-            {exercises.reduce((sum, e) => sum + e.duration, 0)} min
-          </Badge>
-        </CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {exercises.map((exercise) => (
-          <div key={exercise.id} className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
-            <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
-            <div className="flex-1">
-              <p className="font-medium">{exercise.title}</p>
-              <p className="text-sm text-muted-foreground">{exercise.category}</p>
+  }) => {
+    const filteredExercises = getFilteredExercises(section);
+    
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>{title}</span>
+            <Badge variant="outline">
+              {exercises.reduce((sum, e) => sum + e.duration, 0)} min
+            </Badge>
+          </CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {exercises.map((exercise) => (
+            <div key={exercise.id} className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
+              <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
+              <div className="flex-1">
+                <p className="font-medium">{exercise.title}</p>
+                <p className="text-sm text-muted-foreground">{exercise.category}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  value={exercise.duration}
+                  onChange={(e) => updateExerciseDuration(section, exercise.id, parseInt(e.target.value) || 0)}
+                  className="w-20 text-center"
+                  min="1"
+                />
+                <span className="text-sm text-muted-foreground">min</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeExercise(section, exercise.id)}
+                >
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                value={exercise.duration}
-                onChange={(e) => updateExerciseDuration(section, exercise.id, parseInt(e.target.value) || 0)}
-                className="w-20 text-center"
-                min="1"
-              />
-              <span className="text-sm text-muted-foreground">min</span>
+          ))}
+
+          {showExerciseMenu === section ? (
+            <div className="border-2 border-dashed border-border rounded-lg p-4 space-y-2">
+              <p className="text-sm font-medium mb-3">Välj övning från banken:</p>
+              <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto">
+                {filteredExercises.map((exercise) => (
+                  <div key={exercise.id} className="border rounded-lg p-3 hover:bg-secondary/50 transition-colors">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm mb-1">{exercise.title}</h4>
+                        <Badge variant="secondary" className="text-xs">
+                          {exercise.category}
+                        </Badge>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addExercise(section, exercise.id)}
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Lägg till
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">{exercise.description}</p>
+                  </div>
+                ))}
+              </div>
               <Button
                 variant="ghost"
-                size="icon"
-                onClick={() => removeExercise(section, exercise.id)}
+                className="w-full mt-2"
+                onClick={() => setShowExerciseMenu(null)}
               >
-                <Trash2 className="w-4 h-4 text-destructive" />
+                <X className="w-4 h-4 mr-2" />
+                Avbryt
               </Button>
             </div>
-          </div>
-        ))}
-
-        {showExerciseMenu === section ? (
-          <div className="border-2 border-dashed border-border rounded-lg p-4 space-y-2">
-            <p className="text-sm font-medium mb-3">Välj övning från banken:</p>
-            <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto">
-              {exerciseBank.map((exercise) => (
-                <div key={exercise.id} className="border rounded-lg p-3 hover:bg-secondary/50 transition-colors">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm mb-1">{exercise.title}</h4>
-                      <Badge variant="secondary" className="text-xs">
-                        {exercise.category}
-                      </Badge>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => addExercise(section, exercise.id)}
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      Lägg till
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">{exercise.description}</p>
-                </div>
-              ))}
-            </div>
+          ) : (
             <Button
-              variant="ghost"
-              className="w-full mt-2"
-              onClick={() => setShowExerciseMenu(null)}
+              variant="outline"
+              className="w-full border-dashed"
+              onClick={() => setShowExerciseMenu(section)}
             >
-              <X className="w-4 h-4 mr-2" />
-              Avbryt
+              <Plus className="w-4 h-4 mr-2" />
+              Lägg till övning
             </Button>
-          </div>
-        ) : (
-          <Button
-            variant="outline"
-            className="w-full border-dashed"
-            onClick={() => setShowExerciseMenu(section)}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Lägg till övning
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  );
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">

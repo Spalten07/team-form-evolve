@@ -1,18 +1,31 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Dumbbell, BookOpen, CalendarDays, Home } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [userRole, setUserRole] = useState<"coach" | "player" | null>(null);
   const location = useLocation();
 
-  const navLinks = [
-    { to: "/", label: "Hem", icon: Home },
+  useEffect(() => {
+    const role = localStorage.getItem("userRole") as "coach" | "player" | null;
+    setUserRole(role);
+  }, []);
+
+  const coachNavLinks = [
+    { to: "/home", label: "Hem", icon: Home },
     { to: "/exercises", label: "Övningsbank", icon: Dumbbell },
     { to: "/theory", label: "Teoribank", icon: BookOpen },
     { to: "/planner", label: "Planering", icon: CalendarDays },
   ];
+
+  const playerNavLinks = [
+    { to: "/exercises", label: "Övningar", icon: Dumbbell },
+    { to: "/theory", label: "Teoribank", icon: BookOpen },
+  ];
+
+  const navLinks = userRole === "coach" ? coachNavLinks : playerNavLinks;
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -20,7 +33,7 @@ export const Navigation = () => {
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to={userRole === "coach" ? "/home" : "/exercises"} className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-md">
               <span className="text-primary-foreground font-bold text-xl">FT</span>
             </div>

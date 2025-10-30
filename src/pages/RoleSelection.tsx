@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { 
   Clipboard,
   Dumbbell,
@@ -9,6 +9,13 @@ import {
 import heroImage from "@/assets/hero-pitch.jpg";
 
 const RoleSelection = () => {
+  const navigate = useNavigate();
+
+  const selectRole = (role: "coach" | "player") => {
+    localStorage.setItem("userRole", role);
+    navigate(role === "coach" ? "/home" : "/exercises");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -60,11 +67,14 @@ const RoleSelection = () => {
                     <span>Kalenderöversikt</span>
                   </li>
                 </ul>
-                <Button variant="default" size="lg" className="w-full" asChild>
-                  <Link to="/home">
-                    Fortsätt som Tränare
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Link>
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  className="w-full"
+                  onClick={() => selectRole("coach")}
+                >
+                  Fortsätt som Tränare
+                  <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </CardContent>
             </Card>
@@ -99,11 +109,14 @@ const RoleSelection = () => {
                     <span>Följ din utveckling</span>
                   </li>
                 </ul>
-                <Button variant="default" size="lg" className="w-full" asChild>
-                  <Link to="/exercises">
-                    Fortsätt som Spelare
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Link>
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  className="w-full"
+                  onClick={() => selectRole("player")}
+                >
+                  Fortsätt som Spelare
+                  <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </CardContent>
             </Card>
