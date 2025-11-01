@@ -346,45 +346,45 @@ const Planner = () => {
                             </div>
                             {/* Måndag (1/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute left-[25%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[50%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[75%] top-0 bottom-0 w-[1px] bg-border/50"></div>
+                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
                             </div>
                             {/* Tisdag (2/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute left-[25%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[50%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[75%] top-0 bottom-0 w-[1px] bg-border/50"></div>
+                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
                             </div>
                             {/* Onsdag (3/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute left-[25%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[50%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[75%] top-0 bottom-0 w-[1px] bg-border/50"></div>
+                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
                             </div>
                             {/* Torsdag (4/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute left-[25%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[50%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[75%] top-0 bottom-0 w-[1px] bg-border/50"></div>
+                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
                             </div>
                             {/* Fredag (5/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute left-[25%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[50%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[75%] top-0 bottom-0 w-[1px] bg-border/50"></div>
+                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
                             </div>
                             {/* Lördag (6/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute left-[25%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[50%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[75%] top-0 bottom-0 w-[1px] bg-border/50"></div>
+                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
                             </div>
                             {/* Söndag (7/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute left-[25%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[50%] top-0 bottom-0 w-[1px] bg-border/50"></div>
-                              <div className="absolute left-[75%] top-0 bottom-0 w-[1px] bg-border/50"></div>
+                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
                             </div>
                           </>
                         );
