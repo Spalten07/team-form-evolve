@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,70 +34,83 @@ export interface InboxMessage {
 interface InboxProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onUnreadCountChange?: (count: number) => void;
 }
 
 // Mock data - ska ersättas med riktig data senare
-const mockMessages: InboxMessage[] = [
-  {
-    id: "1",
-    type: "callup",
-    title: "Kallelse: Lagträning - Passningar",
-    from: "Tränare Anders",
-    date: "2025-11-01",
-    read: false,
-    callupDetails: {
-      activityType: "training",
-      time: "18:00",
-      gatherTime: "17:45",
-      location: "Östermalms IP",
-      trainingId: "training-123",
-      bringItems: "Vattenflaska, extra t-shirt, fotbollsskor"
-    }
-  },
-  {
-    id: "2",
-    type: "callup",
-    title: "Kallelse: Match mot Hammarby IF",
-    from: "Tränare Anders",
-    date: "2025-11-03",
-    read: false,
-    callupDetails: {
-      activityType: "match",
-      time: "15:00",
-      gatherTime: "14:30",
-      location: "Tele2 Arena",
-      opponent: "Hammarby IF",
-      division: "Division 3 Norra"
-    }
-  },
-  {
-    id: "3",
-    type: "message",
-    title: "Viktig information",
-    from: "Tränare Anders",
-    date: "2025-10-30",
-    read: true,
-    messageContent: "Hej! Glöm inte att ta med er vattenflaska till nästa träning. Vi kommer att ha en intensiv session!"
-  },
-  {
-    id: "4",
-    type: "theory",
-    title: "Nytt teoripass: Offsideregeln",
-    from: "Tränare Anders",
-    date: "2025-10-28",
-    read: true,
-    theoryDetails: {
-      quizTitle: "Offsideregeln & Formationer",
-      questions: 8,
-      quizId: "9-manna-offside"
-    }
+const getInitialMessages = (): InboxMessage[] => {
+  const stored = localStorage.getItem("inboxMessages");
+  if (stored) {
+    return JSON.parse(stored);
   }
-];
+  return [
+    {
+      id: "1",
+      type: "callup",
+      title: "Kallelse: Lagträning - Passningar",
+      from: "Tränare Anders",
+      date: "2025-11-01",
+      read: false,
+      callupDetails: {
+        activityType: "training",
+        time: "18:00",
+        gatherTime: "17:45",
+        location: "Östermalms IP",
+        trainingId: "training-123",
+        bringItems: "Vattenflaska, extra t-shirt, fotbollsskor"
+      }
+    },
+    {
+      id: "2",
+      type: "callup",
+      title: "Kallelse: Match mot Hammarby IF",
+      from: "Tränare Anders",
+      date: "2025-11-03",
+      read: false,
+      callupDetails: {
+        activityType: "match",
+        time: "15:00",
+        gatherTime: "14:30",
+        location: "Tele2 Arena",
+        opponent: "Hammarby IF",
+        division: "Division 3 Norra"
+      }
+    },
+    {
+      id: "3",
+      type: "message",
+      title: "Viktig information",
+      from: "Tränare Anders",
+      date: "2025-10-30",
+      read: true,
+      messageContent: "Hej! Glöm inte att ta med er vattenflaska till nästa träning. Vi kommer att ha en intensiv session!"
+    },
+    {
+      id: "4",
+      type: "theory",
+      title: "Nytt teoripass: Offsideregeln",
+      from: "Tränare Anders",
+      date: "2025-10-28",
+      read: true,
+      theoryDetails: {
+        quizTitle: "Offsideregeln & Formationer",
+        questions: 8,
+        quizId: "9-manna-offside"
+      }
+    }
+  ];
+};
 
-export const Inbox = ({ open, onOpenChange }: InboxProps) => {
-  const [messages, setMessages] = useState<InboxMessage[]>(mockMessages);
+export const Inbox = ({ open, onOpenChange, onUnreadCountChange }: InboxProps) => {
+  const [messages, setMessages] = useState<InboxMessage[]>(getInitialMessages);
   const [selectedMessage, setSelectedMessage] = useState<InboxMessage | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.setItem("inboxMessages", JSON.stringify(messages));
+    const unreadCount = messages.filter(m => !m.read).length;
+    onUnreadCountChange?.(unreadCount);
+  }, [messages, onUnreadCountChange]);
 
   const markAsRead = (messageId: string) => {
     setMessages(prev => prev.map(msg => 

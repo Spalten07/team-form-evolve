@@ -9,9 +9,17 @@ export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState<"coach" | "player" | null>(null);
   const [inboxOpen, setInboxOpen] = useState(false);
-  const [unreadCount] = useState(2); // Mock - ska ersättas med riktig data
+  const [unreadCount, setUnreadCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const stored = localStorage.getItem("inboxMessages");
+    if (stored) {
+      const messages = JSON.parse(stored);
+      setUnreadCount(messages.filter((m: any) => !m.read).length);
+    }
+  }, [inboxOpen]);
 
   useEffect(() => {
     const role = localStorage.getItem("userRole") as "coach" | "player" | null;
@@ -131,7 +139,11 @@ const playerNavLinks = [
       </div>
       
       {/* Inbox Dialog */}
-      <Inbox open={inboxOpen} onOpenChange={setInboxOpen} />
+      <Inbox 
+        open={inboxOpen} 
+        onOpenChange={setInboxOpen}
+        onUnreadCountChange={setUnreadCount}
+      />
     </nav>
   );
 };
