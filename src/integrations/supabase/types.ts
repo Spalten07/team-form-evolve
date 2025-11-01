@@ -113,6 +113,50 @@ export type Database = {
           },
         ]
       }
+      custom_quizzes: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          level: string
+          questions: Json
+          quiz_id: string
+          team_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          level: string
+          questions: Json
+          quiz_id: string
+          team_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          level?: string
+          questions?: Json
+          quiz_id?: string
+          team_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_quizzes_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null

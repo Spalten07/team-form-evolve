@@ -753,13 +753,57 @@ const Quiz = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const quiz = quizId ? quizData[quizId] : null;
+  const [quiz, setQuiz] = useState<QuizData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
+
+  // Load quiz data (static or custom)
+  useEffect(() => {
+    const loadQuiz = async () => {
+      if (!quizId) {
+        setLoading(false);
+        return;
+      }
+
+      // Check if it's a static quiz first
+      if (quizData[quizId]) {
+        setQuiz(quizData[quizId]);
+        setLoading(false);
+        return;
+      }
+
+      // Otherwise, load from database
+      try {
+        const { data, error } = await supabase
+          .from('custom_quizzes')
+          .select('*')
+          .eq('quiz_id', quizId)
+          .single();
+
+        if (error) throw error;
+        
+        if (data) {
+          setQuiz({
+            id: data.quiz_id,
+            title: data.title,
+            level: data.level,
+            questions: data.questions as any[]
+          });
+        }
+      } catch (error) {
+        console.error('Error loading quiz:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadQuiz();
+  }, [quizId]);
 
   // Mark theory assignment as completed when quiz is finished with 100%
   useEffect(() => {
@@ -789,6 +833,21 @@ const Quiz = () => {
       }
     }
   }, [quizCompleted, user, quiz, correctAnswers]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-center text-muted-foreground">Laddar quiz...</p>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
 
   if (!quiz) {
     return (

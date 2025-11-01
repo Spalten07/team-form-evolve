@@ -37,6 +37,7 @@ const PlayerTheoryTodo = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [assignments, setAssignments] = useState<TheoryAssignment[]>([]);
+  const [customQuizzes, setCustomQuizzes] = useState<Record<string, QuizDetails>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -59,6 +60,33 @@ const PlayerTheoryTodo = () => {
 
         if (error) throw error;
         setAssignments(data || []);
+
+        // Load custom quiz details
+        if (data && data.length > 0) {
+          const customQuizIds = data
+            .map(a => a.quiz_id)
+            .filter(id => id.startsWith('custom-'));
+
+          if (customQuizIds.length > 0) {
+            const { data: customData } = await supabase
+              .from('custom_quizzes')
+              .select('*')
+              .in('quiz_id', customQuizIds);
+
+            if (customData) {
+              const customMap: Record<string, QuizDetails> = {};
+              customData.forEach((quiz: any) => {
+                customMap[quiz.quiz_id] = {
+                  id: quiz.quiz_id,
+                  title: quiz.title,
+                  questions: (quiz.questions as any[]).length,
+                  level: quiz.level
+                };
+              });
+              setCustomQuizzes(customMap);
+            }
+          }
+        }
       } catch (error: any) {
         console.error('Error fetching assignments:', error);
         toast.error("Kunde inte hämta teoriuppgifter");
@@ -148,7 +176,7 @@ const PlayerTheoryTodo = () => {
         ) : (
           <div className="space-y-4">
             {pendingAssignments.map((assignment) => {
-              const quiz = quizDetails[assignment.quiz_id];
+              const quiz = quizDetails[assignment.quiz_id] || customQuizzes[assignment.quiz_id];
               if (!quiz) return null;
 
               return (
@@ -160,6 +188,9 @@ const PlayerTheoryTodo = () => {
                           <Badge className="bg-primary text-primary-foreground">
                             {quiz.level}
                           </Badge>
+                          {assignment.quiz_id.startsWith('custom-') && (
+                            <Badge variant="outline">Anpassat</Badge>
+                          )}
                           <span className="text-sm text-muted-foreground">
                             {quiz.questions} frågor
                           </span>

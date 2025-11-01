@@ -2,7 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Trophy, Target, CheckCircle2, Play, Send } from "lucide-react";
+import { BookOpen, Trophy, Target, CheckCircle2, Play, Send, Plus, Eye } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { CreateQuizDialog } from "@/components/CreateQuizDialog";
 
 interface QuizItem {
   id: string;
@@ -73,6 +74,14 @@ interface Player {
   full_name: string;
 }
 
+interface CustomQuiz {
+  id: string;
+  quiz_id: string;
+  title: string;
+  level: string;
+  questions: any[];
+}
+
 const Theory = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -81,6 +90,9 @@ const Theory = () => {
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null);
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [customQuizzes, setCustomQuizzes] = useState<CustomQuiz[]>([]);
+  const [teamId, setTeamId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -100,6 +112,7 @@ const Theory = () => {
 
       if (profile) {
         setUserRole(profile.role);
+        setTeamId(profile.team_id);
 
         if (profile.role === 'coach' && profile.team_id) {
           const { data: players } = await supabase
@@ -109,6 +122,15 @@ const Theory = () => {
             .eq('role', 'player');
 
           if (players) setTeamPlayers(players as Player[]);
+
+          // Fetch custom quizzes
+          const { data: quizzes } = await supabase
+            .from('custom_quizzes')
+            .select('*')
+            .eq('created_by', user.id)
+            .order('created_at', { ascending: false });
+
+          if (quizzes) setCustomQuizzes(quizzes as CustomQuiz[]);
         }
       }
     };
@@ -164,6 +186,18 @@ const Theory = () => {
     }
   };
 
+  const fetchCustomQuizzes = async () => {
+    if (!user) return;
+    
+    const { data: quizzes } = await supabase
+      .from('custom_quizzes')
+      .select('*')
+      .eq('created_by', user.id)
+      .order('created_at', { ascending: false });
+
+    if (quizzes) setCustomQuizzes(quizzes as CustomQuiz[]);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -204,6 +238,62 @@ const Theory = () => {
           </CardContent>
         </Card>
 
+        {/* Create Quiz Button for Coaches */}
+        {userRole === 'coach' && (
+          <Button onClick={() => setCreateDialogOpen(true)} className="mb-6 gap-2">
+            <Plus className="w-4 h-4" />
+            Skapa eget teoripass
+          </Button>
+        )}
+
+        {/* Custom Quizzes */}
+        {customQuizzes.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-4">Dina egna teoripass</h2>
+            <div className="space-y-4">
+              {customQuizzes.map((quiz) => (
+                <Card key={quiz.id} className="hover:shadow-lg transition-all">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className="bg-primary text-primary-foreground">
+                            {quiz.level}
+                          </Badge>
+                          <Badge variant="outline">Anpassat</Badge>
+                          <span className="text-sm text-muted-foreground">
+                            {quiz.questions.length} frågor
+                          </span>
+                        </div>
+                        <CardTitle className="text-2xl">{quiz.title}</CardTitle>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" asChild className="flex-1">
+                        <Link to={`/quiz/${quiz.quiz_id}`}>
+                          <Eye className="w-3 h-3 mr-1" />
+                          Förhandsgranska
+                        </Link>
+                      </Button>
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => handleSendTheory(quiz.quiz_id)}
+                        className="flex-1"
+                      >
+                        <Send className="w-3 h-3 mr-1" />
+                        Skicka ut
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Theory Levels */}
         <div className="space-y-6">
           {theoryLevels.map((level) => (
@@ -234,34 +324,45 @@ const Theory = () => {
                       <span className="text-sm font-medium">Tillgängliga quizar</span>
                     </div>
                     {level.quizzes.map((quiz) => (
-                      <div key={quiz.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors">
-                        <div className="flex-1">
-                          <p className="font-medium">{quiz.title}</p>
-                          <p className="text-sm text-muted-foreground">{quiz.questions} frågor</p>
-                        </div>
-                        {quiz.completed ? (
-                          <Badge className="bg-success/10 text-success hover:bg-success/20">
-                            <CheckCircle2 className="w-3 h-3 mr-1" />
-                            Klar
-                          </Badge>
-                        ) : userRole === 'coach' ? (
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm" asChild>
-                              <Link to={`/quiz/${quiz.id}`}>Förhandsgranska</Link>
-                            </Button>
-                            <Button 
-                              variant="default" 
-                              size="sm"
-                              onClick={() => handleSendTheory(quiz.id)}
-                            >
-                              <Send className="w-3 h-3 mr-1" />
-                              Skicka ut
-                            </Button>
+                      <div key={quiz.id} className="p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex-1">
+                            <p className="font-medium">{quiz.title}</p>
+                            <p className="text-sm text-muted-foreground">{quiz.questions} frågor</p>
                           </div>
-                        ) : (
-                          <Button variant="default" size="sm" asChild>
-                            <Link to={`/quiz/${quiz.id}`}>Starta</Link>
-                          </Button>
+                          {quiz.completed && (
+                            <Badge className="bg-success/10 text-success hover:bg-success/20">
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Klar
+                            </Badge>
+                          )}
+                        </div>
+                        {!quiz.completed && (
+                          <div className="flex gap-2">
+                            {userRole === 'coach' ? (
+                              <>
+                                <Button variant="outline" size="sm" asChild className="flex-1">
+                                  <Link to={`/quiz/${quiz.id}`}>
+                                    <Eye className="w-3 h-3 mr-1" />
+                                    Förhandsgranska
+                                  </Link>
+                                </Button>
+                                <Button 
+                                  variant="default" 
+                                  size="sm"
+                                  onClick={() => handleSendTheory(quiz.id)}
+                                  className="flex-1"
+                                >
+                                  <Send className="w-3 h-3 mr-1" />
+                                  Skicka ut
+                                </Button>
+                              </>
+                            ) : (
+                              <Button variant="default" size="sm" asChild className="w-full">
+                                <Link to={`/quiz/${quiz.id}`}>Starta</Link>
+                              </Button>
+                            )}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -347,6 +448,17 @@ const Theory = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Create Quiz Dialog */}
+      {user && (
+        <CreateQuizDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          userId={user.id}
+          teamId={teamId}
+          onSuccess={fetchCustomQuizzes}
+        />
+      )}
     </div>
   );
 };
