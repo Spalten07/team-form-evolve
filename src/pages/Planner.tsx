@@ -129,31 +129,29 @@ const Planner = () => {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
-              Träningsplanering
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              Planera och organisera dina träningar
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Button variant="hero" size="lg" className="gap-2" asChild>
+        <div className="mb-6">
+          <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
+            Träningsplanering
+          </h1>
+          <p className="text-muted-foreground text-sm mb-4">
+            Planera och organisera dina träningar
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="hero" size="sm" className="gap-2" asChild>
               <Link to="/create-training">
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4" />
                 Ny träning
               </Link>
             </Button>
-            <Button variant="default" size="lg" className="gap-2" asChild>
+            <Button variant="default" size="sm" className="gap-2" asChild>
               <Link to="/send-callup">
-                <Users className="w-5 h-5" />
+                <Users className="w-4 h-4" />
                 Skicka kallelse
               </Link>
             </Button>
-            <Button variant="outline" size="lg" className="gap-2" asChild>
+            <Button variant="outline" size="sm" className="gap-2" asChild>
               <Link to="/saved-trainings">
-                <Target className="w-5 h-5" />
+                <Target className="w-4 h-4" />
                 Mina träningspass
               </Link>
             </Button>
@@ -161,10 +159,19 @@ const Planner = () => {
         </div>
 
         <Tabs defaultValue="trainings" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
-            <TabsTrigger value="trainings">Träningar</TabsTrigger>
-            <TabsTrigger value="calendar">Lagets kalender</TabsTrigger>
-            <TabsTrigger value="scheduling">Schemaläggning</TabsTrigger>
+          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-6 h-auto bg-secondary/50 p-1">
+            <TabsTrigger value="trainings" className="text-sm py-2">
+              <Calendar className="w-4 h-4 mr-2" />
+              Träningar
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="text-sm py-2">
+              <CalendarDays className="w-4 h-4 mr-2" />
+              Lagets kalender
+            </TabsTrigger>
+            <TabsTrigger value="scheduling" className="text-sm py-2">
+              <Clock className="w-4 h-4 mr-2" />
+              Schemaläggning
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="trainings">
