@@ -43,62 +43,7 @@ const getInitialMessages = (): InboxMessage[] => {
   if (stored) {
     return JSON.parse(stored);
   }
-  return [
-    {
-      id: "1",
-      type: "callup",
-      title: "Kallelse: Lagträning - Passningar",
-      from: "Tränare Anders",
-      date: "2025-11-01",
-      read: false,
-      callupDetails: {
-        activityType: "training",
-        time: "18:00",
-        gatherTime: "17:45",
-        location: "Östermalms IP",
-        trainingId: "training-123",
-        bringItems: "Vattenflaska, extra t-shirt, fotbollsskor"
-      }
-    },
-    {
-      id: "2",
-      type: "callup",
-      title: "Kallelse: Match mot Hammarby IF",
-      from: "Tränare Anders",
-      date: "2025-11-03",
-      read: false,
-      callupDetails: {
-        activityType: "match",
-        time: "15:00",
-        gatherTime: "14:30",
-        location: "Tele2 Arena",
-        opponent: "Hammarby IF",
-        division: "Division 3 Norra"
-      }
-    },
-    {
-      id: "3",
-      type: "message",
-      title: "Viktig information",
-      from: "Tränare Anders",
-      date: "2025-10-30",
-      read: true,
-      messageContent: "Hej! Glöm inte att ta med er vattenflaska till nästa träning. Vi kommer att ha en intensiv session!"
-    },
-    {
-      id: "4",
-      type: "theory",
-      title: "Nytt teoripass: Offsideregeln",
-      from: "Tränare Anders",
-      date: "2025-10-28",
-      read: true,
-      theoryDetails: {
-        quizTitle: "Offsideregeln & Formationer",
-        questions: 8,
-        quizId: "9-manna-offside"
-      }
-    }
-  ];
+  return [];
 };
 
 export const Inbox = ({ open, onOpenChange, onUnreadCountChange }: InboxProps) => {
