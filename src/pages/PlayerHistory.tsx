@@ -2,9 +2,10 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, Target, PieChart } from "lucide-react";
+import { Calendar, Clock, Target, PieChart, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface TrainingSession {
   id: number;
@@ -13,6 +14,11 @@ interface TrainingSession {
   focus: string;
   exercises: number;
   completed: boolean;
+  exerciseDetails?: Array<{
+    title: string;
+    category: string;
+    duration: number;
+  }>;
 }
 
 const mockSessions: TrainingSession[] = [
@@ -22,7 +28,13 @@ const mockSessions: TrainingSession[] = [
     duration: 45,
     focus: "Teknik & Bollkontroll",
     exercises: 4,
-    completed: true
+    completed: true,
+    exerciseDetails: [
+      { title: "Joggning & dynamisk stretch", category: "Uppvärmning", duration: 10 },
+      { title: "Bollkänsla par", category: "Teknik", duration: 15 },
+      { title: "1v1 Dribbling", category: "Teknik", duration: 15 },
+      { title: "Stretch & nedvarvning", category: "Nedvarvning", duration: 5 }
+    ]
   },
   {
     id: 2,
@@ -30,7 +42,12 @@ const mockSessions: TrainingSession[] = [
     duration: 30,
     focus: "Passningar",
     exercises: 3,
-    completed: true
+    completed: true,
+    exerciseDetails: [
+      { title: "Rondo 4v1", category: "Uppvärmning", duration: 10 },
+      { title: "Passningstriangel", category: "Passning", duration: 15 },
+      { title: "Cirkelpass & stretch", category: "Nedvarvning", duration: 5 }
+    ]
   },
   {
     id: 3,
@@ -38,12 +55,28 @@ const mockSessions: TrainingSession[] = [
     duration: 60,
     focus: "Avslut",
     exercises: 5,
-    completed: true
+    completed: true,
+    exerciseDetails: [
+      { title: "Koordinationsstege", category: "Uppvärmning", duration: 10 },
+      { title: "Skott från distans", category: "Avslut", duration: 15 },
+      { title: "Avslutsövning 1v1", category: "Avslut", duration: 15 },
+      { title: "Målvaktsträning", category: "Avslut", duration: 15 },
+      { title: "Stretch & nedvarvning", category: "Nedvarvning", duration: 5 }
+    ]
   }
 ];
 
 const PlayerHistory = () => {
   const [sessions] = useState<TrainingSession[]>(mockSessions);
+  const [expandedSessions, setExpandedSessions] = useState<number[]>([]);
+
+  const toggleSession = (sessionId: number) => {
+    setExpandedSessions(prev => 
+      prev.includes(sessionId) 
+        ? prev.filter(id => id !== sessionId)
+        : [...prev, sessionId]
+    );
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -104,9 +137,39 @@ const PlayerHistory = () => {
               <div className="py-6">
                 <div className="w-64 h-64 mx-auto mb-6 relative">
                   <svg viewBox="0 0 100 100" className="transform -rotate-90">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(var(--primary))" strokeWidth="20" strokeDasharray="75 25" strokeDashoffset="0" />
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(var(--accent))" strokeWidth="20" strokeDasharray="15 85" strokeDashoffset="-75" />
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(var(--secondary))" strokeWidth="20" strokeDasharray="10 90" strokeDashoffset="-90" />
+                    {/* Teknik & Bollkontroll - 60% */}
+                    <circle 
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="none" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth="20" 
+                      strokeDasharray="60 40" 
+                      strokeDashoffset="0" 
+                    />
+                    {/* Passningar - 25% */}
+                    <circle 
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="none" 
+                      stroke="hsl(var(--accent))" 
+                      strokeWidth="20" 
+                      strokeDasharray="25 75" 
+                      strokeDashoffset="-60" 
+                    />
+                    {/* Avslut - 15% */}
+                    <circle 
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="none" 
+                      stroke="hsl(var(--secondary))" 
+                      strokeWidth="20" 
+                      strokeDasharray="15 85" 
+                      strokeDashoffset="-85" 
+                    />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
@@ -118,15 +181,15 @@ const PlayerHistory = () => {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10">
                     <span className="font-medium">Teknik & Bollkontroll</span>
-                    <span className="text-sm">75% ({Math.round(totalMinutes * 0.75)} min)</span>
+                    <span className="text-sm font-semibold">60% ({Math.round(totalMinutes * 0.60)} min)</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-accent/10">
                     <span className="font-medium">Passningar</span>
-                    <span className="text-sm">15% ({Math.round(totalMinutes * 0.15)} min)</span>
+                    <span className="text-sm font-semibold">25% ({Math.round(totalMinutes * 0.25)} min)</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/10">
                     <span className="font-medium">Avslut</span>
-                    <span className="text-sm">10% ({Math.round(totalMinutes * 0.10)} min)</span>
+                    <span className="text-sm font-semibold">15% ({Math.round(totalMinutes * 0.15)} min)</span>
                   </div>
                 </div>
               </div>
@@ -147,42 +210,76 @@ const PlayerHistory = () => {
           <h2 className="text-2xl font-bold">Träningshistorik</h2>
           
           {sessions.map((session) => (
-            <Card key={session.id} className="hover:shadow-lg transition-all">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Badge className="bg-success/10 text-success hover:bg-success/20">
-                        Genomförd
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {formatDate(session.date)}
-                      </span>
+            <Collapsible 
+              key={session.id}
+              open={expandedSessions.includes(session.id)}
+              onOpenChange={() => toggleSession(session.id)}
+            >
+              <Card className="hover:shadow-lg transition-all">
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className="bg-success/10 text-success hover:bg-success/20">
+                            Genomförd
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">
+                            {formatDate(session.date)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-xl">{session.focus}</CardTitle>
+                          {expandedSessions.includes(session.id) ? (
+                            <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <CardDescription>
+                          {session.exercises} övningar genomförda
+                        </CardDescription>
+                      </div>
                     </div>
-                    <CardTitle className="text-xl mb-1">{session.focus}</CardTitle>
-                    <CardDescription>
-                      {session.exercises} övningar genomförda
-                    </CardDescription>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CardContent>
+                  <div className="flex flex-wrap gap-4 mb-3">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      {session.duration} minuter
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Target className="w-4 h-4" />
+                      {session.focus}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4" />
+                      {formatDate(session.date)}
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    {session.duration} minuter
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Target className="w-4 h-4" />
-                    {session.focus}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    {formatDate(session.date)}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  
+                  <CollapsibleContent>
+                    {session.exerciseDetails && (
+                      <div className="mt-4 space-y-2 border-t pt-4">
+                        <h4 className="font-semibold text-sm mb-3">Genomförda övningar:</h4>
+                        {session.exerciseDetails.map((exercise, index) => (
+                          <div key={index} className="flex items-start gap-3 p-3 bg-secondary/50 rounded-lg">
+                            <Badge variant="outline" className="mt-0.5">
+                              {exercise.duration} min
+                            </Badge>
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">{exercise.title}</p>
+                              <p className="text-xs text-muted-foreground">{exercise.category}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                </CardContent>
+              </Card>
+            </Collapsible>
           ))}
         </div>
       </main>

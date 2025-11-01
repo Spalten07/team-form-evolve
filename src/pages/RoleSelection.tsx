@@ -1,18 +1,31 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import { 
-  Clipboard,
-  Dumbbell,
-  ArrowRight
-} from "lucide-react";
+import { useState, useEffect } from "react";
+import { Clipboard } from "lucide-react";
 import heroImage from "@/assets/hero-pitch.jpg";
 
 const RoleSelection = () => {
   const navigate = useNavigate();
+  const [rememberChoice, setRememberChoice] = useState(false);
+
+  useEffect(() => {
+    const savedRole = localStorage.getItem("userRole");
+    const autoLogin = localStorage.getItem("autoLogin");
+    if (savedRole && autoLogin === "true") {
+      navigate(savedRole === "coach" ? "/coach-dashboard" : "/player-dashboard");
+    }
+  }, [navigate]);
 
   const selectRole = (role: "coach" | "player") => {
     localStorage.setItem("userRole", role);
+    if (rememberChoice) {
+      localStorage.setItem("autoLogin", "true");
+    } else {
+      localStorage.removeItem("autoLogin");
+    }
     navigate(role === "coach" ? "/coach-dashboard" : "/player-dashboard");
   };
 
@@ -27,91 +40,66 @@ const RoleSelection = () => {
         />
         
         <div className="relative container mx-auto px-4 py-20">
-          <div className="max-w-5xl mx-auto text-center text-primary-foreground mb-12">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+          <div className="max-w-5xl mx-auto text-center text-primary-foreground mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 animate-fade-in">
               Välkommen till FotbollsTräning
             </h1>
-            <p className="text-xl md:text-2xl mb-4 opacity-95">
+            <p className="text-lg md:text-xl mb-4 opacity-95">
               Välj din roll för att komma igång
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto mb-6">
             {/* Coach Card */}
             <Card 
-              className="hover:shadow-2xl transition-all hover:-translate-y-2 border-2 bg-card/95 backdrop-blur cursor-pointer"
+              className="hover:shadow-2xl transition-all hover:-translate-y-1 border-2 bg-card/95 backdrop-blur cursor-pointer"
               onClick={() => selectRole("coach")}
             >
-              <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 rounded-full bg-gradient-primary flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <Clipboard className="w-10 h-10 text-primary-foreground" />
+              <CardHeader className="text-center pb-2">
+                <div className="w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mx-auto mb-3 shadow-lg">
+                  <Clipboard className="w-8 h-8 text-primary-foreground" />
                 </div>
-                <CardTitle className="text-3xl">Tränare</CardTitle>
-                <CardDescription className="text-base">
-                  Planera träningar, skapa övningar och följ lagets utveckling
+                <CardTitle className="text-2xl">Tränare</CardTitle>
+                <CardDescription className="text-sm">
+                  Planera träningar och följ lagets utveckling
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2 text-muted-foreground mb-6">
-                  <li className="flex items-start gap-2">
-                    <span className="text-success">✓</span>
-                    <span>Skapa och planera träningspass</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-success">✓</span>
-                    <span>Tillgång till övningsbank</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-success">✓</span>
-                    <span>Skicka ut quizar och hemuppgifter</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-success">✓</span>
-                    <span>Kalenderöversikt</span>
-                  </li>
-                </ul>
-              </CardContent>
             </Card>
 
             {/* Player Card */}
             <Card 
-              className="hover:shadow-2xl transition-all hover:-translate-y-2 border-2 bg-card/95 backdrop-blur cursor-pointer"
+              className="hover:shadow-2xl transition-all hover:-translate-y-1 border-2 bg-card/95 backdrop-blur cursor-pointer"
               onClick={() => selectRole("player")}
             >
-              <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 rounded-full bg-gradient-accent flex items-center justify-center mx-auto mb-4 shadow-lg relative">
-                  <svg viewBox="0 0 100 100" className="w-12 h-12">
+              <CardHeader className="text-center pb-2">
+                <div className="w-16 h-16 rounded-full bg-gradient-accent flex items-center justify-center mx-auto mb-3 shadow-lg relative">
+                  <svg viewBox="0 0 100 100" className="w-10 h-10">
                     <rect x="20" y="30" width="60" height="50" fill="white" rx="5"/>
                     <circle cx="50" cy="40" r="8" fill="currentColor" className="text-accent-foreground"/>
                     <text x="50" y="72" fontSize="24" fontWeight="bold" textAnchor="middle" fill="currentColor" className="text-accent-foreground">10</text>
                   </svg>
                 </div>
-                <CardTitle className="text-3xl">Spelare</CardTitle>
-                <CardDescription className="text-base">
-                  Träna självständigt, lär dig teori och följ din utveckling
+                <CardTitle className="text-2xl">Spelare</CardTitle>
+                <CardDescription className="text-sm">
+                  Träna självständigt och följ din utveckling
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2 text-muted-foreground mb-6">
-                  <li className="flex items-start gap-2">
-                    <span className="text-success">✓</span>
-                    <span>Övningar för hemmaträning</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-success">✓</span>
-                    <span>Interaktiva quizar och teori</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-success">✓</span>
-                    <span>Progressionssystem och nivåer</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-success">✓</span>
-                    <span>Följ din utveckling</span>
-                  </li>
-                </ul>
-              </CardContent>
             </Card>
+          </div>
+
+          {/* Remember choice checkbox */}
+          <div className="flex items-center justify-center gap-2 max-w-3xl mx-auto">
+            <Checkbox 
+              id="remember" 
+              checked={rememberChoice}
+              onCheckedChange={(checked) => setRememberChoice(checked as boolean)}
+            />
+            <Label 
+              htmlFor="remember" 
+              className="text-primary-foreground text-sm cursor-pointer"
+            >
+              Kom ihåg mitt val och logga in automatiskt
+            </Label>
           </div>
         </div>
       </section>
