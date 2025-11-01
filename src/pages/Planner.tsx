@@ -345,25 +345,21 @@ const Planner = () => {
                 </div>
                 <div className="border rounded-lg overflow-hidden">
                   <div className="w-full">
-                    {/* Header row */}
-                    <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-secondary/80 border-b">
-                      <div className="p-0.5 text-sm font-semibold border-r text-center flex items-center justify-center h-12">Tid</div>
+                    {/* Unified grid for exact column alignment */}
+                    <div className="grid grid-cols-[50px_repeat(7,1fr)] w-full">
+                      <div className="p-0.5 text-sm font-semibold border-r border-b text-center flex items-center justify-center h-12">Tid</div>
                       {weekDays.map((day, idx) => (
-                        <div key={idx} className={`p-0.5 text-sm font-semibold ${idx < 6 ? 'border-r' : ''} text-center flex flex-col items-center justify-center h-12`}>
+                        <div key={`hdr-${idx}`} className={`p-0.5 text-sm font-semibold ${idx < 6 ? 'border-r' : ''} border-b text-center flex flex-col items-center justify-center h-12`}>
                           <div>{format(day, 'EEEEEE', { locale: sv }).toUpperCase()}</div>
                           <div className="text-xs font-normal text-muted-foreground">{format(day, 'd/M')}</div>
                         </div>
                       ))}
-                    </div>
-                    
-                    {/* Calendar grid with dynamic row heights */}
-                    <div className="relative grid grid-cols-[50px_repeat(7,1fr)]">
-                       {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => {
+
+                      {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => {
                         const rowHeight = 'h-5';
-                        
                         return (
                           <React.Fragment key={`row-${time}-${idx}`}>
-                            <div key={`time-${time}`} className={`p-0.5 text-[8px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-center justify-center ${rowHeight}`}>
+                            <div className={`p-0.5 text-[8px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-center justify-center ${rowHeight}`}>
                               {time}
                             </div>
                             {weekDays.map((day, dayIdx) => (
@@ -371,7 +367,6 @@ const Planner = () => {
                                 <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
                                 <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
                                 <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                                {/* Exempel: Träning 16:15-17:45 på måndag */}
                                 {time === "16:00" && dayIdx === 0 && (
                                   <div className="absolute top-[25%] left-0 right-0 bg-primary/30 border-l-4 border-primary p-0.5 z-10 flex flex-col items-center justify-start" style={{ height: 'calc(75% + 20px + 75%)' }}>
                                     <p className="text-[7px] font-bold text-primary leading-tight">Träning</p>
