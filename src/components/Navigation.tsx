@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList, Mail, Trophy, LogOut, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Inbox } from "./Inbox";
+import { RoleSwitcher } from "./RoleSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -116,6 +117,9 @@ const playerNavLinks = [
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            
+            {/* Role Switcher */}
+            {user && <RoleSwitcher />}
             
             {/* Inbox Button */}
             <Button
