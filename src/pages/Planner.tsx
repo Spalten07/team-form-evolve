@@ -343,13 +343,13 @@ const Planner = () => {
                   </Button>
                   <Button variant="outline" size="sm" className="h-6 text-xs px-2" onClick={goToNextWeek}>Nästa →</Button>
                 </div>
-                <div className="border rounded-lg overflow-x-auto">
+                <div className="border rounded-lg overflow-hidden">
                   <div className="w-full">
                     {/* Header row */}
-                    <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-secondary/80">
-                      <div className="p-0.5 text-sm font-semibold border-r text-center flex items-center justify-center">Tid</div>
+                    <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-secondary/80 border-b">
+                      <div className="p-0.5 text-sm font-semibold border-r text-center flex items-center justify-center h-12">Tid</div>
                       {weekDays.map((day, idx) => (
-                        <div key={idx} className={`p-0.5 text-sm font-semibold ${idx < 6 ? 'border-r' : ''} text-center flex flex-col items-center justify-center`}>
+                        <div key={idx} className={`p-0.5 text-sm font-semibold ${idx < 6 ? 'border-r' : ''} text-center flex flex-col items-center justify-center h-12`}>
                           <div>{format(day, 'EEEEEE', { locale: sv }).toUpperCase()}</div>
                           <div className="text-xs font-normal text-muted-foreground">{format(day, 'd/M')}</div>
                         </div>
@@ -363,7 +363,7 @@ const Planner = () => {
                         
                         return (
                           <React.Fragment key={`row-${time}-${idx}`}>
-                            <div key={`time-${time}`} className={`p-0.5 text-[8px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-center ${rowHeight}`}>
+                            <div key={`time-${time}`} className={`p-0.5 text-[8px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-center justify-center ${rowHeight}`}>
                               {time}
                             </div>
                             {weekDays.map((day, dayIdx) => (
