@@ -323,7 +323,7 @@ const Planner = () => {
                 <div className="border rounded-lg overflow-x-auto">
                   <div className="w-full">
                     {/* Header row */}
-                    <div className="grid grid-cols-[80px_repeat(7,1fr)] bg-secondary/80">
+                    <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-secondary/80">
                       <div className="p-2 text-sm font-semibold border-r">Tid</div>
                       <div className="p-2 text-sm font-semibold border-r text-center">M<br/><span className="text-xs font-normal text-muted-foreground">4/11</span></div>
                       <div className="p-2 text-sm font-semibold border-r text-center">T<br/><span className="text-xs font-normal text-muted-foreground">5/11</span></div>
@@ -335,7 +335,7 @@ const Planner = () => {
                     </div>
                     
                     {/* Calendar grid with dynamic row heights */}
-                    <div className="relative grid grid-cols-[80px_repeat(7,1fr)]">
+                    <div className="relative grid grid-cols-[50px_repeat(7,1fr)]">
                       {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => {
                         const rowHeight = 'h-5';
                         
