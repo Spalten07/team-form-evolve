@@ -159,7 +159,7 @@ const Planner = () => {
         </div>
 
         <Tabs defaultValue="trainings" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-6 h-auto bg-secondary/50 p-1">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-6 h-auto bg-secondary/50 p-1 gap-2">
             <TabsTrigger value="trainings" className="text-sm py-2">
               <Calendar className="w-4 h-4 mr-2" />
               Träningar
