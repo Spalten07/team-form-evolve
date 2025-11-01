@@ -341,8 +341,8 @@ const Planner = () => {
                           <div key={`time-${time}`} className="p-1 text-[10px] font-medium text-muted-foreground border-r border-t bg-secondary/30 w-12 flex items-center">
                             {time}
                           </div>
-                          <div className="border-r border-t"></div>
-                          <div className="border-r border-t relative">
+                          <div className="border-r border-t w-4"></div>
+                          <div className="border-r border-t relative w-4">
                             {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
                               <div className="absolute inset-0.5 bg-primary/10 border border-primary/30 rounded flex flex-col justify-center items-center text-center" style={{ gridRow: `span 6` }}>
                                 <p className="text-[9px] font-bold text-primary">Träning</p>
@@ -350,8 +350,8 @@ const Planner = () => {
                               </div>
                             )}
                           </div>
-                          <div className="border-r border-t"></div>
-                          <div className="border-r border-t relative">
+                          <div className="border-r border-t w-4"></div>
+                          <div className="border-r border-t relative w-4">
                             {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
                               <div className="absolute inset-0.5 bg-primary/10 border border-primary/30 rounded flex flex-col justify-center items-center text-center" style={{ gridRow: `span 6` }}>
                                 <p className="text-[9px] font-bold text-primary">Träning</p>
@@ -359,8 +359,8 @@ const Planner = () => {
                               </div>
                             )}
                           </div>
-                          <div className="border-r border-t"></div>
-                          <div className="border-r border-t relative">
+                          <div className="border-r border-t w-4"></div>
+                          <div className="border-r border-t relative w-4">
                             {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
                               <div className="absolute inset-0.5 bg-accent/10 border border-accent/30 rounded flex flex-col justify-center items-center text-center" style={{ gridRow: `span 6` }}>
                                 <p className="text-[9px] font-bold text-accent">Match</p>
@@ -369,7 +369,7 @@ const Planner = () => {
                               </div>
                             )}
                           </div>
-                          <div className="border-t"></div>
+                          <div className="border-t w-4"></div>
                         </>
                       ))}
                     </div>
