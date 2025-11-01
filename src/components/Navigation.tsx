@@ -1,9 +1,20 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList, Mail, Trophy } from "lucide-react";
+import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList, Mail, Trophy, LogOut, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Inbox } from "./Inbox";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +23,7 @@ export const Navigation = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const stored = localStorage.getItem("inboxMessages");
@@ -21,10 +33,37 @@ export const Navigation = () => {
     }
   }, [inboxOpen]);
 
+  // Fetch user role from database
   useEffect(() => {
-    const role = localStorage.getItem("userRole") as "coach" | "player" | null;
-    setUserRole(role);
-  }, []);
+    if (!user) {
+      setUserRole(null);
+      return;
+    }
+
+    const fetchUserRole = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (data) {
+        setUserRole(data.role as "coach" | "player");
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success("Du har loggats ut");
+      navigate("/auth");
+    } catch (error) {
+      toast.error("Kunde inte logga ut");
+    }
+  };
 
 const coachNavLinks = [
   { to: "/exercises", label: "Övningsbank", icon: Dumbbell },
@@ -50,19 +89,33 @@ const playerNavLinks = [
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
-            <Link 
-              to="/" 
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-              title="Byt profil"
-              onClick={() => {
-                localStorage.removeItem("userRole");
-              }}
-            >
-              <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-md">
-                <span className="text-primary-foreground font-bold text-xl">FT</span>
-              </div>
-              <span className="font-bold text-xl text-foreground hidden sm:inline">FotbollsTräning</span>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 hover:opacity-80 transition-opacity focus:outline-none">
+                  <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-md">
+                    <span className="text-primary-foreground font-bold text-xl">FT</span>
+                  </div>
+                  <span className="font-bold text-xl text-foreground hidden sm:inline">FotbollsTräning</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-medium">{user?.email}</p>
+                    {userRole && (
+                      <p className="text-xs text-muted-foreground capitalize">
+                        {userRole === "coach" ? "Tränare" : "Spelare"}
+                      </p>
+                    )}
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logga ut
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             {/* Inbox Button */}
             <Button
