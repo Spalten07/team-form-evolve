@@ -176,29 +176,26 @@ const Planner = () => {
           
           <TabsContent value="trainings">
             {/* Calendar View Card */}
-            <Card className="mb-8 bg-gradient-primary text-primary-foreground border-0 shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <Calendar className="w-6 h-6" />
+            <Card className="mb-6 bg-gradient-primary text-primary-foreground border-0 shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
                   November 2025
                 </CardTitle>
-                <CardDescription className="text-primary-foreground/80 text-xs">
-                  Översikt över planerade träningar
-                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                    <div className="text-3xl font-bold">8</div>
-                    <div className="text-sm opacity-90">Träningar denna månad</div>
+              <CardContent className="pb-4">
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
+                    <div className="text-2xl font-bold">8</div>
+                    <div className="text-xs opacity-90">Träningar denna månad</div>
                   </div>
-                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                    <div className="text-3xl font-bold">3</div>
-                    <div className="text-sm opacity-90">Kommande träningar</div>
+                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
+                    <div className="text-2xl font-bold">3</div>
+                    <div className="text-xs opacity-90">Kommande träningar</div>
                   </div>
-                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                    <div className="text-3xl font-bold">18</div>
-                    <div className="text-sm opacity-90">Genomsnittligt antal spelare</div>
+                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
+                    <div className="text-2xl font-bold">18</div>
+                    <div className="text-xs opacity-90">Genomsnittligt antal spelare</div>
                   </div>
                 </div>
               </CardContent>
