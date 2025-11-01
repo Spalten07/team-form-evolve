@@ -160,16 +160,16 @@ const Planner = () => {
 
         <Tabs defaultValue="trainings" className="w-full">
           <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-6 h-auto bg-secondary/50 p-1 gap-1">
-            <TabsTrigger value="trainings" className="text-sm py-2 border-r border-border">
-              <Calendar className="w-4 h-4 mr-2" />
+            <TabsTrigger value="trainings" className="text-xs py-2 border-r border-border">
+              <Calendar className="w-4 h-4 mr-1.5" />
               Träningar
             </TabsTrigger>
-            <TabsTrigger value="calendar" className="text-sm py-2 border-r border-border">
-              <CalendarDays className="w-4 h-4 mr-2" />
+            <TabsTrigger value="calendar" className="text-xs py-2 border-r border-border">
+              <CalendarDays className="w-4 h-4 mr-1.5" />
               Lagets kalender
             </TabsTrigger>
-            <TabsTrigger value="scheduling" className="text-sm py-2">
-              <Clock className="w-4 h-4 mr-2" />
+            <TabsTrigger value="scheduling" className="text-xs py-2">
+              <Clock className="w-4 h-4 mr-1.5" />
               Schemaläggning
             </TabsTrigger>
           </TabsList>
