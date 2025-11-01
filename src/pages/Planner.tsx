@@ -335,17 +335,14 @@ const Planner = () => {
                     </div>
                     
                     {/* Calendar grid */}
-                    <div className="relative grid grid-cols-[80px_repeat(7,1fr)]">
-                      {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => {
-                        const hasEvent = time === "18:00" || time === "17:00";
-                        const rowHeight = hasEvent ? 'h-16' : 'h-8';
-                        return (
+                    <div className="relative grid grid-cols-[80px_repeat(7,1fr)]" style={{ gridAutoRows: '60px' }}>
+                      {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => (
                         <>
-                          <div key={`time-${time}`} className={`p-2 text-sm font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-start ${rowHeight}`}>
+                          <div key={`time-${time}`} className="p-2 text-sm font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-start">
                             {time}
                           </div>
-                          <div className={`border-r border-t relative ${rowHeight}`}></div>
-                          <div className={`border-r border-t relative ${rowHeight}`}>
+                          <div className="border-r border-t relative"></div>
+                          <div className="border-r border-t relative">
                             {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
                               <div className="absolute inset-0 bg-primary/20 border-l-4 border-primary p-2 flex flex-col justify-start">
                                 <p className="text-sm font-bold text-primary">Träning</p>
@@ -353,8 +350,8 @@ const Planner = () => {
                               </div>
                             )}
                           </div>
-                          <div className={`border-r border-t relative ${rowHeight}`}></div>
-                          <div className={`border-r border-t relative ${rowHeight}`}>
+                          <div className="border-r border-t relative"></div>
+                          <div className="border-r border-t relative">
                             {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
                               <div className="absolute inset-0 bg-primary/20 border-l-4 border-primary p-2 flex flex-col justify-start">
                                 <p className="text-sm font-bold text-primary">Träning</p>
@@ -362,7 +359,7 @@ const Planner = () => {
                               </div>
                             )}
                           </div>
-                          <div className={`border-r border-t relative ${rowHeight}`}>
+                          <div className="border-r border-t relative">
                             {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
                               <div className="absolute inset-0 bg-accent/20 border-l-4 border-accent p-2 flex flex-col justify-start">
                                 <p className="text-sm font-bold text-accent">Match</p>
@@ -371,11 +368,10 @@ const Planner = () => {
                               </div>
                             )}
                           </div>
-                          <div className={`border-r border-t relative ${rowHeight}`}></div>
-                          <div className={`border-t relative ${rowHeight}`}></div>
+                          <div className="border-r border-t relative"></div>
+                          <div className="border-t relative"></div>
                         </>
-                      );
-                      })}
+                      ))}
                     </div>
                   </div>
                 </div>
