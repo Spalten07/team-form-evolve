@@ -347,9 +347,9 @@ const Planner = () => {
                   <div className="w-full">
                     {/* Header row */}
                     <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-secondary/80">
-                      <div className="p-2 text-sm font-semibold border-r text-center">Tid</div>
+                      <div className="p-1 text-sm font-semibold border-r text-center flex items-center justify-center">Tid</div>
                       {weekDays.map((day, idx) => (
-                        <div key={idx} className={`p-2 text-sm font-semibold ${idx < 6 ? 'border-r' : ''} text-center`}>
+                        <div key={idx} className={`p-1 text-sm font-semibold ${idx < 6 ? 'border-r' : ''} text-center flex flex-col items-center justify-center`}>
                           <div>{format(day, 'EEEEEE', { locale: sv }).toUpperCase()}</div>
                           <div className="text-xs font-normal text-muted-foreground">{format(day, 'd/M')}</div>
                         </div>
