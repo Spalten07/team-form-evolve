@@ -319,6 +319,81 @@ const Planner = () => {
                   </div>
                 </div>
               </CardHeader>
+              <CardContent>
+                <div className="border rounded-lg overflow-x-auto">
+                  <div className="w-full">
+                    {/* Header row */}
+                    <div className="grid grid-cols-[80px_repeat(7,1fr)] bg-secondary/80">
+                      <div className="p-2 text-sm font-semibold border-r">Tid</div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">Måndag<br/><span className="text-xs font-normal text-muted-foreground">4/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">Tisdag<br/><span className="text-xs font-normal text-muted-foreground">5/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">Onsdag<br/><span className="text-xs font-normal text-muted-foreground">6/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">Torsdag<br/><span className="text-xs font-normal text-muted-foreground">7/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">Fredag<br/><span className="text-xs font-normal text-muted-foreground">8/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">Lördag<br/><span className="text-xs font-normal text-muted-foreground">9/11</span></div>
+                      <div className="p-2 text-sm font-semibold text-center">Söndag<br/><span className="text-xs font-normal text-muted-foreground">10/11</span></div>
+                    </div>
+                    
+                    {/* Calendar grid with dynamic row heights */}
+                    <div className="relative grid grid-cols-[80px_repeat(7,1fr)]">
+                      {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => {
+                        // Check if this time slot has any events
+                        const hasEvent = time === "18:00";
+                        const rowHeight = hasEvent ? 'h-20' : 'h-6';
+                        
+                        return (
+                          <>
+                            <div key={`time-${time}`} className={`p-2 text-xs font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-start ${rowHeight}`}>
+                              {time}
+                            </div>
+                            {/* Måndag (1/11) - Completed training from mockSessions */}
+                            <div className={`border-r border-t relative ${rowHeight}`}>
+                              {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                                <div className="absolute inset-0 bg-success/20 border-l-4 border-success p-2 flex flex-col justify-start">
+                                  <p className="text-sm font-bold text-success-foreground">Passningsfokus</p>
+                                  <p className="text-xs text-muted-foreground">18:00-19:30</p>
+                                  <p className="text-xs text-muted-foreground">Teknik & Passning</p>
+                                  <Badge className="bg-success/10 text-success hover:bg-success/20 text-[10px] mt-1 w-fit">Genomförd</Badge>
+                                </div>
+                              )}
+                            </div>
+                            {/* Tisdag (2/11) */}
+                            <div className={`border-r border-t relative ${rowHeight}`}></div>
+                            {/* Onsdag (3/11) - Upcoming training from mockSessions */}
+                            <div className={`border-r border-t relative ${rowHeight}`}>
+                              {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                                <div className="absolute inset-0 bg-accent/20 border-l-4 border-accent p-2 flex flex-col justify-start">
+                                  <p className="text-sm font-bold text-accent-foreground">Taktisk träning</p>
+                                  <p className="text-xs text-muted-foreground">18:00-19:30</p>
+                                  <p className="text-xs text-muted-foreground">Positionsspel</p>
+                                  <Badge className="bg-accent/10 text-accent hover:bg-accent/20 text-[10px] mt-1 w-fit">Kommande</Badge>
+                                </div>
+                              )}
+                            </div>
+                            {/* Torsdag (4/11) */}
+                            <div className={`border-r border-t relative ${rowHeight}`}></div>
+                            {/* Fredag (5/11) - Planned training from mockSessions */}
+                            <div className={`border-r border-t relative ${rowHeight}`}>
+                              {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                                <div className="absolute inset-0 bg-primary/20 border-l-4 border-primary p-2 flex flex-col justify-start">
+                                  <p className="text-sm font-bold text-primary">Match & Avslut</p>
+                                  <p className="text-xs text-muted-foreground">18:00-19:30</p>
+                                  <p className="text-xs text-muted-foreground">Avslut & Spelformer</p>
+                                  <Badge variant="outline" className="text-[10px] mt-1 w-fit">Planerad</Badge>
+                                </div>
+                              )}
+                            </div>
+                            {/* Lördag (6/11) */}
+                            <div className={`border-r border-t relative ${rowHeight}`}></div>
+                            {/* Söndag (7/11) */}
+                            <div className={`border-t relative ${rowHeight}`}></div>
+                          </>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
             </Card>
           </TabsContent>
 
