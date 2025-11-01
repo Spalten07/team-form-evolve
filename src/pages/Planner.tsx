@@ -187,15 +187,15 @@ const Planner = () => {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
                     <div className="text-2xl font-bold">8</div>
-                    <div className="text-xs opacity-90">Träningar denna månad</div>
+                    <div className="text-xs opacity-90 leading-tight">Träningar denna månad</div>
                   </div>
                   <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
                     <div className="text-2xl font-bold">3</div>
-                    <div className="text-xs opacity-90">Kommande träningar</div>
+                    <div className="text-xs opacity-90 leading-tight">Kommande träningar</div>
                   </div>
                   <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
                     <div className="text-2xl font-bold">18</div>
-                    <div className="text-xs opacity-90">Genomsnittligt antal spelare</div>
+                    <div className="text-xs opacity-90 leading-tight">Snitt antal spelare</div>
                   </div>
                 </div>
               </CardContent>
