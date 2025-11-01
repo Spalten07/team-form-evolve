@@ -75,7 +75,7 @@ const Players = () => {
         // Get all players in the same team
         const { data: teamPlayers, error: playersError } = await supabase
           .from('profiles')
-          .select('*')
+          .select('id, email, full_name, phone, guardian_name, guardian_phone')
           .eq('team_id', coachProfile.team_id)
           .eq('role', 'player');
 
@@ -91,8 +91,8 @@ const Players = () => {
           lastTraining: new Date().toISOString().split('T')[0],
           upcomingTrainings: 0, // TODO: Calculate from activities
           guardian: {
-            name: "Ej angivet",
-            phone: "Ej angivet"
+            name: player.guardian_name || "Ej angivet",
+            phone: player.phone || "Ej angivet"
           }
         }));
 
@@ -211,16 +211,18 @@ const Players = () => {
           <Button
             variant={sortBy === "name" ? "default" : "outline"}
             size="sm"
+            className="h-8 px-3 text-xs"
             onClick={() => setSortBy("name")}
           >
-            Sortera efter efternamn
+            Sortera A-Ö
           </Button>
           <Button
             variant={sortBy === "attendance" ? "default" : "outline"}
             size="sm"
+            className="h-8 px-3 text-xs"
             onClick={() => setSortBy("attendance")}
           >
-            Sortera efter högst närvaro
+            Högst närvaro
           </Button>
         </div>
 
