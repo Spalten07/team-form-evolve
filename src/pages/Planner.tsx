@@ -346,40 +346,16 @@ const Planner = () => {
                             <div key={`time-${time}`} className={`p-2 text-xs font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-start ${rowHeight}`}>
                               {time}
                             </div>
-                            {/* Måndag (1/11) - Completed training from mockSessions */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                                <div className="absolute inset-0 bg-success/20 border-l-4 border-success p-1 flex flex-col justify-start">
-                                  <p className="text-[10px] font-bold text-success-foreground">Passningsfokus</p>
-                                  <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
-                                  <Badge className="bg-success/10 text-success hover:bg-success/20 text-[8px] mt-0.5 w-fit">Genomförd</Badge>
-                                </div>
-                              )}
-                            </div>
+                            {/* Måndag (1/11) */}
+                            <div className={`border-r border-t relative ${rowHeight}`}></div>
                             {/* Tisdag (2/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}></div>
-                            {/* Onsdag (3/11) - Upcoming training from mockSessions */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                                <div className="absolute inset-0 bg-accent/20 border-l-4 border-accent p-1 flex flex-col justify-start">
-                                  <p className="text-[10px] font-bold text-accent-foreground">Taktisk träning</p>
-                                  <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
-                                  <Badge className="bg-accent/10 text-accent hover:bg-accent/20 text-[8px] mt-0.5 w-fit">Kommande</Badge>
-                                </div>
-                              )}
-                            </div>
+                            {/* Onsdag (3/11) */}
+                            <div className={`border-r border-t relative ${rowHeight}`}></div>
                             {/* Torsdag (4/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}></div>
-                            {/* Fredag (5/11) - Planned training from mockSessions */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                                <div className="absolute inset-0 bg-primary/20 border-l-4 border-primary p-1 flex flex-col justify-start">
-                                  <p className="text-[10px] font-bold text-primary">Match & Avslut</p>
-                                  <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
-                                  <Badge variant="outline" className="text-[8px] mt-0.5 w-fit">Planerad</Badge>
-                                </div>
-                              )}
-                            </div>
+                            {/* Fredag (5/11) */}
+                            <div className={`border-r border-t relative ${rowHeight}`}></div>
                             {/* Lördag (6/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}></div>
                             {/* Söndag (7/11) */}
