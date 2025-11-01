@@ -349,7 +349,7 @@ const Planner = () => {
                         <div>L</div>
                         <div className="text-xs font-normal text-muted-foreground">9/11</div>
                       </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">
+                      <div className="p-2 text-sm font-semibold text-center">
                         <div>S</div>
                         <div className="text-xs font-normal text-muted-foreground">10/11</div>
                       </div>
@@ -409,7 +409,7 @@ const Planner = () => {
                               <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
                             </div>
                             {/* Söndag (7/11) */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
+                            <div className={`border-t relative ${rowHeight}`}>
                               <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
                               <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
                               <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
