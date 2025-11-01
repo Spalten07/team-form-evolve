@@ -52,8 +52,11 @@ const playerNavLinks = [
           <div className="flex items-center gap-3">
             <Link 
               to="/" 
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
               title="Byt profil"
+              onClick={() => {
+                localStorage.removeItem("userRole");
+              }}
             >
               <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-md">
                 <span className="text-primary-foreground font-bold text-xl">FT</span>
