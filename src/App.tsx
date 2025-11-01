@@ -21,6 +21,7 @@ import SavedTrainings from "./pages/SavedTrainings";
 import CoachDashboard from "./pages/CoachDashboard";
 import PlayerDashboard from "./pages/PlayerDashboard";
 import LeagueTables from "./pages/LeagueTables";
+import MyTeam from "./pages/MyTeam";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/send-callup" element={<SendCallup />} />
             <Route path="/saved-trainings" element={<SavedTrainings />} />
             <Route path="/league-tables" element={<LeagueTables />} />
+            <Route path="/my-team" element={<MyTeam />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

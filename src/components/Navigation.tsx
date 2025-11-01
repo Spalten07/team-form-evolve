@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList, Mail, Trophy, LogOut, User } from "lucide-react";
+import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList, Mail, Trophy, LogOut, User, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Inbox } from "./Inbox";
 import { RoleSwitcher } from "./RoleSwitcher";
@@ -71,6 +71,7 @@ const coachNavLinks = [
   { to: "/theory", label: "Teoribank", icon: BookOpen },
   { to: "/planner", label: "Planering", icon: CalendarDays },
   { to: "/players", label: "Mina spelare", icon: Users },
+  { to: "/my-team", label: "Mitt lag", icon: Shield },
   { to: "/league-tables", label: "Tabeller", icon: Trophy },
 ];
 
