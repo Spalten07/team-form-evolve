@@ -366,55 +366,20 @@ const Planner = () => {
                             <div key={`time-${time}`} className={`p-0.5 text-[8px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-center ${rowHeight}`}>
                               {time}
                             </div>
-                            {/* Måndag (1/11) */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              {/* Exempel: Träning 16:15-17:45 */}
-                              {time === "16:00" && (
-                                <div className="absolute top-[25%] left-0 right-0 bg-primary/30 border-l-4 border-primary p-0.5 z-10 flex flex-col items-center justify-start" style={{ height: 'calc(75% + 20px + 75%)' }}>
-                                  <p className="text-[7px] font-bold text-primary leading-tight">Träning</p>
-                                  <p className="text-[6px] text-muted-foreground leading-tight">16:15-17:45</p>
-                                </div>
-                              )}
-                            </div>
-                            {/* Tisdag (2/11) */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                            </div>
-                            {/* Onsdag (3/11) */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                            </div>
-                            {/* Torsdag (4/11) */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                            </div>
-                            {/* Fredag (5/11) */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                            </div>
-                            {/* Lördag (6/11) */}
-                            <div className={`border-r border-t relative ${rowHeight}`}>
-                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                            </div>
-                            {/* Söndag (7/11) */}
-                            <div className={`border-t relative ${rowHeight}`}>
-                              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
-                              <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                            </div>
+                            {weekDays.map((day, dayIdx) => (
+                              <div key={`${time}-${dayIdx}`} className={`${dayIdx < 6 ? 'border-r' : ''} border-t relative ${rowHeight}`}>
+                                <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                                <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                                <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
+                                {/* Exempel: Träning 16:15-17:45 på måndag */}
+                                {time === "16:00" && dayIdx === 0 && (
+                                  <div className="absolute top-[25%] left-0 right-0 bg-primary/30 border-l-4 border-primary p-0.5 z-10 flex flex-col items-center justify-start" style={{ height: 'calc(75% + 20px + 75%)' }}>
+                                    <p className="text-[7px] font-bold text-primary leading-tight">Träning</p>
+                                    <p className="text-[6px] text-muted-foreground leading-tight">16:15-17:45</p>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
                           </>
                         );
                       })}
