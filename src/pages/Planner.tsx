@@ -339,30 +339,27 @@ const Planner = () => {
                         <div className="p-1 border-r min-h-[50px]"></div>
                         <div className="p-1 border-r min-h-[50px]">
                           {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                            <div className="bg-primary/10 border border-primary/30 rounded p-1 h-full">
+                            <div className="bg-primary/10 border border-primary/30 rounded p-1 h-full flex flex-col justify-center items-center text-center">
                               <p className="text-[10px] font-bold text-primary">Träning</p>
-                              <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
-                              <p className="text-[9px] text-muted-foreground">Samling: 17:45</p>
+                              <p className="text-[8px] text-muted-foreground">18:00-19:30</p>
                             </div>
                           )}
                         </div>
                         <div className="p-1 border-r min-h-[50px]"></div>
                         <div className="p-1 border-r min-h-[50px]">
                           {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                            <div className="bg-primary/10 border border-primary/30 rounded p-1 h-full">
+                            <div className="bg-primary/10 border border-primary/30 rounded p-1 h-full flex flex-col justify-center items-center text-center">
                               <p className="text-[10px] font-bold text-primary">Träning</p>
-                              <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
-                              <p className="text-[9px] text-muted-foreground">Samling: 17:45</p>
+                              <p className="text-[8px] text-muted-foreground">18:00-19:30</p>
                             </div>
                           )}
                         </div>
                         <div className="p-1 border-r min-h-[50px]"></div>
                         <div className="p-1 border-r min-h-[50px]">
                           {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
-                            <div className="bg-accent/10 border border-accent/30 rounded p-1 h-full">
+                            <div className="bg-accent/10 border border-accent/30 rounded p-1 h-full flex flex-col justify-center items-center text-center">
                               <p className="text-[10px] font-bold text-accent">Match</p>
-                              <p className="text-[9px] text-muted-foreground">17:00-18:30</p>
-                              <p className="text-[9px] text-muted-foreground">vs Frösö IF</p>
+                              <p className="text-[8px] text-muted-foreground">vs Frösö IF</p>
                             </div>
                           )}
                         </div>
