@@ -15,7 +15,7 @@ import {
   CalendarDays,
   Clock
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -25,6 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Player {
   id: number;
@@ -126,7 +128,15 @@ const mockPlayers: Player[] = [
 const SendCallup = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, loading } = useAuth();
   const preSelectedPlayers = location.state?.selectedPlayers || [];
+  
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
   
   const [sortBy, setSortBy] = useState<"name" | "attendance">("name");
   const [selectedPlayers, setSelectedPlayers] = useState<number[]>(preSelectedPlayers);
@@ -230,7 +240,7 @@ const SendCallup = () => {
     );
   };
 
-  const handleSendCallup = () => {
+  const handleSendCallup = async () => {
     if (selectedPlayers.length === 0) {
       toast.error("Välj minst en spelare");
       return;
@@ -239,9 +249,63 @@ const SendCallup = () => {
       toast.error("Ange plats för träningen");
       return;
     }
+    if (!user) {
+      toast.error("Du måste vara inloggad för att skicka kallelser");
+      return;
+    }
     
-    toast.success(`Kallelse skickad till ${selectedPlayers.length} spelare!`);
-    navigate("/planner");
+    try {
+      // Create ISO datetime string
+      const startDateTime = new Date(`${callupData.date}T${callupData.time}`);
+      // Default duration is 1.5 hours for training
+      const endDateTime = new Date(startDateTime.getTime() + 90 * 60000);
+      
+      // Determine activity type and title
+      let activityType = 'callup';
+      let title = 'Kallelse';
+      
+      if (callupData.type === 'training') {
+        activityType = 'training';
+        title = 'Träning';
+      } else if (callupData.type === 'match') {
+        activityType = 'match';
+        title = 'Match';
+      } else if (callupData.customType) {
+        title = callupData.customType;
+      }
+      
+      // Build description
+      let description = `Plats: ${callupData.location}`;
+      if (callupData.gatherTime) {
+        description += `\nSamling: ${callupData.gatherTime}`;
+      }
+      if (callupData.message) {
+        description += `\n\n${callupData.message}`;
+      }
+      if (callupData.bringItems) {
+        description += `\n\nMedtages: ${callupData.bringItems}`;
+      }
+      
+      // Insert activity into database
+      const { error } = await supabase
+        .from('activities')
+        .insert({
+          title,
+          description,
+          activity_type: activityType,
+          start_time: startDateTime.toISOString(),
+          end_time: endDateTime.toISOString(),
+          created_by: user.id
+        });
+      
+      if (error) throw error;
+      
+      toast.success(`Kallelse skickad till ${selectedPlayers.length} spelare och lagd till i kalendern!`);
+      navigate("/planner");
+    } catch (error: any) {
+      console.error('Error sending callup:', error);
+      toast.error("Kunde inte skicka kallelse. Försök igen.");
+    }
   };
 
   return (

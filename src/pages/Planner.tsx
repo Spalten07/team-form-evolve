@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Plus, Users, Target, CalendarDays } from "lucide-react";
-import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Collapsible,
@@ -13,8 +13,21 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown, Filter } from "lucide-react";
-import { addWeeks, startOfWeek, addDays, format } from "date-fns";
+import { addWeeks, startOfWeek, addDays, format, isSameDay, parseISO } from "date-fns";
 import { sv } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+
+interface Activity {
+  id: string;
+  title: string;
+  description: string | null;
+  activity_type: string;
+  start_time: string;
+  end_time: string;
+  created_by: string;
+}
 
 interface TrainingSession {
   id: number;
@@ -81,11 +94,63 @@ const mockSessions: TrainingSession[] = [
 ];
 
 const Planner = () => {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const [sessions, setSessions] = useState<TrainingSession[]>(mockSessions);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [expandedSession, setExpandedSession] = useState<number | null>(null);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [monthFilter, setMonthFilter] = useState("november");
   const [activityFilter, setActivityFilter] = useState("all");
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  // Fetch activities from database
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchActivities = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('activities')
+          .select('*')
+          .order('start_time', { ascending: true });
+
+        if (error) throw error;
+        if (data) setActivities(data);
+      } catch (error: any) {
+        console.error('Error fetching activities:', error);
+        toast.error("Kunde inte hämta aktiviteter");
+      }
+    };
+
+    fetchActivities();
+
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel('activities-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'activities'
+        },
+        () => {
+          fetchActivities();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   // Get the days for the current week
   const getWeekDays = () => {
@@ -100,6 +165,41 @@ const Planner = () => {
   // Navigate to next week
   const goToNextWeek = () => {
     setCurrentWeekStart(addWeeks(currentWeekStart, 1));
+  };
+
+  // Get activities for a specific day and time slot
+  const getActivitiesForTimeSlot = (day: Date, hour: number) => {
+    return activities.filter(activity => {
+      const activityStart = parseISO(activity.start_time);
+      const activityHour = activityStart.getHours();
+      const activityMinutes = activityStart.getMinutes();
+      
+      // Check if activity starts in this hour slot
+      return isSameDay(activityStart, day) && activityHour === hour;
+    });
+  };
+
+  // Calculate activity positioning within time slot
+  const calculateActivityStyle = (activity: Activity) => {
+    const start = parseISO(activity.start_time);
+    const end = parseISO(activity.end_time);
+    
+    const startMinutes = start.getMinutes();
+    const durationMs = end.getTime() - start.getTime();
+    const durationMinutes = durationMs / (1000 * 60);
+    
+    // Calculate top position (0-100% within the hour slot)
+    const topPercent = (startMinutes / 60) * 100;
+    
+    // Calculate height (each hour slot is rowHeight)
+    // We use a base height of 20px (h-5 = 1.25rem = 20px)
+    const hourSlotHeight = 20;
+    const heightPx = (durationMinutes / 60) * hourSlotHeight;
+    
+    return {
+      top: `${topPercent}%`,
+      height: `${heightPx}px`
+    };
   };
 
   // Navigate to current week
@@ -362,19 +462,39 @@ const Planner = () => {
                             <div className={`p-0.5 text-[8px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-center justify-center ${rowHeight}`}>
                               {time}
                             </div>
-                            {weekDays.map((day, dayIdx) => (
-                              <div key={`${time}-${dayIdx}`} className={`${dayIdx < 6 ? 'border-r' : ''} border-t relative ${rowHeight}`}>
-                                <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
-                                <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
-                                <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
-                                {time === "16:00" && dayIdx === 0 && (
-                                  <div className="absolute top-[25%] left-0 right-0 bg-primary/30 border-l-4 border-primary p-0.5 z-10 flex flex-col items-center justify-start" style={{ height: 'calc(75% + 20px + 75%)' }}>
-                                    <p className="text-[7px] font-bold text-primary leading-tight">Träning</p>
-                                    <p className="text-[6px] text-muted-foreground leading-tight">16:15-17:45</p>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
+                            {weekDays.map((day, dayIdx) => {
+                              const hour = parseInt(time.split(':')[0]);
+                              const dayActivities = getActivitiesForTimeSlot(day, hour);
+                              
+                              return (
+                                <div key={`${time}-${dayIdx}`} className={`${dayIdx < 6 ? 'border-r' : ''} border-t relative ${rowHeight}`}>
+                                  <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
+                                  <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
+                                  <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
+                                  
+                                  {dayActivities.map((activity) => {
+                                    const style = calculateActivityStyle(activity);
+                                    const startTime = format(parseISO(activity.start_time), 'HH:mm');
+                                    const endTime = format(parseISO(activity.end_time), 'HH:mm');
+                                    
+                                    return (
+                                      <div 
+                                        key={activity.id}
+                                        className="absolute left-0 right-0 bg-primary/30 border-l-4 border-primary p-0.5 z-10 flex flex-col items-center justify-start overflow-hidden"
+                                        style={style}
+                                      >
+                                        <p className="text-[7px] font-bold text-primary leading-tight truncate w-full text-center">
+                                          {activity.title}
+                                        </p>
+                                        <p className="text-[6px] text-muted-foreground leading-tight">
+                                          {startTime}-{endTime}
+                                        </p>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            })}
                           </React.Fragment>
                         );
                       })}

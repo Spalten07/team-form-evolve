@@ -1,33 +1,46 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Clipboard } from "lucide-react";
 import heroImage from "@/assets/hero-pitch.jpg";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const RoleSelection = () => {
   const navigate = useNavigate();
-  const [rememberChoice, setRememberChoice] = useState(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const savedRole = localStorage.getItem("userRole");
-    const autoLogin = localStorage.getItem("autoLogin");
-    if (savedRole && autoLogin === "true") {
-      navigate(savedRole === "coach" ? "/coach-dashboard" : "/player-dashboard");
+    if (!loading && !user) {
+      navigate("/auth");
+    } else if (!loading && user) {
+      // Get user role from profiles table
+      supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single()
+        .then(({ data }) => {
+          if (data?.role === "coach") {
+            navigate("/coach-dashboard");
+          } else {
+            navigate("/player-dashboard");
+          }
+        });
     }
-  }, [navigate]);
+  }, [user, loading, navigate]);
 
   const selectRole = (role: "coach" | "player") => {
-    localStorage.setItem("userRole", role);
-    if (rememberChoice) {
-      localStorage.setItem("autoLogin", "true");
-    } else {
-      localStorage.removeItem("autoLogin");
-    }
     navigate(role === "coach" ? "/coach-dashboard" : "/player-dashboard");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p>Laddar...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,21 +98,6 @@ const RoleSelection = () => {
                 </CardDescription>
               </CardHeader>
             </Card>
-          </div>
-
-          {/* Remember choice checkbox */}
-          <div className="flex items-center justify-center gap-2 max-w-3xl mx-auto">
-            <Checkbox 
-              id="remember" 
-              checked={rememberChoice}
-              onCheckedChange={(checked) => setRememberChoice(checked as boolean)}
-            />
-            <Label 
-              htmlFor="remember" 
-              className="text-primary-foreground text-sm cursor-pointer"
-            >
-              Kom ihåg mitt val och logga in automatiskt
-            </Label>
           </div>
         </div>
       </section>
