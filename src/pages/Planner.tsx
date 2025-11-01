@@ -349,7 +349,7 @@ const Planner = () => {
                         <span>L</span>
                         <span className="text-xs font-normal text-muted-foreground">9/11</span>
                       </div>
-                      <div className="p-2 text-sm font-semibold text-center flex flex-col items-center justify-center">
+                       <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
                         <span>S</span>
                         <span className="text-xs font-normal text-muted-foreground">10/11</span>
                       </div>
