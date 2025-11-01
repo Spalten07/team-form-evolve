@@ -383,7 +383,7 @@ const Planner = () => {
                             {/* Lördag (6/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}></div>
                             {/* Söndag (7/11) */}
-                            <div className={`border-t relative ${rowHeight}`}></div>
+                            <div className={`border-r border-t relative ${rowHeight}`}></div>
                           </>
                         );
                       })}
