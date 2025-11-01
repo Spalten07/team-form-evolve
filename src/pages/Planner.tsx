@@ -273,25 +273,12 @@ const Planner = () => {
             <Card>
               <CardHeader>
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <CalendarDays className="w-6 h-6" />
-                        Lagets kalender
-                      </CardTitle>
-                      <CardDescription className="text-xs">Veckoschema för träningar och matcher</CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">← Föregående</Button>
-                      <Button 
-                        variant={weekFilter === "current" ? "default" : "outline"} 
-                        size="sm"
-                        onClick={() => setWeekFilter("current")}
-                      >
-                        Denna vecka
-                      </Button>
-                      <Button variant="outline" size="sm">Nästa →</Button>
-                    </div>
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <CalendarDays className="w-6 h-6" />
+                      Lagets kalender
+                    </CardTitle>
+                    <CardDescription className="text-xs">Veckoschema för träningar och matcher</CardDescription>
                   </div>
                   <div className="flex gap-2 items-center">
                     <Filter className="w-4 h-4 text-muted-foreground" />
@@ -320,6 +307,18 @@ const Planner = () => {
                 </div>
               </CardHeader>
               <CardContent>
+                <div className="flex gap-1 mb-2 justify-center">
+                  <Button variant="outline" size="sm" className="h-6 text-xs px-2">← Föreg.</Button>
+                  <Button 
+                    variant={weekFilter === "current" ? "default" : "outline"} 
+                    size="sm"
+                    className="h-6 text-xs px-2"
+                    onClick={() => setWeekFilter("current")}
+                  >
+                    Denna vecka
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-6 text-xs px-2">Nästa →</Button>
+                </div>
                 <div className="border rounded-lg overflow-x-auto">
                   <div className="w-full">
                     {/* Header row */}
