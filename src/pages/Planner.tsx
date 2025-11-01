@@ -325,13 +325,13 @@ const Planner = () => {
                     {/* Header row */}
                     <div className="grid grid-cols-[80px_repeat(7,1fr)] bg-secondary/80">
                       <div className="p-2 text-sm font-semibold border-r">Tid</div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">Måndag<br/><span className="text-xs font-normal text-muted-foreground">4/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">Tisdag<br/><span className="text-xs font-normal text-muted-foreground">5/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">Onsdag<br/><span className="text-xs font-normal text-muted-foreground">6/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">Torsdag<br/><span className="text-xs font-normal text-muted-foreground">7/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">Fredag<br/><span className="text-xs font-normal text-muted-foreground">8/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">Lördag<br/><span className="text-xs font-normal text-muted-foreground">9/11</span></div>
-                      <div className="p-2 text-sm font-semibold text-center">Söndag<br/><span className="text-xs font-normal text-muted-foreground">10/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">M<br/><span className="text-xs font-normal text-muted-foreground">4/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">T<br/><span className="text-xs font-normal text-muted-foreground">5/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">O<br/><span className="text-xs font-normal text-muted-foreground">6/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">T<br/><span className="text-xs font-normal text-muted-foreground">7/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">F<br/><span className="text-xs font-normal text-muted-foreground">8/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">L<br/><span className="text-xs font-normal text-muted-foreground">9/11</span></div>
+                      <div className="p-2 text-sm font-semibold text-center">S<br/><span className="text-xs font-normal text-muted-foreground">10/11</span></div>
                     </div>
                     
                     {/* Calendar grid with dynamic row heights */}
@@ -349,11 +349,10 @@ const Planner = () => {
                             {/* Måndag (1/11) - Completed training from mockSessions */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
                               {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                                <div className="absolute inset-0 bg-success/20 border-l-4 border-success p-2 flex flex-col justify-start">
-                                  <p className="text-sm font-bold text-success-foreground">Passningsfokus</p>
-                                  <p className="text-xs text-muted-foreground">18:00-19:30</p>
-                                  <p className="text-xs text-muted-foreground">Teknik & Passning</p>
-                                  <Badge className="bg-success/10 text-success hover:bg-success/20 text-[10px] mt-1 w-fit">Genomförd</Badge>
+                                <div className="absolute inset-0 bg-success/20 border-l-4 border-success p-1 flex flex-col justify-start">
+                                  <p className="text-[10px] font-bold text-success-foreground">Passningsfokus</p>
+                                  <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
+                                  <Badge className="bg-success/10 text-success hover:bg-success/20 text-[8px] mt-0.5 w-fit">Genomförd</Badge>
                                 </div>
                               )}
                             </div>
@@ -362,11 +361,10 @@ const Planner = () => {
                             {/* Onsdag (3/11) - Upcoming training from mockSessions */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
                               {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                                <div className="absolute inset-0 bg-accent/20 border-l-4 border-accent p-2 flex flex-col justify-start">
-                                  <p className="text-sm font-bold text-accent-foreground">Taktisk träning</p>
-                                  <p className="text-xs text-muted-foreground">18:00-19:30</p>
-                                  <p className="text-xs text-muted-foreground">Positionsspel</p>
-                                  <Badge className="bg-accent/10 text-accent hover:bg-accent/20 text-[10px] mt-1 w-fit">Kommande</Badge>
+                                <div className="absolute inset-0 bg-accent/20 border-l-4 border-accent p-1 flex flex-col justify-start">
+                                  <p className="text-[10px] font-bold text-accent-foreground">Taktisk träning</p>
+                                  <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
+                                  <Badge className="bg-accent/10 text-accent hover:bg-accent/20 text-[8px] mt-0.5 w-fit">Kommande</Badge>
                                 </div>
                               )}
                             </div>
@@ -375,11 +373,10 @@ const Planner = () => {
                             {/* Fredag (5/11) - Planned training from mockSessions */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
                               {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                                <div className="absolute inset-0 bg-primary/20 border-l-4 border-primary p-2 flex flex-col justify-start">
-                                  <p className="text-sm font-bold text-primary">Match & Avslut</p>
-                                  <p className="text-xs text-muted-foreground">18:00-19:30</p>
-                                  <p className="text-xs text-muted-foreground">Avslut & Spelformer</p>
-                                  <Badge variant="outline" className="text-[10px] mt-1 w-fit">Planerad</Badge>
+                                <div className="absolute inset-0 bg-primary/20 border-l-4 border-primary p-1 flex flex-col justify-start">
+                                  <p className="text-[10px] font-bold text-primary">Match & Avslut</p>
+                                  <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
+                                  <Badge variant="outline" className="text-[8px] mt-0.5 w-fit">Planerad</Badge>
                                 </div>
                               )}
                             </div>
