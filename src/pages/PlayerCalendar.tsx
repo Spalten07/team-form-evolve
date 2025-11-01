@@ -3,13 +3,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Users, History, ArrowLeft, CalendarDays } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CalendarWeekView } from "@/components/CalendarWeekView";
 import { EventDetailsDialog } from "@/components/EventDetailsDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { format, parseISO } from "date-fns";
 
 interface TeamEvent {
-  id: number;
+  id: string;
   date: string;
   time: string;
   type: "training" | "match";
@@ -25,67 +29,87 @@ interface TeamEvent {
   bringItems?: string;
 }
 
-const mockEvents: TeamEvent[] = [
-  {
-    id: 1,
-    date: "2025-11-01",
-    time: "18:00",
-    startTime: "18:00",
-    endTime: "19:30",
-    type: "training",
-    title: "Lagträning - Passningar",
-    location: "Östermalms IP",
-    attendance: "confirmed",
-    gatherTime: "17:45",
-    trainingId: "training-123",
-    bringItems: "Vattenflaska, fotbollsskor"
-  },
-  {
-    id: 2,
-    date: "2025-11-03",
-    time: "15:00",
-    startTime: "15:00",
-    endTime: "17:00",
-    type: "match",
-    title: "Seriematch mot Hammarby IF",
-    location: "Tele2 Arena",
-    attendance: "confirmed",
-    opponent: "Hammarby IF",
-    division: "Division 3 Norra",
-    gatherTime: "14:30"
-  },
-  {
-    id: 3,
-    date: "2025-11-05",
-    time: "18:00",
-    startTime: "18:00",
-    endTime: "19:30",
-    type: "training",
-    title: "Lagträning - Avslut",
-    location: "Frösö IP",
-    attendance: "pending",
-    gatherTime: "17:45"
-  },
-  {
-    id: 4,
-    date: "2025-11-08",
-    time: "18:00",
-    startTime: "18:00",
-    endTime: "19:30",
-    type: "training",
-    title: "Lagträning - Taktik",
-    location: "Östermalms IP",
-    attendance: "pending",
-    gatherTime: "17:45"
-  }
-];
-
 const PlayerCalendar = () => {
-  const [events] = useState<TeamEvent[]>(mockEvents);
+  const [events, setEvents] = useState<TeamEvent[]>([]);
   const [viewMode, setViewMode] = useState<"list" | "week">("list");
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const navigate = useNavigate();
   const { playerId } = useParams();
+  const { user, loading } = useAuth();
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  // Fetch activities from database
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchActivities = async () => {
+      try {
+        const now = new Date().toISOString();
+        const { data, error } = await supabase
+          .from('activities')
+          .select('*')
+          .gte('start_time', now)
+          .order('start_time', { ascending: true });
+
+        if (error) throw error;
+        
+        if (data) {
+          const formattedEvents: TeamEvent[] = data.map(activity => {
+            const startDate = parseISO(activity.start_time);
+            const endDate = parseISO(activity.end_time);
+            
+            // Extract location from description (format: "Plats: Location\n...")
+            const locationMatch = activity.description?.match(/Plats:\s*(.+?)(?:\n|$)/);
+            const location = locationMatch ? locationMatch[1] : "Plats ej angiven";
+            
+            return {
+              id: activity.id,
+              date: format(startDate, 'yyyy-MM-dd'),
+              time: format(startDate, 'HH:mm'),
+              startTime: format(startDate, 'HH:mm'),
+              endTime: format(endDate, 'HH:mm'),
+              type: activity.activity_type === 'match' ? 'match' : 'training',
+              title: activity.title,
+              location: location,
+              attendance: "pending"
+            };
+          });
+          setEvents(formattedEvents);
+        }
+      } catch (error: any) {
+        console.error('Error fetching activities:', error);
+        toast.error("Kunde inte hämta aktiviteter");
+      }
+    };
+
+    fetchActivities();
+
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel('player-activities-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'activities'
+        },
+        () => {
+          fetchActivities();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const playerName = playerId ? (() => {
     const players = [
@@ -228,19 +252,7 @@ const PlayerCalendar = () => {
 
         {viewMode === "week" ? (
           <CalendarWeekView 
-            events={events.map(e => ({
-              id: e.id.toString(),
-              title: e.title,
-              type: e.type,
-              date: e.date,
-              startTime: e.startTime,
-              endTime: e.endTime,
-              location: e.location,
-              opponent: e.opponent,
-              division: e.division,
-              gatherTime: e.gatherTime,
-              trainingId: e.trainingId
-            }))}
+            events={events}
             onEventClick={(event) => setSelectedEvent(event)}
           />
         ) : (

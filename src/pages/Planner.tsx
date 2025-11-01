@@ -57,46 +57,9 @@ const mockPlayers: Player[] = [
   { id: 8, name: "Maja Svensson" }
 ];
 
-const mockSessions: TrainingSession[] = [
-  {
-    id: 1,
-    date: "2025-11-01",
-    time: "18:00",
-    title: "Passningsfokus",
-    focus: "Teknik & Passning",
-    duration: "90 min",
-    players: 16,
-    status: "completed",
-    calledPlayers: [1, 2, 3, 4, 5, 6, 7, 8]
-  },
-  {
-    id: 2,
-    date: "2025-11-03",
-    time: "18:00",
-    title: "Taktisk träning",
-    focus: "Positionsspel",
-    duration: "90 min",
-    players: 18,
-    status: "upcoming",
-    calledPlayers: [1, 2, 3, 4, 5, 6, 7, 8]
-  },
-  {
-    id: 3,
-    date: "2025-11-05",
-    time: "18:00",
-    title: "Match & Avslut",
-    focus: "Avslut & Spelformer",
-    duration: "90 min",
-    players: 20,
-    status: "planned",
-    calledPlayers: [1, 2, 4, 5, 6, 7, 8]
-  }
-];
-
 const Planner = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const [sessions, setSessions] = useState<TrainingSession[]>(mockSessions);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [expandedSession, setExpandedSession] = useState<number | null>(null);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -209,22 +172,6 @@ const Planner = () => {
 
   const weekDays = getWeekDays();
 
-  const togglePlayerInSession = (sessionId: number, playerId: number) => {
-    setSessions(prev => prev.map(session => {
-      if (session.id === sessionId) {
-        const calledPlayers = session.calledPlayers || [];
-        const isCalledCurrently = calledPlayers.includes(playerId);
-        return {
-          ...session,
-          calledPlayers: isCalledCurrently 
-            ? calledPlayers.filter(id => id !== playerId)
-            : [...calledPlayers, playerId]
-        };
-      }
-      return session;
-    }));
-  };
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
@@ -324,73 +271,6 @@ const Planner = () => {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Training Sessions List */}
-            <div className="space-y-3">
-              <h2 className="text-xl font-bold">Planerade träningar</h2>
-              
-              {sessions.map((session) => (
-                <Collapsible 
-                  key={session.id}
-                  open={expandedSession === session.id}
-                  onOpenChange={(isOpen) => setExpandedSession(isOpen ? session.id : null)}
-                >
-                  <Card className="hover:shadow-md transition-all">
-                    <CollapsibleTrigger asChild>
-                      <CardHeader className="py-3 cursor-pointer">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              {getStatusBadge(session.status)}
-                              <span className="text-xs text-muted-foreground">
-                                {formatDate(session.date)} • {session.time}
-                              </span>
-                            </div>
-                            <CardTitle className="text-base">{session.title}</CardTitle>
-                          </div>
-                          <ChevronDown className={`w-5 h-5 transition-transform ${expandedSession === session.id ? 'rotate-180' : ''}`} />
-                        </div>
-                      </CardHeader>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <CardContent className="pt-0">
-                        <div className="border-t pt-3 space-y-3">
-                          {session.id === 2 && (
-                            <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-3">
-                              <p className="text-sm font-medium mb-1">Kopplat träningspass</p>
-                              <p className="text-xs text-muted-foreground">Taktisk träning - Positionsspel</p>
-                              <Button variant="link" size="sm" className="h-auto p-0 text-xs mt-1">
-                                Visa träningspass →
-                              </Button>
-                            </div>
-                          )}
-                          <div>
-                            <h4 className="font-semibold text-sm mb-2">Kallade spelare ({session.calledPlayers?.length || 0})</h4>
-                            <div className="grid grid-cols-2 gap-2">
-                              {mockPlayers.map(player => (
-                                <div key={player.id} className="flex items-center space-x-2">
-                                  <Checkbox
-                                    id={`session-${session.id}-player-${player.id}`}
-                                    checked={session.calledPlayers?.includes(player.id)}
-                                    onCheckedChange={() => togglePlayerInSession(session.id, player.id)}
-                                  />
-                                  <label
-                                    htmlFor={`session-${session.id}-player-${player.id}`}
-                                    className="text-sm cursor-pointer"
-                                  >
-                                    {player.name}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
-                  </Card>
-                </Collapsible>
-              ))}
-            </div>
           </TabsContent>
 
           <TabsContent value="calendar">

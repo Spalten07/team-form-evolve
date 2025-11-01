@@ -3,11 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Users, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { format, parseISO } from "date-fns";
 
 interface PastEvent {
-  id: number;
+  id: string;
   date: string;
   time: string;
   type: "training" | "match";
@@ -17,58 +21,61 @@ interface PastEvent {
   result?: string;
 }
 
-const mockPastEvents: PastEvent[] = [
-  {
-    id: 1,
-    date: "2025-10-25",
-    time: "18:00",
-    type: "training",
-    title: "Lagträning - Teknik",
-    location: "Fotbollsplan 1",
-    attendance: "confirmed"
-  },
-  {
-    id: 2,
-    date: "2025-10-22",
-    time: "18:00",
-    type: "training",
-    title: "Lagträning - Taktik",
-    location: "Fotbollsplan 2",
-    attendance: "confirmed"
-  },
-  {
-    id: 3,
-    date: "2025-10-20",
-    time: "15:00",
-    type: "match",
-    title: "Seriematch mot AIK",
-    location: "Friends Arena",
-    attendance: "confirmed",
-    result: "2-1 Vinst"
-  },
-  {
-    id: 4,
-    date: "2025-10-18",
-    time: "18:00",
-    type: "training",
-    title: "Lagträning - Passningar",
-    location: "Fotbollsplan 1",
-    attendance: "confirmed"
-  },
-  {
-    id: 5,
-    date: "2025-10-15",
-    time: "18:00",
-    type: "training",
-    title: "Lagträning - Avslut",
-    location: "Fotbollsplan 1",
-    attendance: "absent"
-  }
-];
-
 const PlayerPastActivities = () => {
-  const [events] = useState<PastEvent[]>(mockPastEvents);
+  const [events, setEvents] = useState<PastEvent[]>([]);
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  // Fetch past activities from database
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchPastActivities = async () => {
+      try {
+        const now = new Date().toISOString();
+        const { data, error } = await supabase
+          .from('activities')
+          .select('*')
+          .lt('end_time', now)
+          .order('start_time', { ascending: false });
+
+        if (error) throw error;
+        
+        if (data) {
+          const formattedEvents: PastEvent[] = data.map(activity => {
+            const startDate = parseISO(activity.start_time);
+            
+            // Extract location from description
+            const locationMatch = activity.description?.match(/Plats:\s*(.+?)(?:\n|$)/);
+            const location = locationMatch ? locationMatch[1] : "Plats ej angiven";
+            
+            return {
+              id: activity.id,
+              date: format(startDate, 'yyyy-MM-dd'),
+              time: format(startDate, 'HH:mm'),
+              type: activity.activity_type === 'match' ? 'match' : 'training',
+              title: activity.title,
+              location: location,
+              attendance: "confirmed"
+            };
+          });
+          setEvents(formattedEvents);
+        }
+      } catch (error: any) {
+        console.error('Error fetching past activities:', error);
+        toast.error("Kunde inte hämta tidigare aktiviteter");
+      }
+    };
+
+    fetchPastActivities();
+  }, [user]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
