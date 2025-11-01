@@ -324,14 +324,35 @@ const Planner = () => {
                   <div className="w-full">
                     {/* Header row */}
                     <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-secondary/80">
-                      <div className="p-2 text-sm font-semibold border-r">Tid</div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">M<br/><span className="text-xs font-normal text-muted-foreground">4/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">T<br/><span className="text-xs font-normal text-muted-foreground">5/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">O<br/><span className="text-xs font-normal text-muted-foreground">6/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">T<br/><span className="text-xs font-normal text-muted-foreground">7/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">F<br/><span className="text-xs font-normal text-muted-foreground">8/11</span></div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">L<br/><span className="text-xs font-normal text-muted-foreground">9/11</span></div>
-                      <div className="p-2 text-sm font-semibold text-center">S<br/><span className="text-xs font-normal text-muted-foreground">10/11</span></div>
+                      <div className="p-2 text-sm font-semibold border-r text-center">Tid</div>
+                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
+                        <span>M</span>
+                        <span className="text-xs font-normal text-muted-foreground">4/11</span>
+                      </div>
+                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
+                        <span>T</span>
+                        <span className="text-xs font-normal text-muted-foreground">5/11</span>
+                      </div>
+                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
+                        <span>O</span>
+                        <span className="text-xs font-normal text-muted-foreground">6/11</span>
+                      </div>
+                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
+                        <span>T</span>
+                        <span className="text-xs font-normal text-muted-foreground">7/11</span>
+                      </div>
+                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
+                        <span>F</span>
+                        <span className="text-xs font-normal text-muted-foreground">8/11</span>
+                      </div>
+                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
+                        <span>L</span>
+                        <span className="text-xs font-normal text-muted-foreground">9/11</span>
+                      </div>
+                      <div className="p-2 text-sm font-semibold text-center flex flex-col items-center justify-center">
+                        <span>S</span>
+                        <span className="text-xs font-normal text-muted-foreground">10/11</span>
+                      </div>
                     </div>
                     
                     {/* Calendar grid with dynamic row heights */}
