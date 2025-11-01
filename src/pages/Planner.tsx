@@ -13,6 +13,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown, Filter } from "lucide-react";
+import { addWeeks, startOfWeek, addDays, format } from "date-fns";
+import { sv } from "date-fns/locale";
 
 interface TrainingSession {
   id: number;
@@ -81,9 +83,31 @@ const mockSessions: TrainingSession[] = [
 const Planner = () => {
   const [sessions, setSessions] = useState<TrainingSession[]>(mockSessions);
   const [expandedSession, setExpandedSession] = useState<number | null>(null);
-  const [weekFilter, setWeekFilter] = useState("current");
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [monthFilter, setMonthFilter] = useState("november");
   const [activityFilter, setActivityFilter] = useState("all");
+
+  // Get the days for the current week
+  const getWeekDays = () => {
+    return Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
+  };
+
+  // Navigate to previous week
+  const goToPreviousWeek = () => {
+    setCurrentWeekStart(addWeeks(currentWeekStart, -1));
+  };
+
+  // Navigate to next week
+  const goToNextWeek = () => {
+    setCurrentWeekStart(addWeeks(currentWeekStart, 1));
+  };
+
+  // Navigate to current week
+  const goToCurrentWeek = () => {
+    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  };
+
+  const weekDays = getWeekDays();
 
   const togglePlayerInSession = (sessionId: number, playerId: number) => {
     setSessions(prev => prev.map(session => {
@@ -308,50 +332,28 @@ const Planner = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex gap-1 mb-2 justify-center">
-                  <Button variant="outline" size="sm" className="h-6 text-xs px-2">← Föreg.</Button>
+                  <Button variant="outline" size="sm" className="h-6 text-xs px-2" onClick={goToPreviousWeek}>← Föreg.</Button>
                   <Button 
-                    variant={weekFilter === "current" ? "default" : "outline"} 
+                    variant="default"
                     size="sm"
                     className="h-6 text-xs px-2"
-                    onClick={() => setWeekFilter("current")}
+                    onClick={goToCurrentWeek}
                   >
                     Denna vecka
                   </Button>
-                  <Button variant="outline" size="sm" className="h-6 text-xs px-2">Nästa →</Button>
+                  <Button variant="outline" size="sm" className="h-6 text-xs px-2" onClick={goToNextWeek}>Nästa →</Button>
                 </div>
                 <div className="border rounded-lg overflow-x-auto">
                   <div className="w-full">
                     {/* Header row */}
                     <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-secondary/80">
                       <div className="p-2 text-sm font-semibold border-r text-center">Tid</div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">
-                        <div>M</div>
-                        <div className="text-xs font-normal text-muted-foreground">4/11</div>
-                      </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">
-                        <div>T</div>
-                        <div className="text-xs font-normal text-muted-foreground">5/11</div>
-                      </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">
-                        <div>O</div>
-                        <div className="text-xs font-normal text-muted-foreground">6/11</div>
-                      </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">
-                        <div>T</div>
-                        <div className="text-xs font-normal text-muted-foreground">7/11</div>
-                      </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">
-                        <div>F</div>
-                        <div className="text-xs font-normal text-muted-foreground">8/11</div>
-                      </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center">
-                        <div>L</div>
-                        <div className="text-xs font-normal text-muted-foreground">9/11</div>
-                      </div>
-                      <div className="p-2 text-sm font-semibold text-center">
-                        <div>S</div>
-                        <div className="text-xs font-normal text-muted-foreground">10/11</div>
-                      </div>
+                      {weekDays.map((day, idx) => (
+                        <div key={idx} className={`p-2 text-sm font-semibold ${idx < 6 ? 'border-r' : ''} text-center`}>
+                          <div>{format(day, 'EEEEEE', { locale: sv }).toUpperCase()}</div>
+                          <div className="text-xs font-normal text-muted-foreground">{format(day, 'd/M')}</div>
+                        </div>
+                      ))}
                     </div>
                     
                     {/* Calendar grid with dynamic row heights */}
