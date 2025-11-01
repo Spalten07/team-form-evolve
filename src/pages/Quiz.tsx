@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface QuizQuestion {
   id: number;
@@ -749,6 +752,7 @@ const quizData: Record<string, QuizData> = {
 const Quiz = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const quiz = quizId ? quizData[quizId] : null;
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -756,6 +760,35 @@ const Quiz = () => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
+
+  // Mark theory assignment as completed when quiz is finished with 100%
+  useEffect(() => {
+    if (quizCompleted && user && quiz) {
+      const percentage = Math.round((correctAnswers / quiz.questions.length) * 100);
+      
+      if (percentage === 100) {
+        const markAsCompleted = async () => {
+          try {
+            const { error } = await supabase
+              .from('theory_assignments')
+              .update({ 
+                completed: true,
+                completed_at: new Date().toISOString()
+              })
+              .eq('assigned_to', user.id)
+              .eq('quiz_id', quiz.id)
+              .eq('completed', false);
+
+            if (error) throw error;
+          } catch (error: any) {
+            console.error('Error marking assignment as completed:', error);
+          }
+        };
+
+        markAsCompleted();
+      }
+    }
+  }, [quizCompleted, user, quiz, correctAnswers]);
 
   if (!quiz) {
     return (

@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList, Mail, Trophy, LogOut, User, Shield } from "lucide-react";
+import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList, Mail, Trophy, LogOut, User, Shield, Target } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Inbox } from "./Inbox";
 import { RoleSwitcher } from "./RoleSwitcher";
@@ -78,6 +78,7 @@ const coachNavLinks = [
 const playerNavLinks = [
   { to: "/exercises", label: "Övningar", icon: Dumbbell },
   { to: "/theory", label: "Teoribank", icon: BookOpen },
+  { to: "/player-theory-todo", label: "Teori att göra", icon: Target },
   { to: "/player-calendar", label: "Kalender", icon: CalendarDays },
   { to: "/player-history", label: "Min träningshistorik", icon: ClipboardList },
 ];

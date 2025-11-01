@@ -163,6 +163,53 @@ export type Database = {
           },
         ]
       }
+      scheduled_callups: {
+        Row: {
+          coach_id: string
+          created_at: string
+          day_of_week: number
+          days_before: number
+          id: string
+          is_active: boolean
+          selected_players: string[]
+          team_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          day_of_week: number
+          days_before: number
+          id?: string
+          is_active?: boolean
+          selected_players: string[]
+          team_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          day_of_week?: number
+          days_before?: number
+          id?: string
+          is_active?: boolean
+          selected_players?: string[]
+          team_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_callups_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           coach_id: string
@@ -194,6 +241,50 @@ export type Database = {
             columns: ["coach_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      theory_assignments: {
+        Row: {
+          assigned_by: string
+          assigned_to: string
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          quiz_id: string
+          team_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_by: string
+          assigned_to: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          quiz_id: string
+          team_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_by?: string
+          assigned_to?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          quiz_id?: string
+          team_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theory_assignments_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]

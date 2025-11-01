@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Clock, Plus, Users, Target, CalendarDays } from "lucide-react";
+import { Calendar, Clock, Plus, Users, Target, CalendarDays, Edit, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,6 +13,12 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown, Filter } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { addWeeks, startOfWeek, addDays, format, isSameDay, parseISO } from "date-fns";
 import { sv } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,11 +48,18 @@ interface TrainingSession {
 }
 
 interface Player {
-  id: number;
-  name: string;
+  id: string;
+  full_name: string;
 }
 
-const mockPlayers: Player[] = [];
+interface ScheduledCallup {
+  id: string;
+  title: string;
+  days_before: number;
+  day_of_week: number;
+  selected_players: string[];
+  is_active: boolean;
+}
 
 const Planner = () => {
   const navigate = useNavigate();
@@ -56,6 +69,8 @@ const Planner = () => {
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [monthFilter, setMonthFilter] = useState("november");
   const [activityFilter, setActivityFilter] = useState("all");
+  const [scheduledCallups, setScheduledCallups] = useState<ScheduledCallup[]>([]);
+  const [teamPlayers, setTeamPlayers] = useState<Player[]>([]);
 
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -64,29 +79,55 @@ const Planner = () => {
     }
   }, [user, loading, navigate]);
 
-  // Fetch activities from database
+  // Fetch activities and scheduled callups from database
   useEffect(() => {
     if (!user) return;
 
-    const fetchActivities = async () => {
+    const fetchData = async () => {
       try {
-        const { data, error } = await supabase
+        // Fetch activities
+        const { data: activitiesData, error: activitiesError } = await supabase
           .from('activities')
           .select('*')
           .order('start_time', { ascending: true });
 
-        if (error) throw error;
-        if (data) setActivities(data);
+        if (activitiesError) throw activitiesError;
+        if (activitiesData) setActivities(activitiesData);
+
+        // Fetch team players and scheduled callups
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('team_id, role')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.role === 'coach' && profile.team_id) {
+          const { data: players } = await supabase
+            .from('profiles')
+            .select('id, full_name')
+            .eq('team_id', profile.team_id)
+            .eq('role', 'player');
+
+          if (players) setTeamPlayers(players as Player[]);
+
+          const { data: callups } = await supabase
+            .from('scheduled_callups')
+            .select('*')
+            .eq('coach_id', user.id)
+            .order('created_at', { ascending: false });
+
+          if (callups) setScheduledCallups(callups);
+        }
       } catch (error: any) {
-        console.error('Error fetching activities:', error);
-        toast.error("Kunde inte hämta aktiviteter");
+        console.error('Error fetching data:', error);
+        toast.error("Kunde inte hämta data");
       }
     };
 
-    fetchActivities();
+    fetchData();
 
     // Subscribe to realtime updates
-    const channel = supabase
+    const activitiesChannel = supabase
       .channel('activities-changes')
       .on(
         'postgres_changes',
@@ -96,13 +137,30 @@ const Planner = () => {
           table: 'activities'
         },
         () => {
-          fetchActivities();
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    const callupsChannel = supabase
+      .channel('scheduled-callups-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'scheduled_callups',
+          filter: `coach_id=eq.${user.id}`
+        },
+        () => {
+          fetchData();
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(activitiesChannel);
+      supabase.removeChannel(callupsChannel);
     };
   }, [user]);
 
@@ -184,6 +242,41 @@ const Planner = () => {
       month: 'long', 
       day: 'numeric' 
     }).format(date);
+  };
+
+  const toggleCallupStatus = async (callupId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('scheduled_callups')
+        .update({ is_active: !currentStatus })
+        .eq('id', callupId);
+
+      if (error) throw error;
+      toast.success(currentStatus ? "Kallelse inaktiverad" : "Kallelse aktiverad");
+    } catch (error: any) {
+      console.error('Error toggling callup status:', error);
+      toast.error("Kunde inte ändra status");
+    }
+  };
+
+  const deleteCallup = async (callupId: string) => {
+    try {
+      const { error } = await supabase
+        .from('scheduled_callups')
+        .delete()
+        .eq('id', callupId);
+
+      if (error) throw error;
+      toast.success("Kallelse borttagen");
+    } catch (error: any) {
+      console.error('Error deleting callup:', error);
+      toast.error("Kunde inte ta bort kallelse");
+    }
+  };
+
+  const getDayName = (dayOfWeek: number) => {
+    const days = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
+    return days[dayOfWeek];
   };
 
   return (
@@ -388,140 +481,95 @@ const Planner = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {/* Scheduled Callup 1 */}
-                <Collapsible>
-                  <Card className="border-primary/20">
-                    <CollapsibleTrigger asChild>
-                      <CardHeader className="py-3 cursor-pointer hover:bg-secondary/50 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <CardTitle className="text-sm">Träningskallelse - Tisdagar</CardTitle>
-                            <CardDescription className="text-xs mt-1">
-                              Skickas 2 dagar innan • Till: 8 spelare
-                            </CardDescription>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="bg-success/10 text-success">Aktiv</Badge>
-                            <ChevronDown className="w-4 h-4" />
-                          </div>
-                        </div>
-                      </CardHeader>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <CardContent className="pt-0 border-t">
-                        <div className="space-y-3 pt-3">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">Status</span>
-                            <Button variant="outline" size="sm">Inaktivera</Button>
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium block mb-2">Kallade spelare (8)</span>
-                            <div className="grid grid-cols-2 gap-2">
-                              {mockPlayers.map(player => (
-                                <div key={player.id} className="flex items-center space-x-2">
-                                  <Checkbox id={`sched1-${player.id}`} defaultChecked />
-                                  <label htmlFor={`sched1-${player.id}`} className="text-sm cursor-pointer">
-                                    {player.name}
-                                  </label>
-                                </div>
-                              ))}
+                {scheduledCallups.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>Inga schemalagda kallelser ännu</p>
+                    <p className="text-sm mt-2">Skapa en ny kallelse för att automatisera utsändningar</p>
+                  </div>
+                ) : (
+                  scheduledCallups.map((callup) => (
+                    <Collapsible key={callup.id}>
+                      <Card className="border-primary/20">
+                        <CollapsibleTrigger asChild>
+                          <CardHeader className="py-3 cursor-pointer hover:bg-secondary/50 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <CardTitle className="text-sm">{callup.title}</CardTitle>
+                                <CardDescription className="text-xs mt-1">
+                                  Skickas {callup.days_before} dagar innan • {getDayName(callup.day_of_week)} • Till: {callup.selected_players.length} spelare
+                                </CardDescription>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge 
+                                  variant="outline" 
+                                  className={callup.is_active ? "bg-success/10 text-success" : ""}
+                                >
+                                  {callup.is_active ? "Aktiv" : "Inaktiv"}
+                                </Badge>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                      <ChevronDown className="w-4 h-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleCallupStatus(callup.id, callup.is_active);
+                                    }}>
+                                      {callup.is_active ? "Inaktivera" : "Aktivera"}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={(e) => {
+                                      e.stopPropagation();
+                                      deleteCallup(callup.id);
+                                    }} className="text-destructive">
+                                      <Trash2 className="w-3 h-3 mr-2" />
+                                      Ta bort
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
-                  </Card>
-                </Collapsible>
-
-                {/* Scheduled Callup 2 */}
-                <Collapsible>
-                  <Card className="border-primary/20">
-                    <CollapsibleTrigger asChild>
-                      <CardHeader className="py-3 cursor-pointer hover:bg-secondary/50 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <CardTitle className="text-sm">Matchkallelse - Lördagar</CardTitle>
-                            <CardDescription className="text-xs mt-1">
-                              Skickas 3 dagar innan • Till: 8 spelare
-                            </CardDescription>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="bg-success/10 text-success">Aktiv</Badge>
-                            <ChevronDown className="w-4 h-4" />
-                          </div>
-                        </div>
-                      </CardHeader>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <CardContent className="pt-0 border-t">
-                        <div className="space-y-3 pt-3">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">Status</span>
-                            <Button variant="outline" size="sm">Inaktivera</Button>
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium block mb-2">Kallade spelare (8)</span>
-                            <div className="grid grid-cols-2 gap-2">
-                              {mockPlayers.map(player => (
-                                <div key={player.id} className="flex items-center space-x-2">
-                                  <Checkbox id={`sched2-${player.id}`} defaultChecked />
-                                  <label htmlFor={`sched2-${player.id}`} className="text-sm cursor-pointer">
-                                    {player.name}
-                                  </label>
+                          </CardHeader>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <CardContent className="pt-0 border-t">
+                            <div className="space-y-3 pt-3">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Status</span>
+                                <Button 
+                                  variant={callup.is_active ? "outline" : "default"}
+                                  size="sm"
+                                  onClick={() => toggleCallupStatus(callup.id, callup.is_active)}
+                                >
+                                  {callup.is_active ? "Inaktivera" : "Aktivera"}
+                                </Button>
+                              </div>
+                              <div>
+                                <span className="text-sm font-medium block mb-2">
+                                  Kallade spelare ({callup.selected_players.length})
+                                </span>
+                                <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+                                  {callup.selected_players.map(playerId => {
+                                    const player = teamPlayers.find(p => p.id === playerId);
+                                    return player ? (
+                                      <div key={playerId} className="flex items-center space-x-2">
+                                        <Checkbox checked disabled />
+                                        <label className="text-sm">
+                                          {player.full_name || 'Namnlös spelare'}
+                                        </label>
+                                      </div>
+                                    ) : null;
+                                  })}
                                 </div>
-                              ))}
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
-                  </Card>
-                </Collapsible>
-
-                {/* Scheduled Callup 3 */}
-                <Collapsible>
-                  <Card className="border-primary/20">
-                    <CollapsibleTrigger asChild>
-                      <CardHeader className="py-3 cursor-pointer hover:bg-secondary/50 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <CardTitle className="text-sm">Träningskallelse - Torsdagar</CardTitle>
-                            <CardDescription className="text-xs mt-1">
-                              Skickas 1 dag innan • Till: 7 spelare
-                            </CardDescription>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">Inaktiv</Badge>
-                            <ChevronDown className="w-4 h-4" />
-                          </div>
-                        </div>
-                      </CardHeader>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <CardContent className="pt-0 border-t">
-                        <div className="space-y-3 pt-3">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">Status</span>
-                            <Button variant="default" size="sm">Aktivera</Button>
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium block mb-2">Kallade spelare (7)</span>
-                            <div className="grid grid-cols-2 gap-2">
-                              {mockPlayers.map(player => (
-                                <div key={player.id} className="flex items-center space-x-2">
-                                  <Checkbox id={`sched3-${player.id}`} defaultChecked={player.id !== 3} />
-                                  <label htmlFor={`sched3-${player.id}`} className="text-sm cursor-pointer">
-                                    {player.name}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
-                  </Card>
-                </Collapsible>
+                          </CardContent>
+                        </CollapsibleContent>
+                      </Card>
+                    </Collapsible>
+                  ))
+                )}
               </CardContent>
             </Card>
           </TabsContent>

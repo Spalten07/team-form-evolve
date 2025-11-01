@@ -2,8 +2,14 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Trophy, Target, CheckCircle2, Play } from "lucide-react";
-import { Link } from "react-router-dom";
+import { BookOpen, Trophy, Target, CheckCircle2, Play, Send } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 interface QuizItem {
   id: string;
@@ -62,13 +68,101 @@ const theoryLevels: TheoryLevel[] = [
   }
 ];
 
+interface Player {
+  id: string;
+  full_name: string;
+}
+
 const Theory = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [teamPlayers, setTeamPlayers] = useState<Player[]>([]);
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchUserData = async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role, team_id')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        setUserRole(profile.role);
+
+        if (profile.role === 'coach' && profile.team_id) {
+          const { data: players } = await supabase
+            .from('profiles')
+            .select('id, full_name')
+            .eq('team_id', profile.team_id)
+            .eq('role', 'player');
+
+          if (players) setTeamPlayers(players as Player[]);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
   const totalQuizzes = theoryLevels.reduce((sum, level) => sum + level.quizzes.length, 0);
   const completedQuizzes = theoryLevels.reduce(
     (sum, level) => sum + level.quizzes.filter(q => q.completed).length, 
     0
   );
   const completionPercentage = totalQuizzes > 0 ? Math.round((completedQuizzes / totalQuizzes) * 100) : 0;
+
+  const handleSendTheory = (quizId: string) => {
+    setSelectedQuiz(quizId);
+    setSendDialogOpen(true);
+  };
+
+  const handleConfirmSend = async () => {
+    if (!user || !selectedQuiz || selectedPlayers.length === 0) {
+      toast.error("Välj minst en spelare");
+      return;
+    }
+
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('team_id')
+        .eq('id', user.id)
+        .single();
+
+      const assignments = selectedPlayers.map(playerId => ({
+        quiz_id: selectedQuiz,
+        assigned_by: user.id,
+        assigned_to: playerId,
+        team_id: profile?.team_id
+      }));
+
+      const { error } = await supabase
+        .from('theory_assignments')
+        .insert(assignments);
+
+      if (error) throw error;
+
+      toast.success(`Teoriuppgift skickad till ${selectedPlayers.length} spelare!`);
+      setSendDialogOpen(false);
+      setSelectedPlayers([]);
+      setSelectedQuiz(null);
+    } catch (error: any) {
+      console.error('Error sending theory:', error);
+      toast.error("Kunde inte skicka teoriuppgift");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -150,6 +244,20 @@ const Theory = () => {
                             <CheckCircle2 className="w-3 h-3 mr-1" />
                             Klar
                           </Badge>
+                        ) : userRole === 'coach' ? (
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" asChild>
+                              <Link to={`/quiz/${quiz.id}`}>Förhandsgranska</Link>
+                            </Button>
+                            <Button 
+                              variant="default" 
+                              size="sm"
+                              onClick={() => handleSendTheory(quiz.id)}
+                            >
+                              <Send className="w-3 h-3 mr-1" />
+                              Skicka ut
+                            </Button>
+                          </div>
                         ) : (
                           <Button variant="default" size="sm" asChild>
                             <Link to={`/quiz/${quiz.id}`}>Starta</Link>
@@ -180,6 +288,65 @@ const Theory = () => {
           ))}
         </div>
       </main>
+
+      {/* Send Theory Dialog */}
+      <Dialog open={sendDialogOpen} onOpenChange={setSendDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Send className="w-5 h-5" />
+              Skicka ut teoriuppgift
+            </DialogTitle>
+            <DialogDescription>
+              Välj vilka spelare som ska få teoriuppgiften
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-medium mb-3">Välj spelare ({selectedPlayers.length} valda)</p>
+              <div className="max-h-60 overflow-y-auto space-y-2 border rounded-lg p-3">
+                {teamPlayers.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Inga spelare i laget
+                  </p>
+                ) : (
+                  teamPlayers.map(player => (
+                    <div key={player.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`player-${player.id}`}
+                        checked={selectedPlayers.includes(player.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedPlayers([...selectedPlayers, player.id]);
+                          } else {
+                            setSelectedPlayers(selectedPlayers.filter(id => id !== player.id));
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor={`player-${player.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {player.full_name || 'Namnlös spelare'}
+                      </label>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setSendDialogOpen(false)} className="flex-1">
+                Avbryt
+              </Button>
+              <Button onClick={handleConfirmSend} className="flex-1" disabled={selectedPlayers.length === 0}>
+                Skicka
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
