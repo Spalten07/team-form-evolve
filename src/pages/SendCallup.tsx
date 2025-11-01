@@ -600,31 +600,35 @@ const SendCallup = () => {
           <Button
             variant={sortBy === "name" ? "default" : "outline"}
             size="sm"
+            className="h-8 px-3 text-xs"
             onClick={() => setSortBy("name")}
           >
-            Sortera efter efternamn
+            Sortera A-Ö
           </Button>
           <Button
             variant={sortBy === "attendance" ? "default" : "outline"}
             size="sm"
+            className="h-8 px-3 text-xs"
             onClick={() => setSortBy("attendance")}
           >
-            Sortera efter högst närvaro
+            Högst närvaro
           </Button>
           <Button
             variant="outline"
             size="sm"
+            className="h-8 px-3 text-xs"
             onClick={() => setSelectedPlayers(sortedPlayers.map(p => p.id))}
           >
-            Välj alla spelare
+            Välj alla
           </Button>
           {selectedPlayers.length > 0 && (
             <Button
               variant="outline"
               size="sm"
+              className="h-8 px-3 text-xs"
               onClick={() => setSelectedPlayers([])}
             >
-              Ta bort alla markerade
+              Avmarkera
             </Button>
           )}
         </div>
