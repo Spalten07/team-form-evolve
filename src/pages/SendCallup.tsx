@@ -277,7 +277,7 @@ const SendCallup = () => {
       }
       
       // Insert activity into database with team_id
-      const { error } = await supabase
+      const { data: activityData, error: activityError } = await supabase
         .from('activities')
         .insert({
           title,
@@ -287,11 +287,26 @@ const SendCallup = () => {
           end_time: endDateTime.toISOString(),
           created_by: user.id,
           team_id: profileData.team_id
-        });
+        })
+        .select()
+        .single();
       
-      if (error) throw error;
+      if (activityError) throw activityError;
       
-      toast.success(`Kallelse skickad till ${selectedPlayers.length} spelare och lagd till i kalendern!`);
+      // Create callup responses for each selected player
+      const callupResponses = selectedPlayers.map(playerId => ({
+        activity_id: activityData.id,
+        player_id: playerId,
+        status: 'pending'
+      }));
+      
+      const { error: responsesError } = await supabase
+        .from('callup_responses')
+        .insert(callupResponses);
+      
+      if (responsesError) throw responsesError;
+      
+      toast.success(`Kallelse skickad till ${selectedPlayers.length} spelare!`);
       navigate("/planner");
     } catch (error: any) {
       console.error('Error sending callup:', error);

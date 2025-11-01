@@ -3,31 +3,29 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Mail, Calendar, Clock, MapPin, Users, BookOpen, MessageSquare, ExternalLink } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Mail, Calendar, Clock, MapPin, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { format, parseISO } from "date-fns";
+import { sv } from "date-fns/locale";
 
-export interface InboxMessage {
+interface CallupResponse {
   id: string;
-  type: "callup" | "message" | "theory";
-  title: string;
-  from: string;
-  date: string;
-  read: boolean;
-  callupDetails?: {
-    activityType: "training" | "match";
-    time: string;
-    gatherTime?: string;
-    location: string;
-    opponent?: string;
-    division?: string;
-    trainingId?: string;
-    bringItems?: string;
-  };
-  messageContent?: string;
-  theoryDetails?: {
-    quizTitle: string;
-    questions: number;
-    quizId: string;
+  activity_id: string;
+  status: 'pending' | 'confirmed' | 'declined';
+  decline_reason: string | null;
+  created_at: string;
+  activity: {
+    id: string;
+    title: string;
+    description: string | null;
+    activity_type: string;
+    start_time: string;
+    end_time: string;
+    created_by: string;
   };
 }
 
@@ -37,77 +35,123 @@ interface InboxProps {
   onUnreadCountChange?: (count: number) => void;
 }
 
-// Mock data - ska ersättas med riktig data senare
-const getInitialMessages = (): InboxMessage[] => {
-  const stored = localStorage.getItem("inboxMessages");
-  if (stored) {
-    return JSON.parse(stored);
-  }
-  return [];
-};
-
 export const Inbox = ({ open, onOpenChange, onUnreadCountChange }: InboxProps) => {
-  const [messages, setMessages] = useState<InboxMessage[]>(getInitialMessages);
-  const [selectedMessage, setSelectedMessage] = useState<InboxMessage | null>(null);
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [callups, setCallups] = useState<CallupResponse[]>([]);
+  const [selectedCallup, setSelectedCallup] = useState<CallupResponse | null>(null);
+  const [declineReason, setDeclineReason] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // Fetch callups from database
   useEffect(() => {
-    localStorage.setItem("inboxMessages", JSON.stringify(messages));
-    const unreadCount = messages.filter(m => !m.read).length;
-    onUnreadCountChange?.(unreadCount);
-  }, [messages, onUnreadCountChange]);
+    if (!user) return;
 
-  const markAsRead = (messageId: string) => {
-    setMessages(prev => prev.map(msg => 
-      msg.id === messageId ? { ...msg, read: true } : msg
-    ));
-  };
+    const fetchCallups = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('callup_responses')
+          .select(`
+            *,
+            activity:activities(*)
+          `)
+          .eq('player_id', user.id)
+          .order('created_at', { ascending: false });
 
-  const handleMessageClick = (message: InboxMessage) => {
-    setSelectedMessage(message);
-    markAsRead(message.id);
-  };
+        if (error) throw error;
+        setCallups((data || []) as CallupResponse[]);
+        
+        // Count pending callups as unread
+        const unreadCount = (data || []).filter(c => c.status === 'pending').length;
+        onUnreadCountChange?.(unreadCount);
+      } catch (error: any) {
+        console.error('Error fetching callups:', error);
+        toast.error("Kunde inte hämta kallelser");
+      }
+    };
 
-  const handleViewTraining = (trainingId?: string) => {
-    if (trainingId) {
-      navigate(`/saved-trainings`);
-      onOpenChange(false);
+    fetchCallups();
+
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel('callup-responses-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'callup_responses',
+          filter: `player_id=eq.${user.id}`
+        },
+        () => {
+          fetchCallups();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, onUnreadCountChange]);
+
+  const handleResponse = async (callupId: string, status: 'confirmed' | 'declined') => {
+    if (status === 'declined' && !declineReason.trim()) {
+      toast.error("Ange en anledning till varför du inte kan komma");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('callup_responses')
+        .update({
+          status,
+          decline_reason: status === 'declined' ? declineReason : null
+        })
+        .eq('id', callupId);
+
+      if (error) throw error;
+
+      toast.success(status === 'confirmed' ? "Du har bekräftat din närvaro" : "Du har avsagt dig");
+      setSelectedCallup(null);
+      setDeclineReason("");
+    } catch (error: any) {
+      console.error('Error updating callup response:', error);
+      toast.error("Kunde inte uppdatera svar");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleViewQuiz = (quizId?: string) => {
-    if (quizId) {
-      navigate(`/quiz/${quizId}`);
-      onOpenChange(false);
-    }
-  };
-
-  const getMessageIcon = (type: string) => {
-    switch (type) {
-      case "callup":
-        return <Calendar className="w-5 h-5" />;
-      case "theory":
-        return <BookOpen className="w-5 h-5" />;
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return <Badge className="bg-success/10 text-success"><CheckCircle className="w-3 h-3 mr-1" />Bekräftad</Badge>;
+      case "declined":
+        return <Badge className="bg-destructive/10 text-destructive"><XCircle className="w-3 h-3 mr-1" />Avsagd</Badge>;
       default:
-        return <MessageSquare className="w-5 h-5" />;
+        return <Badge className="bg-warning/10 text-warning"><AlertCircle className="w-3 h-3 mr-1" />Väntande svar</Badge>;
     }
   };
 
-  const getTypeBadge = (type: string) => {
-    switch (type) {
-      case "callup":
-        return <Badge className="bg-primary/10 text-primary">Kallelse</Badge>;
-      case "theory":
-        return <Badge className="bg-accent/10 text-accent">Teoripass</Badge>;
-      default:
-        return <Badge variant="outline">Meddelande</Badge>;
-    }
+  const parseActivityDetails = (activity: any) => {
+    const location = activity.description?.match(/Plats:\s*(.+?)(?:\n|$)/)?.[1] || "Plats ej angiven";
+    const gatherTime = activity.description?.match(/Samling:\s*(.+?)(?:\n|$)/)?.[1];
+    const bringItems = activity.description?.match(/Medtages:\s*(.+?)(?:\n|$)/)?.[1];
+    
+    return {
+      location,
+      gatherTime,
+      bringItems,
+      time: format(parseISO(activity.start_time), 'HH:mm'),
+      endTime: format(parseISO(activity.end_time), 'HH:mm'),
+      date: format(parseISO(activity.start_time), 'PPP', { locale: sv })
+    };
   };
 
   return (
     <>
-      <Dialog open={open && !selectedMessage} onOpenChange={(isOpen) => {
-        if (!isOpen) setSelectedMessage(null);
+      <Dialog open={open && !selectedCallup} onOpenChange={(isOpen) => {
+        if (!isOpen) setSelectedCallup(null);
         onOpenChange(isOpen);
       }}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -117,159 +161,171 @@ export const Inbox = ({ open, onOpenChange, onUnreadCountChange }: InboxProps) =
               Inkorg
             </DialogTitle>
             <DialogDescription>
-              {messages.filter(m => !m.read).length} olästa meddelanden
+              {callups.filter(c => c.status === 'pending').length} väntande kallelser
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-2">
-            {messages.length === 0 ? (
+            {callups.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                Inga meddelanden än
+                Inga kallelser än
               </div>
             ) : (
-              messages.map((message) => (
-                <Card 
-                  key={message.id}
-                  className={`cursor-pointer hover:shadow-md transition-all ${!message.read ? 'border-primary border-2' : ''}`}
-                  onClick={() => handleMessageClick(message)}
-                >
-                  <CardHeader className="py-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3 flex-1">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${!message.read ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
-                          {getMessageIcon(message.type)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            {getTypeBadge(message.type)}
-                            {!message.read && (
-                              <Badge className="bg-success/10 text-success">Nytt</Badge>
-                            )}
+              callups.map((callup) => {
+                const details = parseActivityDetails(callup.activity);
+                return (
+                  <Card 
+                    key={callup.id}
+                    className={`cursor-pointer hover:shadow-md transition-all ${callup.status === 'pending' ? 'border-primary border-2' : ''}`}
+                    onClick={() => setSelectedCallup(callup)}
+                  >
+                    <CardHeader className="py-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${callup.status === 'pending' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
+                            <Calendar className="w-5 h-5" />
                           </div>
-                          <CardTitle className="text-base truncate">{message.title}</CardTitle>
-                          <CardDescription className="text-xs">
-                            {message.from} • {new Date(message.date).toLocaleDateString('sv-SE')}
-                          </CardDescription>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge className="bg-primary/10 text-primary">Kallelse</Badge>
+                              {getStatusBadge(callup.status)}
+                            </div>
+                            <CardTitle className="text-base truncate">{callup.activity.title}</CardTitle>
+                            <CardDescription className="text-xs">
+                              {details.date} • {details.time}
+                            </CardDescription>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                </Card>
-              ))
+                    </CardHeader>
+                  </Card>
+                );
+              })
             )}
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Message Details Dialog */}
-      <Dialog open={!!selectedMessage} onOpenChange={(isOpen) => {
-        if (!isOpen) setSelectedMessage(null);
+      {/* Callup Details Dialog */}
+      <Dialog open={!!selectedCallup} onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          setSelectedCallup(null);
+          setDeclineReason("");
+        }
       }}>
         <DialogContent className="max-w-lg">
-          {selectedMessage && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{selectedMessage.title}</DialogTitle>
-                <DialogDescription>
-                  Från {selectedMessage.from} • {new Date(selectedMessage.date).toLocaleDateString('sv-SE')}
-                </DialogDescription>
-              </DialogHeader>
+          {selectedCallup && (() => {
+            const details = parseActivityDetails(selectedCallup.activity);
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle>{selectedCallup.activity.title}</DialogTitle>
+                  <DialogDescription>
+                    {details.date}
+                  </DialogDescription>
+                </DialogHeader>
 
-              <div className="space-y-4">
-                {selectedMessage.type === "callup" && selectedMessage.callupDetails && (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
-                      <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="font-medium">
-                        {selectedMessage.callupDetails.activityType === "match" ? "Match" : "Träning"}
-                      </span>
-                    </div>
-                    
-                    {selectedMessage.callupDetails.opponent && (
-                      <>
-                        <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
-                          <Users className="w-4 h-4 text-muted-foreground" />
-                          <div>
-                            <div className="font-medium">Motståndare</div>
-                            <div className="text-sm text-muted-foreground">{selectedMessage.callupDetails.opponent}</div>
-                          </div>
-                        </div>
-                        {selectedMessage.callupDetails.division && (
-                          <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
-                            <Badge variant="outline">{selectedMessage.callupDetails.division}</Badge>
-                          </div>
-                        )}
-                      </>
-                    )}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="font-medium">
+                      {selectedCallup.activity.activity_type === "match" ? "Match" : "Träning"}
+                    </span>
+                  </div>
 
-                    <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      <div>
-                        <div className="font-medium">Tid</div>
-                        <div className="text-sm text-muted-foreground">
-                          Start: {selectedMessage.callupDetails.time}
-                          {selectedMessage.callupDetails.gatherTime && ` • Samling: ${selectedMessage.callupDetails.gatherTime}`}
-                        </div>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium">Tid</div>
+                      <div className="text-sm text-muted-foreground">
+                        Start: {details.time}
+                        {details.gatherTime && ` • Samling: ${details.gatherTime}`}
                       </div>
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
-                      <MapPin className="w-4 h-4 text-muted-foreground" />
-                      <div>
-                        <div className="font-medium">Plats</div>
-                        <div className="text-sm text-muted-foreground">{selectedMessage.callupDetails.location}</div>
-                      </div>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium">Plats</div>
+                      <div className="text-sm text-muted-foreground">{details.location}</div>
                     </div>
+                  </div>
 
-                    {selectedMessage.callupDetails.bringItems && (
-                      <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
-                        <div className="font-medium mb-1">Medtages</div>
-                        <div className="text-sm">{selectedMessage.callupDetails.bringItems}</div>
+                  {details.bringItems && (
+                    <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
+                      <div className="font-medium mb-1">Medtages</div>
+                      <div className="text-sm">{details.bringItems}</div>
+                    </div>
+                  )}
+
+                  {/* Status display */}
+                  <div className="p-3 rounded-lg bg-secondary/50">
+                    <div className="font-medium mb-2">Din status</div>
+                    {getStatusBadge(selectedCallup.status)}
+                    {selectedCallup.status === 'declined' && selectedCallup.decline_reason && (
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        <span className="font-medium">Anledning: </span>
+                        {selectedCallup.decline_reason}
                       </div>
                     )}
-
-                    {selectedMessage.callupDetails.trainingId && (
-                      <Button 
-                        variant="outline" 
-                        className="w-full gap-2"
-                        onClick={() => handleViewTraining(selectedMessage.callupDetails?.trainingId)}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        Se träningspass
-                      </Button>
-                    )}
                   </div>
-                )}
 
-                {selectedMessage.type === "message" && selectedMessage.messageContent && (
-                  <div className="p-4 rounded-lg bg-secondary/50">
-                    <p>{selectedMessage.messageContent}</p>
-                  </div>
-                )}
-
-                {selectedMessage.type === "theory" && selectedMessage.theoryDetails && (
-                  <div className="space-y-3">
-                    <div className="p-3 rounded-lg bg-secondary/50">
-                      <div className="font-medium mb-1">{selectedMessage.theoryDetails.quizTitle}</div>
-                      <div className="text-sm text-muted-foreground">{selectedMessage.theoryDetails.questions} frågor</div>
+                  {/* Response buttons */}
+                  {selectedCallup.status === 'pending' && (
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="default" 
+                          className="flex-1 gap-2"
+                          onClick={() => handleResponse(selectedCallup.id, 'confirmed')}
+                          disabled={loading}
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          Ja, jag kommer
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          className="flex-1 gap-2"
+                          onClick={() => {
+                            if (!declineReason.trim()) {
+                              // Show decline reason input
+                              return;
+                            }
+                            handleResponse(selectedCallup.id, 'declined');
+                          }}
+                          disabled={loading}
+                        >
+                          <XCircle className="w-4 h-4" />
+                          Nej
+                        </Button>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="decline-reason">
+                          Kan du inte komma? Ange anledning nedan:
+                        </Label>
+                        <Textarea
+                          id="decline-reason"
+                          placeholder="T.ex. Sjuk, annan aktivitet, familjeåtagande..."
+                          value={declineReason}
+                          onChange={(e) => setDeclineReason(e.target.value)}
+                          rows={3}
+                        />
+                      </div>
                     </div>
-                    <Button 
-                      variant="default" 
-                      className="w-full gap-2"
-                      onClick={() => handleViewQuiz(selectedMessage.theoryDetails?.quizId)}
-                    >
-                      <BookOpen className="w-4 h-4" />
-                      Starta quiz
-                    </Button>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              <Button variant="outline" onClick={() => setSelectedMessage(null)}>
-                Stäng
-              </Button>
-            </>
-          )}
+                <Button variant="outline" onClick={() => {
+                  setSelectedCallup(null);
+                  setDeclineReason("");
+                }}>
+                  Stäng
+                </Button>
+              </>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </>
