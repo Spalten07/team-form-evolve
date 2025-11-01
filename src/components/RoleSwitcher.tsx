@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { UserCircle, Plus } from "lucide-react";
+import { UserCircle, Plus, User } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,13 +26,27 @@ interface UserRole {
   role: 'coach' | 'player';
 }
 
+interface ProfileData {
+  phone: string;
+  address: string;
+  guardian_name: string;
+  guardian_phone: string;
+}
+
 export const RoleSwitcher = () => {
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [activeRole, setActiveRole] = useState<string>("");
   const [showAddRole, setShowAddRole] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const [newRole, setNewRole] = useState<'coach' | 'player'>('player');
   const [teamCode, setTeamCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData>({
+    phone: "",
+    address: "",
+    guardian_name: "",
+    guardian_phone: "",
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,15 +67,21 @@ export const RoleSwitcher = () => {
       setRoles(userRoles);
     }
 
-    // Fetch active role from profile
+    // Fetch active role and profile data
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, phone, address, guardian_name, guardian_phone')
       .eq('id', user.id)
       .single();
 
     if (profile) {
       setActiveRole(profile.role);
+      setProfileData({
+        phone: profile.phone || "",
+        address: profile.address || "",
+        guardian_name: profile.guardian_name || "",
+        guardian_phone: profile.guardian_phone || "",
+      });
     }
   };
 
@@ -165,6 +185,26 @@ export const RoleSwitcher = () => {
     }
   };
 
+  const saveProfile = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(profileData)
+      .eq('id', user.id);
+
+    if (error) {
+      toast.error("Kunde inte spara profil");
+      console.error(error);
+    } else {
+      toast.success("Profil uppdaterad");
+      setShowEditProfile(false);
+    }
+    setLoading(false);
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -187,6 +227,10 @@ export const RoleSwitcher = () => {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setShowEditProfile(true)}>
+            <User className="h-4 w-4 mr-2" />
+            Redigera profil
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowAddRole(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Lägg till roll
@@ -226,6 +270,58 @@ export const RoleSwitcher = () => {
             )}
             <Button onClick={addNewRole} disabled={loading} className="w-full">
               Lägg till roll
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditProfile} onOpenChange={setShowEditProfile}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Redigera profil</DialogTitle>
+            <DialogDescription>
+              Uppdatera din kontaktinformation och vårdnadshavare
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="phone">Telefonnummer</Label>
+              <Input
+                id="phone"
+                value={profileData.phone}
+                onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                placeholder="070-123 45 67"
+              />
+            </div>
+            <div>
+              <Label htmlFor="address">Adress</Label>
+              <Input
+                id="address"
+                value={profileData.address}
+                onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
+                placeholder="Gatuadress, Postnummer Stad"
+              />
+            </div>
+            <div>
+              <Label htmlFor="guardian_name">Vårdnadshavares namn</Label>
+              <Input
+                id="guardian_name"
+                value={profileData.guardian_name}
+                onChange={(e) => setProfileData({ ...profileData, guardian_name: e.target.value })}
+                placeholder="Förnamn Efternamn"
+              />
+            </div>
+            <div>
+              <Label htmlFor="guardian_phone">Vårdnadshavares telefon</Label>
+              <Input
+                id="guardian_phone"
+                value={profileData.guardian_phone}
+                onChange={(e) => setProfileData({ ...profileData, guardian_phone: e.target.value })}
+                placeholder="070-123 45 67"
+              />
+            </div>
+            <Button onClick={saveProfile} disabled={loading} className="w-full">
+              Spara ändringar
             </Button>
           </div>
         </DialogContent>
