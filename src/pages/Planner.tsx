@@ -325,33 +325,33 @@ const Planner = () => {
                     {/* Header row */}
                     <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-secondary/80">
                       <div className="p-2 text-sm font-semibold border-r text-center">Tid</div>
-                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
-                        <span>M</span>
-                        <span className="text-xs font-normal text-muted-foreground">4/11</span>
+                      <div className="p-2 text-sm font-semibold border-r text-center">
+                        <div>M</div>
+                        <div className="text-xs font-normal text-muted-foreground">4/11</div>
                       </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
-                        <span>T</span>
-                        <span className="text-xs font-normal text-muted-foreground">5/11</span>
+                      <div className="p-2 text-sm font-semibold border-r text-center">
+                        <div>T</div>
+                        <div className="text-xs font-normal text-muted-foreground">5/11</div>
                       </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
-                        <span>O</span>
-                        <span className="text-xs font-normal text-muted-foreground">6/11</span>
+                      <div className="p-2 text-sm font-semibold border-r text-center">
+                        <div>O</div>
+                        <div className="text-xs font-normal text-muted-foreground">6/11</div>
                       </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
-                        <span>T</span>
-                        <span className="text-xs font-normal text-muted-foreground">7/11</span>
+                      <div className="p-2 text-sm font-semibold border-r text-center">
+                        <div>T</div>
+                        <div className="text-xs font-normal text-muted-foreground">7/11</div>
                       </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
-                        <span>F</span>
-                        <span className="text-xs font-normal text-muted-foreground">8/11</span>
+                      <div className="p-2 text-sm font-semibold border-r text-center">
+                        <div>F</div>
+                        <div className="text-xs font-normal text-muted-foreground">8/11</div>
                       </div>
-                      <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
-                        <span>L</span>
-                        <span className="text-xs font-normal text-muted-foreground">9/11</span>
+                      <div className="p-2 text-sm font-semibold border-r text-center">
+                        <div>L</div>
+                        <div className="text-xs font-normal text-muted-foreground">9/11</div>
                       </div>
-                       <div className="p-2 text-sm font-semibold border-r text-center flex flex-col items-center justify-center">
-                        <span>S</span>
-                        <span className="text-xs font-normal text-muted-foreground">10/11</span>
+                      <div className="p-2 text-sm font-semibold border-r text-center">
+                        <div>S</div>
+                        <div className="text-xs font-normal text-muted-foreground">10/11</div>
                       </div>
                     </div>
                     
