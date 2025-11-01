@@ -113,7 +113,7 @@ const PlayerCalendar = () => {
 
   const getTypeBadge = (type: string) => {
     if (type === "match") {
-      return <Badge className="bg-accent-foreground/10 text-accent-foreground hover:bg-accent-foreground/20">Match</Badge>;
+      return <Badge className="bg-blue-500/20 text-blue-700 dark:text-blue-300 hover:bg-blue-500/30 border-blue-500/30">Match</Badge>;
     }
     return <Badge variant="outline">Träning</Badge>;
   };
@@ -147,30 +147,18 @@ const PlayerCalendar = () => {
           </Button>
         )}
         
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               {playerId ? `${playerName}s kalender` : "Kalender"}
             </h1>
-            <p className="text-muted-foreground text-sm">
-              {playerId 
-                ? `Se ${playerName}s kommande träningar och matcher`
-                : "Se kommande träningar och matcher"
-              }
-            </p>
           </div>
-          <div className="flex gap-2">
-            {!playerId && (
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={() => navigate("/player-past-activities")}
-              >
-                <History className="w-4 h-4" />
-                Tidigare
-              </Button>
-            )}
-          </div>
+          <p className="text-muted-foreground text-sm">
+            {playerId 
+              ? `Se ${playerName}s kommande träningar och matcher`
+              : "Se kommande träningar och matcher"
+            }
+          </p>
         </div>
 
         {/* Calendar Overview */}
@@ -225,6 +213,17 @@ const PlayerCalendar = () => {
             <CalendarDays className="w-4 h-4 mr-2" />
             Veckoschema
           </Button>
+          {!playerId && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => navigate("/player-past-activities")}
+            >
+              <History className="w-4 h-4" />
+              Tidigare
+            </Button>
+          )}
         </div>
 
         {viewMode === "week" ? (

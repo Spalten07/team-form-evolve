@@ -226,24 +226,35 @@ const Planner = () => {
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <CardContent className="pt-0">
-                        <div className="border-t pt-3">
-                          <h4 className="font-semibold text-sm mb-2">Kallade spelare ({session.calledPlayers?.length || 0})</h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {mockPlayers.map(player => (
-                              <div key={player.id} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`session-${session.id}-player-${player.id}`}
-                                  checked={session.calledPlayers?.includes(player.id)}
-                                  onCheckedChange={() => togglePlayerInSession(session.id, player.id)}
-                                />
-                                <label
-                                  htmlFor={`session-${session.id}-player-${player.id}`}
-                                  className="text-sm cursor-pointer"
-                                >
-                                  {player.name}
-                                </label>
-                              </div>
-                            ))}
+                        <div className="border-t pt-3 space-y-3">
+                          {session.id === 2 && (
+                            <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-3">
+                              <p className="text-sm font-medium mb-1">Kopplat träningspass</p>
+                              <p className="text-xs text-muted-foreground">Taktisk träning - Positionsspel</p>
+                              <Button variant="link" size="sm" className="h-auto p-0 text-xs mt-1">
+                                Visa träningspass →
+                              </Button>
+                            </div>
+                          )}
+                          <div>
+                            <h4 className="font-semibold text-sm mb-2">Kallade spelare ({session.calledPlayers?.length || 0})</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                              {mockPlayers.map(player => (
+                                <div key={player.id} className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`session-${session.id}-player-${player.id}`}
+                                    checked={session.calledPlayers?.includes(player.id)}
+                                    onCheckedChange={() => togglePlayerInSession(session.id, player.id)}
+                                  />
+                                  <label
+                                    htmlFor={`session-${session.id}-player-${player.id}`}
+                                    className="text-sm cursor-pointer"
+                                  >
+                                    {player.name}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </CardContent>

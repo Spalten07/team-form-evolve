@@ -559,41 +559,39 @@ const Exercises = () => {
                   </Button>
 
                   {recommendedSessions && recommendedSessions.length > 0 && (
-                    <Accordion type="single" collapsible value={showRecommendedSessions ? "suggestions" : ""} onValueChange={(value) => setShowRecommendedSessions(value === "suggestions")}>
-                      <AccordionItem value="suggestions" className="border-0">
-                        <AccordionTrigger className="hover:no-underline">
-                          <h3 className="font-semibold text-lg">Mina träningsförslag ({recommendedSessions.length})</h3>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-6 mt-2">
-                            {recommendedSessions.map((session, sessionIndex) => (
-                              <Card key={sessionIndex} className="bg-secondary/30">
-                                <CardHeader>
-                                  <CardTitle className="text-lg">Alternativ {sessionIndex + 1}</CardTitle>
-                                  <CardDescription>
-                                    Total tid: {session.reduce((sum, ex) => sum + ex.duration, 0)} minuter
-                                  </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-2">
-                                  {session.map((exercise, index) => (
-                                    <div key={index} className="flex items-start gap-3 p-3 bg-background rounded-lg">
-                                      <Badge variant="outline" className="mt-1">
-                                        {exercise.duration} min
-                                      </Badge>
-                                      <div className="flex-1">
-                                        <p className="font-medium">{exercise.title}</p>
-                                        <p className="text-sm text-muted-foreground">{exercise.category}</p>
-                                        <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
-                                      </div>
+                    <div className="space-y-3 mt-4">
+                      <h3 className="font-semibold text-lg">Rekommenderade träningsupplägg ({recommendedSessions.length})</h3>
+                      {recommendedSessions.map((session, sessionIndex) => (
+                        <Accordion key={sessionIndex} type="single" collapsible>
+                          <AccordionItem value="item-1">
+                            <AccordionTrigger className="hover:no-underline">
+                              <div className="flex items-center justify-between w-full pr-4">
+                                <span className="font-semibold">Alternativ {sessionIndex + 1}</span>
+                                <Badge variant="outline">
+                                  {session.reduce((sum, ex) => sum + ex.duration, 0)} min
+                                </Badge>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-2 mt-2">
+                                {session.map((exercise, index) => (
+                                  <div key={index} className="flex items-start gap-3 p-3 bg-secondary/30 rounded-lg">
+                                    <Badge variant="outline" className="mt-1">
+                                      {exercise.duration} min
+                                    </Badge>
+                                    <div className="flex-1">
+                                      <p className="font-medium">{exercise.title}</p>
+                                      <p className="text-sm text-muted-foreground">{exercise.category}</p>
+                                      <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
                                     </div>
-                                  ))}
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                                  </div>
+                                ))}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      ))}
+                    </div>
                   )}
 
                   {recommendedSessions && recommendedSessions.length === 0 && (

@@ -373,9 +373,15 @@ const CreateTraining = () => {
     return warmupTotal + mainTotal + cooldownTotal;
   };
 
+  const generateTitle = () => {
+    if (session.title) return session.title;
+    if (session.focus) return `Träning: ${session.focus}`;
+    return "Träningspass";
+  };
+
   const handleSave = () => {
-    if (!session.title || !session.focus) {
-      toast.error("Vänligen fyll i titel och fokusområde");
+    if (!session.focus) {
+      toast.error("Vänligen välj ett fokusområde");
       return;
     }
 
@@ -383,6 +389,11 @@ const CreateTraining = () => {
       toast.error("Lägg till minst en övning");
       return;
     }
+
+    const finalSession = {
+      ...session,
+      title: generateTitle()
+    };
 
     toast.success("Träning sparad!");
     setTimeout(() => navigate("/planner"), 1000);
@@ -634,10 +645,10 @@ const CreateTraining = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="title">Titel *</Label>
+                <Label htmlFor="title">Titel (valfritt)</Label>
                 <Input
                   id="title"
-                  placeholder="T.ex. Passningsfokus"
+                  placeholder="Lämna tom för automatisk titel baserad på fokusområde"
                   value={session.title}
                   onChange={(e) => setSession({ ...session, title: e.target.value })}
                 />

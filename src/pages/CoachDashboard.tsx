@@ -25,6 +25,27 @@ const CoachDashboard = () => {
           </p>
         </div>
 
+        {/* Next Match Info */}
+        <Card className="mb-8 bg-gradient-hero text-primary-foreground border-0">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="w-5 h-5" />
+              Nästa match
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p className="text-2xl font-bold">Vårt lag vs Frösö IF</p>
+              <p className="text-sm opacity-90">Lördag 9 november, 17:00</p>
+              <p className="text-sm opacity-90">Östermalms IP</p>
+              <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3 mt-3">
+                <p className="text-sm font-medium">Division 3 Norra</p>
+                <p className="text-xs opacity-90 mt-1">6 matcher kvar att spela denna säsong</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* League Table */}
         <Card className="mb-8">
           <CardHeader>
