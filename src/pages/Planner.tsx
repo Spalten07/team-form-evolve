@@ -321,57 +321,52 @@ const Planner = () => {
               </CardHeader>
               <CardContent>
                 <div className="border rounded-lg overflow-x-auto">
-                  <div className="min-w-[800px]">
+                  <div className="w-full">
                     <div className="grid grid-cols-8 bg-secondary/80">
-                      <div className="p-3 text-sm font-semibold border-r">Tid</div>
-                      <div className="p-3 text-sm font-semibold border-r text-center">Mån<br/><span className="text-xs font-normal text-muted-foreground">4 nov</span></div>
-                      <div className="p-3 text-sm font-semibold border-r text-center">Tis<br/><span className="text-xs font-normal text-muted-foreground">5 nov</span></div>
-                      <div className="p-3 text-sm font-semibold border-r text-center">Ons<br/><span className="text-xs font-normal text-muted-foreground">6 nov</span></div>
-                      <div className="p-3 text-sm font-semibold border-r text-center">Tor<br/><span className="text-xs font-normal text-muted-foreground">7 nov</span></div>
-                      <div className="p-3 text-sm font-semibold border-r text-center">Fre<br/><span className="text-xs font-normal text-muted-foreground">8 nov</span></div>
-                      <div className="p-3 text-sm font-semibold border-r text-center">Lör<br/><span className="text-xs font-normal text-muted-foreground">9 nov</span></div>
-                      <div className="p-3 text-sm font-semibold text-center">Sön<br/><span className="text-xs font-normal text-muted-foreground">10 nov</span></div>
+                      <div className="p-1.5 text-xs font-semibold border-r">Tid</div>
+                      <div className="p-1.5 text-xs font-semibold border-r text-center">Mån<br/><span className="text-[10px] font-normal text-muted-foreground">4/11</span></div>
+                      <div className="p-1.5 text-xs font-semibold border-r text-center">Tis<br/><span className="text-[10px] font-normal text-muted-foreground">5/11</span></div>
+                      <div className="p-1.5 text-xs font-semibold border-r text-center">Ons<br/><span className="text-[10px] font-normal text-muted-foreground">6/11</span></div>
+                      <div className="p-1.5 text-xs font-semibold border-r text-center">Tor<br/><span className="text-[10px] font-normal text-muted-foreground">7/11</span></div>
+                      <div className="p-1.5 text-xs font-semibold border-r text-center">Fre<br/><span className="text-[10px] font-normal text-muted-foreground">8/11</span></div>
+                      <div className="p-1.5 text-xs font-semibold border-r text-center">Lör<br/><span className="text-[10px] font-normal text-muted-foreground">9/11</span></div>
+                      <div className="p-1.5 text-xs font-semibold text-center">Sön<br/><span className="text-[10px] font-normal text-muted-foreground">10/11</span></div>
                     </div>
                     
-                    {["15:00", "16:00", "17:00", "18:00", "19:00", "20:00"].map((time) => (
+                    {["16:00", "17:00", "18:00", "19:00"].map((time) => (
                       <div key={time} className="grid grid-cols-8 border-t hover:bg-secondary/20 transition-colors">
-                        <div className="p-3 text-sm font-medium text-muted-foreground border-r bg-secondary/30">{time}</div>
-                        <div className="p-2 border-r min-h-[80px]"></div>
-                        <div className="p-2 border-r min-h-[80px]">
+                        <div className="p-1.5 text-xs font-medium text-muted-foreground border-r bg-secondary/30">{time}</div>
+                        <div className="p-1 border-r min-h-[50px]"></div>
+                        <div className="p-1 border-r min-h-[50px]">
                           {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                            <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-2 h-full">
-                              <p className="text-xs font-bold text-primary">Träning</p>
-                              <p className="text-[10px] text-muted-foreground mt-0.5">18:00-19:30</p>
-                              <p className="text-[10px] text-muted-foreground">Samling: 17:45</p>
-                              <p className="text-[10px] text-muted-foreground">Plan 2, Östersunds IP</p>
+                            <div className="bg-primary/10 border border-primary/30 rounded p-1 h-full">
+                              <p className="text-[10px] font-bold text-primary">Träning</p>
+                              <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
+                              <p className="text-[9px] text-muted-foreground">Samling: 17:45</p>
                             </div>
                           )}
                         </div>
-                        <div className="p-2 border-r min-h-[80px]"></div>
-                        <div className="p-2 border-r min-h-[80px]">
+                        <div className="p-1 border-r min-h-[50px]"></div>
+                        <div className="p-1 border-r min-h-[50px]">
                           {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                            <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-2 h-full">
-                              <p className="text-xs font-bold text-primary">Träning</p>
-                              <p className="text-[10px] text-muted-foreground mt-0.5">18:00-19:30</p>
-                              <p className="text-[10px] text-muted-foreground">Samling: 17:45</p>
-                              <p className="text-[10px] text-muted-foreground">Plan 1, Östersunds IP</p>
+                            <div className="bg-primary/10 border border-primary/30 rounded p-1 h-full">
+                              <p className="text-[10px] font-bold text-primary">Träning</p>
+                              <p className="text-[9px] text-muted-foreground">18:00-19:30</p>
+                              <p className="text-[9px] text-muted-foreground">Samling: 17:45</p>
                             </div>
                           )}
                         </div>
-                        <div className="p-2 border-r min-h-[80px]"></div>
-                        <div className="p-2 border-r min-h-[80px]">
+                        <div className="p-1 border-r min-h-[50px]"></div>
+                        <div className="p-1 border-r min-h-[50px]">
                           {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
-                            <div className="bg-accent/10 border-2 border-accent/30 rounded-lg p-2 h-full">
-                              <p className="text-xs font-bold text-accent">Match</p>
-                              <p className="text-[10px] text-muted-foreground mt-0.5">17:00-18:30</p>
-                              <p className="text-[10px] text-muted-foreground">vs Frösö IF</p>
-                              <p className="text-[10px] text-muted-foreground">Division 3 Norra</p>
-                              <p className="text-[10px] text-muted-foreground">Samling: 16:30</p>
-                              <p className="text-[10px] text-muted-foreground">Frösö IP</p>
+                            <div className="bg-accent/10 border border-accent/30 rounded p-1 h-full">
+                              <p className="text-[10px] font-bold text-accent">Match</p>
+                              <p className="text-[9px] text-muted-foreground">17:00-18:30</p>
+                              <p className="text-[9px] text-muted-foreground">vs Frösö IF</p>
                             </div>
                           )}
                         </div>
-                        <div className="p-2 min-h-[80px]"></div>
+                        <div className="p-1 min-h-[50px]"></div>
                       </div>
                     ))}
                   </div>
