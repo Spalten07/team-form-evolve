@@ -322,8 +322,9 @@ const Planner = () => {
               <CardContent>
                 <div className="border rounded-lg overflow-x-auto">
                   <div className="w-full">
-                    <div className="grid grid-cols-8 bg-secondary/80">
-                      <div className="p-1 text-[10px] font-semibold border-r">Tid</div>
+                    {/* Header row */}
+                    <div className="grid grid-cols-[auto_1fr_1fr_1fr_1fr_1fr_1fr_1fr] bg-secondary/80">
+                      <div className="p-1 text-[10px] font-semibold border-r w-12">Tid</div>
                       <div className="p-1 text-[10px] font-semibold border-r text-center">M<br/><span className="text-[8px] font-normal text-muted-foreground">4/11</span></div>
                       <div className="p-1 text-[10px] font-semibold border-r text-center">T<br/><span className="text-[8px] font-normal text-muted-foreground">5/11</span></div>
                       <div className="p-1 text-[10px] font-semibold border-r text-center">O<br/><span className="text-[8px] font-normal text-muted-foreground">6/11</span></div>
@@ -333,39 +334,45 @@ const Planner = () => {
                       <div className="p-1 text-[10px] font-semibold text-center">S<br/><span className="text-[8px] font-normal text-muted-foreground">10/11</span></div>
                     </div>
                     
-                    {["16:00", "16:15", "16:30", "16:45", "17:00", "17:15", "17:30", "17:45", "18:00", "18:15", "18:30", "18:45", "19:00"].map((time) => (
-                      <div key={time} className="grid grid-cols-8 border-t hover:bg-secondary/20 transition-colors">
-                        <div className="p-1 text-[10px] font-medium text-muted-foreground border-r bg-secondary/30">{time}</div>
-                        <div className="p-0.5 border-r min-h-[30px]"></div>
-                        <div className="p-0.5 border-r min-h-[30px]">
-                          {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                            <div className="bg-primary/10 border border-primary/30 rounded p-0.5 h-full flex flex-col justify-center items-center text-center">
-                              <p className="text-[9px] font-bold text-primary">Träning</p>
-                              <p className="text-[7px] text-muted-foreground">18:00</p>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-0.5 border-r min-h-[30px]"></div>
-                        <div className="p-0.5 border-r min-h-[30px]">
-                          {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                            <div className="bg-primary/10 border border-primary/30 rounded p-0.5 h-full flex flex-col justify-center items-center text-center">
-                              <p className="text-[9px] font-bold text-primary">Träning</p>
-                              <p className="text-[7px] text-muted-foreground">18:00</p>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-0.5 border-r min-h-[30px]"></div>
-                        <div className="p-0.5 border-r min-h-[30px]">
-                          {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
-                            <div className="bg-accent/10 border border-accent/30 rounded p-0.5 h-full flex flex-col justify-center items-center text-center">
-                              <p className="text-[9px] font-bold text-accent">Match</p>
-                              <p className="text-[7px] text-muted-foreground">17:00</p>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-0.5 min-h-[30px]"></div>
-                      </div>
-                    ))}
+                    {/* Calendar grid */}
+                    <div className="relative grid grid-cols-[auto_1fr_1fr_1fr_1fr_1fr_1fr_1fr]" style={{ gridAutoRows: '30px' }}>
+                      {["16:00", "16:15", "16:30", "16:45", "17:00", "17:15", "17:30", "17:45", "18:00", "18:15", "18:30", "18:45", "19:00"].map((time, idx) => (
+                        <>
+                          <div key={`time-${time}`} className="p-1 text-[10px] font-medium text-muted-foreground border-r border-t bg-secondary/30 w-12 flex items-center">
+                            {time}
+                          </div>
+                          <div className="border-r border-t"></div>
+                          <div className="border-r border-t relative">
+                            {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                              <div className="absolute inset-0.5 bg-primary/10 border border-primary/30 rounded flex flex-col justify-center items-center text-center" style={{ gridRow: `span 6` }}>
+                                <p className="text-[9px] font-bold text-primary">Träning</p>
+                                <p className="text-[7px] text-muted-foreground">18:00-19:30</p>
+                              </div>
+                            )}
+                          </div>
+                          <div className="border-r border-t"></div>
+                          <div className="border-r border-t relative">
+                            {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                              <div className="absolute inset-0.5 bg-primary/10 border border-primary/30 rounded flex flex-col justify-center items-center text-center" style={{ gridRow: `span 6` }}>
+                                <p className="text-[9px] font-bold text-primary">Träning</p>
+                                <p className="text-[7px] text-muted-foreground">18:00-19:30</p>
+                              </div>
+                            )}
+                          </div>
+                          <div className="border-r border-t"></div>
+                          <div className="border-r border-t relative">
+                            {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
+                              <div className="absolute inset-0.5 bg-accent/10 border border-accent/30 rounded flex flex-col justify-center items-center text-center" style={{ gridRow: `span 6` }}>
+                                <p className="text-[9px] font-bold text-accent">Match</p>
+                                <p className="text-[7px] text-muted-foreground">17:00-18:30</p>
+                                <p className="text-[7px] text-muted-foreground">vs Frösö</p>
+                              </div>
+                            )}
+                          </div>
+                          <div className="border-t"></div>
+                        </>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </CardContent>
