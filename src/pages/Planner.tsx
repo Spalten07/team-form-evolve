@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Plus, Users, Target, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Collapsible,
@@ -362,7 +362,7 @@ const Planner = () => {
                         const rowHeight = 'h-5';
                         
                         return (
-                          <>
+                          <React.Fragment key={`row-${time}-${idx}`}>
                             <div key={`time-${time}`} className={`p-0.5 text-[8px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-center ${rowHeight}`}>
                               {time}
                             </div>
@@ -380,7 +380,7 @@ const Planner = () => {
                                 )}
                               </div>
                             ))}
-                          </>
+                          </React.Fragment>
                         );
                       })}
                     </div>
