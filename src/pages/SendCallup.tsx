@@ -255,6 +255,19 @@ const SendCallup = () => {
     }
     
     try {
+      // Get user's team
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('team_id')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) throw profileError;
+      if (!profileData?.team_id) {
+        toast.error("Du är inte kopplad till ett lag");
+        return;
+      }
+
       // Create ISO datetime string
       const startDateTime = new Date(`${callupData.date}T${callupData.time}`);
       // Default duration is 1.5 hours for training
@@ -286,7 +299,7 @@ const SendCallup = () => {
         description += `\n\nMedtages: ${callupData.bringItems}`;
       }
       
-      // Insert activity into database
+      // Insert activity into database with team_id
       const { error } = await supabase
         .from('activities')
         .insert({
@@ -295,7 +308,8 @@ const SendCallup = () => {
           activity_type: activityType,
           start_time: startDateTime.toISOString(),
           end_time: endDateTime.toISOString(),
-          created_by: user.id
+          created_by: user.id,
+          team_id: profileData.team_id
         });
       
       if (error) throw error;

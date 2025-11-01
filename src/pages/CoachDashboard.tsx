@@ -9,6 +9,7 @@ import {
   Trophy,
   Activity
 } from "lucide-react";
+import { TeamCodeCard } from "@/components/TeamCodeCard";
 
 const CoachDashboard = () => {
   return (
@@ -24,6 +25,9 @@ const CoachDashboard = () => {
             Lagets statistik och resultat
           </p>
         </div>
+
+        {/* Team Code Card */}
+        <TeamCodeCard />
 
         {/* Next Match Info */}
         <Card className="mb-8 bg-gradient-hero text-primary-foreground border-0">

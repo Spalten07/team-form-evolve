@@ -17,7 +17,8 @@ const Auth = () => {
     email: "",
     password: "",
     fullName: "",
-    role: "player" as "player" | "coach"
+    role: "player" as "player" | "coach",
+    teamCode: ""
   });
 
   useEffect(() => {
@@ -51,7 +52,7 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Inloggning lyckades!");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const signUpData: any = {
           email: formData.email,
           password: formData.password,
           options: {
@@ -61,9 +62,22 @@ const Auth = () => {
             },
             emailRedirectTo: `${window.location.origin}/`
           }
-        });
+        };
+
+        // Add team_code for players
+        if (formData.role === "player" && formData.teamCode) {
+          signUpData.options.data.team_code = formData.teamCode.toUpperCase();
+        }
+
+        const { error } = await supabase.auth.signUp(signUpData);
 
         if (error) throw error;
+        
+        if (formData.role === "player" && !formData.teamCode) {
+          toast.error("Lagkod krävs för spelare");
+          return;
+        }
+        
         toast.success("Konto skapat! Du kan nu logga in.");
         setIsLogin(true);
       }
@@ -123,6 +137,24 @@ const Auth = () => {
                         <option value="coach">Tränare</option>
                       </select>
                     </div>
+                    {formData.role === "player" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="teamCode">Lagkod</Label>
+                        <Input
+                          id="teamCode"
+                          type="text"
+                          required
+                          value={formData.teamCode}
+                          onChange={(e) => setFormData({ ...formData, teamCode: e.target.value.toUpperCase() })}
+                          placeholder="Ange lagkod från din tränare"
+                          maxLength={6}
+                          className="uppercase"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Fråga din tränare efter lagkoden
+                        </p>
+                      </div>
+                    )}
                   </>
                 )}
                 <div className="space-y-2">

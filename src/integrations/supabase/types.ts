@@ -23,6 +23,7 @@ export type Database = {
           end_time: string
           id: string
           start_time: string
+          team_id: string | null
           title: string
           updated_at: string
         }
@@ -34,6 +35,7 @@ export type Database = {
           end_time: string
           id?: string
           start_time: string
+          team_id?: string | null
           title: string
           updated_at?: string
         }
@@ -45,6 +47,7 @@ export type Database = {
           end_time?: string
           id?: string
           start_time?: string
+          team_id?: string | null
           title?: string
           updated_at?: string
         }
@@ -56,6 +59,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "activities_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -65,6 +75,7 @@ export type Database = {
           full_name: string | null
           id: string
           role: string
+          team_id: string | null
           updated_at: string
         }
         Insert: {
@@ -73,6 +84,7 @@ export type Database = {
           full_name?: string | null
           id: string
           role: string
+          team_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -81,16 +93,60 @@ export type Database = {
           full_name?: string | null
           id?: string
           role?: string
+          team_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          coach_id: string
+          created_at: string
+          id: string
+          name: string
+          team_code: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          id?: string
+          name: string
+          team_code: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          team_code?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_team_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
