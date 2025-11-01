@@ -336,7 +336,7 @@ const Planner = () => {
                     
                     {/* Calendar grid with dynamic row heights */}
                     <div className="relative grid grid-cols-[50px_repeat(7,1fr)]">
-                      {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => {
+                       {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => {
                         const rowHeight = 'h-5';
                         
                         return (
@@ -349,6 +349,13 @@ const Planner = () => {
                               <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-border/50"></div>
                               <div className="absolute top-[50%] left-0 right-0 h-[1px] bg-border/50"></div>
                               <div className="absolute top-[75%] left-0 right-0 h-[1px] bg-border/50"></div>
+                              {/* Exempel: Träning 16:15-17:45 */}
+                              {time === "16:00" && (
+                                <div className="absolute top-[25%] left-0 right-0 bg-primary/30 border-l-4 border-primary p-0.5 z-10" style={{ height: 'calc(75% + 20px + 75%)' }}>
+                                  <p className="text-[8px] font-bold text-primary">Träning</p>
+                                  <p className="text-[7px] text-muted-foreground">16:15-17:45</p>
+                                </div>
+                              )}
                             </div>
                             {/* Tisdag (2/11) */}
                             <div className={`border-r border-t relative ${rowHeight}`}>
