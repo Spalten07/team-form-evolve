@@ -352,8 +352,8 @@ const Planner = () => {
                               {/* Exempel: Träning 16:15-17:45 */}
                               {time === "16:00" && (
                                 <div className="absolute top-[25%] left-0 right-0 bg-primary/30 border-l-4 border-primary p-0.5 z-10" style={{ height: 'calc(75% + 20px + 75%)' }}>
-                                  <p className="text-[8px] font-bold text-primary">Träning</p>
-                                  <p className="text-[7px] text-muted-foreground">16:15-17:45</p>
+                                  <p className="text-[7px] font-bold text-primary leading-tight">Träning</p>
+                                  <p className="text-[6px] text-muted-foreground leading-tight">16:15-17:45</p>
                                 </div>
                               )}
                             </div>
