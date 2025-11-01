@@ -16,10 +16,13 @@ import {
   CalendarDays
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface Player {
-  id: number;
+  id: string;
   name: string;
   email: string;
   attendanceRate: number;
@@ -32,14 +35,80 @@ interface Player {
   };
 }
 
-const mockPlayers: Player[] = [];
-
 const Players = () => {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const [sortBy, setSortBy] = useState<"name" | "attendance">("name");
-  const [selectedPlayers, setSelectedPlayers] = useState<number[]>([]);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [loadingPlayers, setLoadingPlayers] = useState(true);
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  // Fetch players from database
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchPlayers = async () => {
+      try {
+        setLoadingPlayers(true);
+        
+        // Get coach's team_id
+        const { data: coachProfile, error: coachError } = await supabase
+          .from('profiles')
+          .select('team_id')
+          .eq('id', user.id)
+          .single();
+
+        if (coachError) throw coachError;
+        if (!coachProfile?.team_id) {
+          setPlayers([]);
+          setLoadingPlayers(false);
+          return;
+        }
+
+        // Get all players in the same team
+        const { data: teamPlayers, error: playersError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('team_id', coachProfile.team_id)
+          .eq('role', 'player');
+
+        if (playersError) throw playersError;
+
+        // Transform to Player interface
+        const formattedPlayers: Player[] = (teamPlayers || []).map(player => ({
+          id: player.id,
+          name: player.full_name || player.email.split('@')[0],
+          email: player.email,
+          attendanceRate: 0, // TODO: Calculate from activities
+          personalTrainingSessions: 0, // TODO: Calculate from activities
+          lastTraining: new Date().toISOString().split('T')[0],
+          upcomingTrainings: 0, // TODO: Calculate from activities
+          guardian: {
+            name: "Ej angivet",
+            phone: "Ej angivet"
+          }
+        }));
+
+        setPlayers(formattedPlayers);
+      } catch (error: any) {
+        console.error('Error fetching players:', error);
+        toast.error("Kunde inte hämta spelare");
+      } finally {
+        setLoadingPlayers(false);
+      }
+    };
+
+    fetchPlayers();
+  }, [user, navigate]);
   
-  const players = [...mockPlayers].sort((a, b) => {
+  const sortedPlayers = [...players].sort((a, b) => {
     if (sortBy === "name") {
       const lastNameA = a.name.split(" ")[1] || a.name;
       const lastNameB = b.name.split(" ")[1] || b.name;
@@ -64,7 +133,7 @@ const Players = () => {
     return "bg-destructive/20 text-destructive";
   };
 
-  const togglePlayerSelection = (playerId: number) => {
+  const togglePlayerSelection = (playerId: string) => {
     setSelectedPlayers(prev => 
       prev.includes(playerId) 
         ? prev.filter(id => id !== playerId)
@@ -72,9 +141,9 @@ const Players = () => {
     );
   };
 
-  const avgAttendance = Math.round(
-    players.reduce((sum, p) => sum + p.attendanceRate, 0) / players.length
-  );
+  const avgAttendance = players.length > 0 
+    ? Math.round(players.reduce((sum, p) => sum + p.attendanceRate, 0) / players.length)
+    : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -163,7 +232,16 @@ const Players = () => {
           
           <TabsContent value="overview">
             <div className="space-y-3">
-              {players.map((player) => (
+              {loadingPlayers ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Laddar spelare...
+                </div>
+              ) : sortedPlayers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Inga spelare i laget än. Dela din lagkod så att spelare kan ansluta!
+                </div>
+              ) : (
+                sortedPlayers.map((player) => (
                 <Card 
                   key={player.id} 
                   className={`hover:shadow-md transition-all cursor-pointer ${
@@ -215,7 +293,8 @@ const Players = () => {
                     </div>
                   </CardHeader>
                 </Card>
-              ))}
+                ))
+              )}
             </div>
           </TabsContent>
 
@@ -239,7 +318,7 @@ const Players = () => {
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {selectedPlayers.map(playerId => {
-                          const player = players.find(p => p.id === playerId);
+                          const player = sortedPlayers.find(p => p.id === playerId);
                           return player ? (
                             <Badge key={playerId} variant="outline">
                               {player.name}

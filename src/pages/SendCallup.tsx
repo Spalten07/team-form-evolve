@@ -29,7 +29,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface Player {
-  id: number;
+  id: string;
   name: string;
   email: string;
   attendanceRate: number;
@@ -42,13 +42,13 @@ interface Player {
   };
 }
 
-const mockPlayers: Player[] = [];
-
 const SendCallup = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading } = useAuth();
   const preSelectedPlayers = location.state?.selectedPlayers || [];
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [loadingPlayers, setLoadingPlayers] = useState(true);
   
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -56,9 +56,67 @@ const SendCallup = () => {
       navigate("/auth");
     }
   }, [user, loading, navigate]);
+
+  // Fetch players from database
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchPlayers = async () => {
+      try {
+        setLoadingPlayers(true);
+        
+        // Get coach's team_id
+        const { data: coachProfile, error: coachError } = await supabase
+          .from('profiles')
+          .select('team_id')
+          .eq('id', user.id)
+          .single();
+
+        if (coachError) throw coachError;
+        if (!coachProfile?.team_id) {
+          setPlayers([]);
+          setLoadingPlayers(false);
+          return;
+        }
+
+        // Get all players in the same team
+        const { data: teamPlayers, error: playersError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('team_id', coachProfile.team_id)
+          .eq('role', 'player');
+
+        if (playersError) throw playersError;
+
+        // Transform to Player interface
+        const formattedPlayers: Player[] = (teamPlayers || []).map(player => ({
+          id: player.id,
+          name: player.full_name || player.email.split('@')[0],
+          email: player.email,
+          attendanceRate: 0,
+          personalTrainingSessions: 0,
+          lastTraining: new Date().toISOString().split('T')[0],
+          upcomingTrainings: 0,
+          guardian: {
+            name: "Ej angivet",
+            phone: "Ej angivet"
+          }
+        }));
+
+        setPlayers(formattedPlayers);
+      } catch (error: any) {
+        console.error('Error fetching players:', error);
+        toast.error("Kunde inte hämta spelare");
+      } finally {
+        setLoadingPlayers(false);
+      }
+    };
+
+    fetchPlayers();
+  }, [user]);
   
   const [sortBy, setSortBy] = useState<"name" | "attendance">("name");
-  const [selectedPlayers, setSelectedPlayers] = useState<number[]>(preSelectedPlayers);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>(preSelectedPlayers);
   const [callupData, setCallupData] = useState({
     date: new Date().toISOString().split('T')[0],
     time: "18:00",
@@ -135,7 +193,7 @@ const SendCallup = () => {
     return options;
   };
   
-  const players = [...mockPlayers].sort((a, b) => {
+  const sortedPlayers = [...players].sort((a, b) => {
     if (sortBy === "name") {
       const lastNameA = a.name.split(" ")[1] || a.name;
       const lastNameB = b.name.split(" ")[1] || b.name;
@@ -151,7 +209,7 @@ const SendCallup = () => {
     return "bg-destructive/20 text-destructive";
   };
 
-  const togglePlayerSelection = (playerId: number) => {
+  const togglePlayerSelection = (playerId: string) => {
     setSelectedPlayers(prev => 
       prev.includes(playerId) 
         ? prev.filter(id => id !== playerId)
@@ -541,7 +599,7 @@ const SendCallup = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setSelectedPlayers(players.map(p => p.id))}
+            onClick={() => setSelectedPlayers(sortedPlayers.map(p => p.id))}
           >
             Välj alla spelare
           </Button>
@@ -560,7 +618,16 @@ const SendCallup = () => {
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Välj spelare</h2>
           
-          {players.map((player) => (
+          {loadingPlayers ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Laddar spelare...
+            </div>
+          ) : sortedPlayers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Inga spelare i laget än. Dela din lagkod så att spelare kan ansluta!
+            </div>
+          ) : (
+            sortedPlayers.map((player) => (
             <Card 
               key={player.id} 
               className={`hover:shadow-md transition-all cursor-pointer ${
@@ -593,7 +660,8 @@ const SendCallup = () => {
                 </div>
               </CardHeader>
             </Card>
-          ))}
+            ))
+          )}
         </div>
       </main>
     </div>
