@@ -341,12 +341,41 @@ const Planner = () => {
                           <div key={`time-${time}`} className="p-1 text-[10px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-start">
                             {time}
                           </div>
+                          {/* Måndag */}
                           <div className="border-r border-t relative"></div>
+                          {/* Tisdag */}
+                          <div className="border-r border-t relative">
+                            {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                              <div className="absolute inset-0 bg-primary/30 p-2 flex flex-col justify-start z-10" style={{ gridRow: `span 6` }}>
+                                <p className="text-xs font-bold text-primary">Träning</p>
+                                <p className="text-[10px] text-muted-foreground">18:00-19:30</p>
+                              </div>
+                            )}
+                          </div>
+                          {/* Onsdag */}
                           <div className="border-r border-t relative"></div>
+                          {/* Torsdag */}
+                          <div className="border-r border-t relative">
+                            {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
+                              <div className="absolute inset-0 bg-primary/30 p-2 flex flex-col justify-start z-10" style={{ gridRow: `span 6` }}>
+                                <p className="text-xs font-bold text-primary">Träning</p>
+                                <p className="text-[10px] text-muted-foreground">18:00-19:30</p>
+                              </div>
+                            )}
+                          </div>
+                          {/* Fredag */}
+                          <div className="border-r border-t relative">
+                            {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
+                              <div className="absolute inset-0 bg-accent/30 p-2 flex flex-col justify-start z-10" style={{ gridRow: `span 6` }}>
+                                <p className="text-xs font-bold text-accent">Match</p>
+                                <p className="text-[10px] text-muted-foreground">17:00-18:30</p>
+                                <p className="text-[10px] text-muted-foreground">vs Frösö</p>
+                              </div>
+                            )}
+                          </div>
+                          {/* Lördag */}
                           <div className="border-r border-t relative"></div>
-                          <div className="border-r border-t relative"></div>
-                          <div className="border-r border-t relative"></div>
-                          <div className="border-r border-t relative"></div>
+                          {/* Söndag */}
                           <div className="border-t relative"></div>
                         </>
                       ))}
