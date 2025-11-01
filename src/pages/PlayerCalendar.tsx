@@ -111,19 +111,7 @@ const PlayerCalendar = () => {
     };
   }, [user]);
 
-  const playerName = playerId ? (() => {
-    const players = [
-      { id: 1, name: "Erik Andersson" },
-      { id: 2, name: "Sofia Nilsson" },
-      { id: 3, name: "Oscar Berg" },
-      { id: 4, name: "Anna Karlsson" },
-      { id: 5, name: "Lucas Eriksson" },
-      { id: 6, name: "Emma Johansson" },
-      { id: 7, name: "Oliver Larsson" },
-      { id: 8, name: "Maja Svensson" }
-    ];
-    return players.find(p => p.id === parseInt(playerId))?.name || "Spelaren";
-  })() : null;
+  const playerName = playerId ? "Spelaren" : null;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
