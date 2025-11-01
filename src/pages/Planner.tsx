@@ -335,47 +335,43 @@ const Planner = () => {
                     </div>
                     
                     {/* Calendar grid */}
-                    <div className="relative grid grid-cols-[80px_repeat(7,1fr)]">
-                      {["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map((time, idx) => {
-                        const hasEvent = time === "18:00" || time === "17:00";
-                        const rowHeight = hasEvent ? 'h-16' : 'h-8';
-                        return (
+                    <div className="relative grid grid-cols-[80px_repeat(7,1fr)]" style={{ gridAutoRows: '30px' }}>
+                      {["08:00", "08:15", "08:30", "08:45", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "16:00", "16:15", "16:30", "16:45", "17:00", "17:15", "17:30", "17:45", "18:00", "18:15", "18:30", "18:45", "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "21:00", "21:15", "21:30", "21:45", "22:00"].map((time, idx) => (
                         <>
-                          <div key={`time-${time}`} className={`p-2 text-sm font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-start ${rowHeight}`}>
+                          <div key={`time-${time}`} className="p-1 text-[10px] font-medium text-muted-foreground border-r border-t bg-secondary/30 flex items-start">
                             {time}
                           </div>
-                          <div className={`border-r border-t relative ${rowHeight}`}></div>
-                          <div className={`border-r border-t relative ${rowHeight}`}>
+                          <div className="border-r border-t relative"></div>
+                          <div className="border-r border-t relative">
                             {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                              <div className="absolute inset-0 bg-primary/20 border-l-4 border-primary p-2 flex flex-col justify-start">
-                                <p className="text-sm font-bold text-primary">Träning</p>
-                                <p className="text-xs text-muted-foreground">18:00-19:30</p>
+                              <div className="absolute inset-0.5 bg-primary/20 border-l-4 border-primary p-1 flex flex-col justify-start" style={{ gridRow: `span 6` }}>
+                                <p className="text-[9px] font-bold text-primary">Träning</p>
+                                <p className="text-[7px] text-muted-foreground">18:00-19:30</p>
                               </div>
                             )}
                           </div>
-                          <div className={`border-r border-t relative ${rowHeight}`}></div>
-                          <div className={`border-r border-t relative ${rowHeight}`}>
+                          <div className="border-r border-t relative"></div>
+                          <div className="border-r border-t relative">
                             {time === "18:00" && (activityFilter === "all" || activityFilter === "training") && (
-                              <div className="absolute inset-0 bg-primary/20 border-l-4 border-primary p-2 flex flex-col justify-start">
-                                <p className="text-sm font-bold text-primary">Träning</p>
-                                <p className="text-xs text-muted-foreground">18:00-19:30</p>
+                              <div className="absolute inset-0.5 bg-primary/20 border-l-4 border-primary p-1 flex flex-col justify-start" style={{ gridRow: `span 6` }}>
+                                <p className="text-[9px] font-bold text-primary">Träning</p>
+                                <p className="text-[7px] text-muted-foreground">18:00-19:30</p>
                               </div>
                             )}
                           </div>
-                          <div className={`border-r border-t relative ${rowHeight}`}>
+                          <div className="border-r border-t relative">
                             {time === "17:00" && (activityFilter === "all" || activityFilter === "match") && (
-                              <div className="absolute inset-0 bg-accent/20 border-l-4 border-accent p-2 flex flex-col justify-start">
-                                <p className="text-sm font-bold text-accent">Match</p>
-                                <p className="text-xs text-muted-foreground">17:00-18:30</p>
-                                <p className="text-xs text-muted-foreground">vs Frösö</p>
+                              <div className="absolute inset-0.5 bg-accent/20 border-l-4 border-accent p-1 flex flex-col justify-start" style={{ gridRow: `span 6` }}>
+                                <p className="text-[9px] font-bold text-accent">Match</p>
+                                <p className="text-[7px] text-muted-foreground">17:00-18:30</p>
+                                <p className="text-[7px] text-muted-foreground">vs Frösö</p>
                               </div>
                             )}
                           </div>
-                          <div className={`border-r border-t relative ${rowHeight}`}></div>
-                          <div className={`border-t relative ${rowHeight}`}></div>
+                          <div className="border-r border-t relative"></div>
+                          <div className="border-t relative"></div>
                         </>
-                      );
-                      })}
+                      ))}
                     </div>
                   </div>
                 </div>
