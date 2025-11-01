@@ -8,8 +8,74 @@ import {
   TrendingUp,
   Calendar
 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const PlayerDashboard = () => {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({
+    attendance: 0,
+    trainings: 0,
+    matches: 0
+  });
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchStats = async () => {
+      try {
+        // Get player's team_id
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('team_id')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile?.team_id) return;
+
+        // Fetch all activities from the last 3 months where end_time has passed
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+        const { data: activities } = await supabase
+          .from('activities')
+          .select('id, activity_type, end_time')
+          .eq('team_id', profile.team_id)
+          .lt('end_time', new Date().toISOString())
+          .gte('start_time', threeMonthsAgo.toISOString());
+
+        // Fetch callup responses for completed activities
+        const activityIds = activities?.map(a => a.id) || [];
+        const { data: responses } = await supabase
+          .from('callup_responses')
+          .select('status, activity_id')
+          .eq('player_id', user.id)
+          .in('activity_id', activityIds);
+
+        // Calculate statistics
+        const totalActivities = activities?.length || 0;
+        const confirmedResponses = responses?.filter(r => r.status === 'confirmed').length || 0;
+        const attendanceRate = totalActivities > 0 ? Math.round((confirmedResponses / totalActivities) * 100) : 0;
+
+        const trainings = activities?.filter(a => a.activity_type === 'training').length || 0;
+        const matches = activities?.filter(a => a.activity_type === 'match').length || 0;
+
+        setStats({
+          attendance: attendanceRate,
+          trainings,
+          matches
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        toast.error('Kunde inte hämta statistik');
+      }
+    };
+
+    fetchStats();
+  }, [user]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -25,7 +91,7 @@ const PlayerDashboard = () => {
         </div>
 
         {/* Personal Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
@@ -34,7 +100,7 @@ const PlayerDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">92%</div>
+              <div className="text-3xl font-bold">{stats.attendance}%</div>
               <p className="text-xs text-muted-foreground mt-1">Senaste 3 månaderna</p>
             </CardContent>
           </Card>
@@ -47,23 +113,11 @@ const PlayerDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">18</div>
-              <p className="text-xs text-muted-foreground mt-1">Egna träningar denna månad</p>
+              <div className="text-3xl font-bold">{stats.trainings}</div>
+              <p className="text-xs text-muted-foreground mt-1">Genomförda träningar senaste 3 månaderna</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
-                <TrendingUp className="w-4 h-4" />
-                Utveckling
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">+15%</div>
-              <p className="text-xs text-muted-foreground mt-1">Ökning i träningstid</p>
-            </CardContent>
-          </Card>
 
           <Card>
             <CardHeader className="pb-3">
@@ -73,169 +127,12 @@ const PlayerDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">8</div>
-              <p className="text-xs text-muted-foreground mt-1">Spelade matcher</p>
+              <div className="text-3xl font-bold">{stats.matches}</div>
+              <p className="text-xs text-muted-foreground mt-1">Genomförda matcher senaste 3 månaderna</p>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          {/* Latest Results */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
-                Senaste resultat
-              </CardTitle>
-              <CardDescription>
-                Lagets senaste matcher i serien
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
-                <div>
-                  <p className="font-semibold">Vårt lag - Motståndare A</p>
-                  <p className="text-sm text-muted-foreground">2025-10-27</p>
-                </div>
-                <div className="text-right">
-                  <Badge className="bg-success text-success-foreground">Vinst</Badge>
-                  <p className="text-lg font-bold mt-1">3 - 1</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 bg-warning/10 rounded-lg border border-warning/20">
-                <div>
-                  <p className="font-semibold">Motståndare B - Vårt lag</p>
-                  <p className="text-sm text-muted-foreground">2025-10-20</p>
-                </div>
-                <div className="text-right">
-                  <Badge className="bg-warning text-warning-foreground">Oavgjort</Badge>
-                  <p className="text-lg font-bold mt-1">2 - 2</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
-                <div>
-                  <p className="font-semibold">Vårt lag - Motståndare C</p>
-                  <p className="text-sm text-muted-foreground">2025-10-13</p>
-                </div>
-                <div className="text-right">
-                  <Badge className="bg-success text-success-foreground">Vinst</Badge>
-                  <p className="text-lg font-bold mt-1">4 - 2</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Team Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
-                Tabellposition
-              </CardTitle>
-              <CardDescription>
-                Division 3 Norra
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1">
-                <div className="grid grid-cols-5 gap-2 pb-2 border-b font-semibold text-xs text-muted-foreground">
-                  <div>Pos</div>
-                  <div className="col-span-2">Lag</div>
-                  <div className="text-center">M</div>
-                  <div className="text-center">P</div>
-                </div>
-                <div className="grid grid-cols-5 gap-2 py-2 border-b text-sm">
-                  <div>1</div>
-                  <div className="col-span-2">Frösö IF</div>
-                  <div className="text-center">12</div>
-                  <div className="text-center font-bold">28</div>
-                </div>
-                <div className="grid grid-cols-5 gap-2 py-2 border-b text-sm">
-                  <div>2</div>
-                  <div className="col-span-2">IFK Östersund</div>
-                  <div className="text-center">12</div>
-                  <div className="text-center font-bold">26</div>
-                </div>
-                <div className="grid grid-cols-5 gap-2 py-2 border-b bg-primary/10 text-sm font-semibold">
-                  <div>3</div>
-                  <div className="col-span-2">Vårt lag</div>
-                  <div className="text-center">12</div>
-                  <div className="text-center">24</div>
-                </div>
-                <div className="grid grid-cols-5 gap-2 py-2 border-b text-sm">
-                  <div>4</div>
-                  <div className="col-span-2">Ånge IF</div>
-                  <div className="text-center">12</div>
-                  <div className="text-center font-bold">21</div>
-                </div>
-                <div className="grid grid-cols-5 gap-2 py-2 text-sm">
-                  <div>5</div>
-                  <div className="col-span-2">Brunflo FK</div>
-                  <div className="text-center">12</div>
-                  <div className="text-center font-bold">19</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Training Focus */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5" />
-              Vad jag tränat mest på
-            </CardTitle>
-            <CardDescription>
-              Fördelning av träningsfokus senaste 3 månaderna
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Teknik & Bollkontroll</span>
-                  <span className="text-sm text-muted-foreground">40%</span>
-                </div>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div className="bg-primary rounded-full h-2" style={{ width: "40%" }} />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Passning & Mottagning</span>
-                  <span className="text-sm text-muted-foreground">30%</span>
-                </div>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div className="bg-primary rounded-full h-2" style={{ width: "30%" }} />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Avslut & Skott</span>
-                  <span className="text-sm text-muted-foreground">20%</span>
-                </div>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div className="bg-primary rounded-full h-2" style={{ width: "20%" }} />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Kondition & Uthållighet</span>
-                  <span className="text-sm text-muted-foreground">10%</span>
-                </div>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div className="bg-primary rounded-full h-2" style={{ width: "10%" }} />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </main>
     </div>
   );
