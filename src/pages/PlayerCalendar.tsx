@@ -2,7 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, History, CalendarDays, Filter, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, History, CalendarDays, Filter, CheckCircle, XCircle, AlertCircle, Edit2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -214,7 +214,7 @@ const PlayerCalendar = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
                 <div className="text-2xl font-bold">{trainings.length}</div>
                 <div className="text-xs opacity-90 leading-tight">Träningar</div>
@@ -222,10 +222,6 @@ const PlayerCalendar = () => {
               <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
                 <div className="text-2xl font-bold">{matches.length}</div>
                 <div className="text-xs opacity-90 leading-tight">Matcher</div>
-              </div>
-              <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-3">
-                <div className="text-2xl font-bold">{confirmedCount}</div>
-                <div className="text-xs opacity-90 leading-tight">Bekräftade</div>
               </div>
             </div>
           </CardContent>
@@ -327,10 +323,10 @@ const PlayerCalendar = () => {
                                     className={`absolute left-0 right-0 ${bgColor} border-l-4 p-0.5 z-10 flex flex-col items-center justify-start overflow-hidden`}
                                     style={style}
                                   >
-                                    <p className="text-[7px] font-bold leading-tight truncate w-full text-center">
+                                    <p className="text-[7px] font-bold leading-tight truncate w-full text-center text-foreground">
                                       {activity.title}
                                     </p>
-                                    <p className="text-[6px] text-muted-foreground leading-tight">
+                                    <p className="text-[5px] text-foreground leading-tight">
                                       {startTime}-{endTime}
                                     </p>
                                   </div>
@@ -400,6 +396,31 @@ const PlayerCalendar = () => {
                                 </div>
                               </div>
                             </div>
+                          </div>
+                          
+                          <div className="flex gap-2 mt-3">
+                            {callupResponses[activity.id]?.status !== 'confirmed' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleResponseChange(activity.id, 'confirmed')}
+                                className="flex-1"
+                              >
+                                <CheckCircle className="w-3 h-3 mr-1" />
+                                Bekräfta
+                              </Button>
+                            )}
+                            {callupResponses[activity.id]?.status !== 'declined' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleResponseChange(activity.id, 'declined')}
+                                className="flex-1"
+                              >
+                                <XCircle className="w-3 h-3 mr-1" />
+                                Avsäg
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </CardContent>

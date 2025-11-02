@@ -6,7 +6,8 @@ import {
   Target,
   Trophy,
   TrendingUp,
-  Calendar
+  Calendar,
+  BookOpen
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +19,9 @@ const PlayerDashboard = () => {
   const [stats, setStats] = useState({
     attendance: 0,
     trainings: 0,
-    matches: 0
+    matches: 0,
+    completedTheory: 0,
+    totalTheory: 0
   });
 
   useEffect(() => {
@@ -62,10 +65,21 @@ const PlayerDashboard = () => {
         const trainings = activities?.filter(a => a.activity_type === 'training').length || 0;
         const matches = activities?.filter(a => a.activity_type === 'match').length || 0;
 
+        // Fetch theory assignments statistics
+        const { data: theoryAssignments } = await supabase
+          .from('theory_assignments')
+          .select('completed')
+          .eq('assigned_to', user.id);
+
+        const completedTheory = theoryAssignments?.filter(a => a.completed).length || 0;
+        const totalTheory = theoryAssignments?.length || 0;
+
         setStats({
           attendance: attendanceRate,
           trainings,
-          matches
+          matches,
+          completedTheory,
+          totalTheory
         });
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -91,7 +105,7 @@ const PlayerDashboard = () => {
         </div>
 
         {/* Personal Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
@@ -118,7 +132,6 @@ const PlayerDashboard = () => {
             </CardContent>
           </Card>
 
-
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
@@ -129,6 +142,19 @@ const PlayerDashboard = () => {
             <CardContent>
               <div className="text-3xl font-bold">{stats.matches}</div>
               <p className="text-xs text-muted-foreground mt-1">Genomförda matcher senaste 3 månaderna</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
+                <BookOpen className="w-4 h-4" />
+                Teori
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.completedTheory}/{stats.totalTheory}</div>
+              <p className="text-xs text-muted-foreground mt-1">Genomförda teoripass</p>
             </CardContent>
           </Card>
         </div>

@@ -302,24 +302,28 @@ export const RoleSwitcher = () => {
                 placeholder="Gatuadress, Postnummer Stad"
               />
             </div>
-            <div>
-              <Label htmlFor="guardian_name">Vårdnadshavares namn</Label>
-              <Input
-                id="guardian_name"
-                value={profileData.guardian_name}
-                onChange={(e) => setProfileData({ ...profileData, guardian_name: e.target.value })}
-                placeholder="Förnamn Efternamn"
-              />
-            </div>
-            <div>
-              <Label htmlFor="guardian_phone">Vårdnadshavares telefon</Label>
-              <Input
-                id="guardian_phone"
-                value={profileData.guardian_phone}
-                onChange={(e) => setProfileData({ ...profileData, guardian_phone: e.target.value })}
-                placeholder="070-123 45 67"
-              />
-            </div>
+            {activeRole === 'player' && (
+              <>
+                <div>
+                  <Label htmlFor="guardian_name">Vårdnadshavares namn</Label>
+                  <Input
+                    id="guardian_name"
+                    value={profileData.guardian_name}
+                    onChange={(e) => setProfileData({ ...profileData, guardian_name: e.target.value })}
+                    placeholder="Förnamn Efternamn"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="guardian_phone">Vårdnadshavares telefon</Label>
+                  <Input
+                    id="guardian_phone"
+                    value={profileData.guardian_phone}
+                    onChange={(e) => setProfileData({ ...profileData, guardian_phone: e.target.value })}
+                    placeholder="070-123 45 67"
+                  />
+                </div>
+              </>
+            )}
             <Button onClick={saveProfile} disabled={loading} className="w-full">
               Spara ändringar
             </Button>

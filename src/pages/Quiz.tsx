@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy, AlertCircle } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -900,7 +901,75 @@ const Quiz = () => {
     setShowExplanation(false);
     setCorrectAnswers(0);
     setQuizCompleted(false);
+    setHasCompletedBefore(false);
   };
+
+  const handleStartRetake = () => {
+    setShowRetakeDialog(false);
+    setHasCompletedBefore(false);
+    // Load quiz normally
+    const loadQuiz = async () => {
+      try {
+        if (quizData[quizId]) {
+          setQuiz(quizData[quizId]);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('custom_quizzes')
+          .select('*')
+          .eq('quiz_id', quizId)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          setQuiz({
+            id: data.quiz_id,
+            title: data.title,
+            level: data.level,
+            questions: data.questions as QuizQuestion[]
+          });
+        }
+      } catch (error: any) {
+        console.error('Error loading quiz:', error);
+        toast.error("Kunde inte ladda quiz");
+      }
+    };
+
+    loadQuiz();
+  };
+
+  if (showRetakeDialog) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <AlertDialog open={showRetakeDialog} onOpenChange={setShowRetakeDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <div className="flex justify-center mb-4">
+                  <AlertCircle className="w-12 h-12 text-warning" />
+                </div>
+                <AlertDialogTitle className="text-center">Vill du göra om teoripasset?</AlertDialogTitle>
+                <AlertDialogDescription className="text-center">
+                  Du har redan genomfört detta teoripass tidigare. Vill du göra om det?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
+                <AlertDialogAction onClick={handleStartRetake} className="w-full">
+                  Ja, jag vill göra om det
+                </AlertDialogAction>
+                <AlertDialogCancel onClick={() => navigate('/theory')} className="w-full">
+                  Jag vill inte göra om teoripasset
+                </AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </main>
+      </div>
+    );
+  }
 
   if (quizCompleted) {
     const percentage = Math.round((correctAnswers / quiz.questions.length) * 100);
