@@ -60,9 +60,18 @@ export const Inbox = ({ open, onOpenChange, onUnreadCountChange }: InboxProps) =
         if (error) throw error;
         setCallups((data || []) as CallupResponse[]);
         
-        // Count pending callups as unread
-        const unreadCount = (data || []).filter(c => c.status === 'pending').length;
-        onUnreadCountChange?.(unreadCount);
+        // Count pending callups AND pending theory assignments as unread
+        const pendingCallups = (data || []).filter(c => c.status === 'pending').length;
+        
+        // Fetch pending theory assignments
+        const { data: theoryData } = await supabase
+          .from('theory_assignments')
+          .select('id')
+          .eq('assigned_to', user.id)
+          .eq('completed', false);
+        
+        const pendingTheory = (theoryData || []).length;
+        onUnreadCountChange?.(pendingCallups + pendingTheory);
       } catch (error: any) {
         console.error('Error fetching callups:', error);
         toast.error("Kunde inte hämta kallelser");

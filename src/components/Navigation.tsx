@@ -70,7 +70,7 @@ const coachNavLinks = [
   { to: "/exercises", label: "Övningsbank", icon: Dumbbell },
   { to: "/theory", label: "Teoribank", icon: BookOpen },
   { to: "/planner", label: "Planering", icon: CalendarDays },
-  { to: "/players", label: "Mina spelare", icon: Users },
+  { to: "/players", label: "Min trupp", icon: Users },
   { to: "/my-team", label: "Mitt lag", icon: Shield },
   { to: "/league-tables", label: "Tabeller", icon: Trophy },
 ];
@@ -78,7 +78,6 @@ const coachNavLinks = [
 const playerNavLinks = [
   { to: "/exercises", label: "Övningar", icon: Dumbbell },
   { to: "/theory", label: "Teoribank", icon: BookOpen },
-  { to: "/player-theory-todo", label: "Teori att göra", icon: Target },
   { to: "/player-calendar", label: "Kalender", icon: CalendarDays },
   { to: "/player-history", label: "Min träningshistorik", icon: ClipboardList },
 ];

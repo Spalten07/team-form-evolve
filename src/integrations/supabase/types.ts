@@ -68,6 +68,41 @@ export type Database = {
           },
         ]
       }
+      attendance: {
+        Row: {
+          activity_id: string
+          attended: boolean
+          created_at: string
+          id: string
+          player_id: string
+          updated_at: string
+        }
+        Insert: {
+          activity_id: string
+          attended?: boolean
+          created_at?: string
+          id?: string
+          player_id: string
+          updated_at?: string
+        }
+        Update: {
+          activity_id?: string
+          attended?: boolean
+          created_at?: string
+          id?: string
+          player_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       callup_responses: {
         Row: {
           activity_id: string

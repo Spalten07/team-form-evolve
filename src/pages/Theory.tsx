@@ -189,59 +189,40 @@ const Theory = () => {
         </div>
 
         {userRole === 'player' ? (
-          <Tabs defaultValue="todo" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="todo">Teori att göra</TabsTrigger>
-              <TabsTrigger value="all">Alla teoripass</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="todo">
-              {/* Progress Overview */}
-              <Card className="mb-8 bg-gradient-hero text-primary-foreground border-0 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="text-2xl flex items-center gap-2">
-                    <Target className="w-6 h-6" />
-                    Dina uppgifter
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                      <div className="text-3xl font-bold">{pendingAssignments.length}</div>
-                      <div className="text-sm opacity-90">Uppgifter kvar</div>
-                    </div>
-                    <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
-                      <div className="text-3xl font-bold">{completedAssignments.length}</div>
-                      <div className="text-sm opacity-90">Uppgifter klara</div>
-                    </div>
+          <>
+            {/* Progress Overview for players */}
+            <Card className="mb-8 bg-gradient-hero text-primary-foreground border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Target className="w-6 h-6" />
+                  Dina uppgifter
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
+                    <div className="text-3xl font-bold">{pendingAssignments.length}</div>
+                    <div className="text-sm opacity-90">Uppgifter kvar</div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="bg-primary-foreground/10 backdrop-blur rounded-lg p-4">
+                    <div className="text-3xl font-bold">{completedAssignments.length}</div>
+                    <div className="text-sm opacity-90">Uppgifter klara</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Pending Assignments */}
-              {isLoading ? (
-                <Card>
-                  <CardContent className="py-8 text-center text-muted-foreground">
-                    Laddar uppgifter...
-                  </CardContent>
-                </Card>
-              ) : pendingAssignments.length === 0 ? (
-                <Card>
-                  <CardContent className="py-8 text-center">
-                    <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground">
-                      Du har inga teoriuppgifter att göra just nu
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
+            {/* Pending Assignments for players */}
+            {pendingAssignments.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">Att göra</h2>
                 <div className="space-y-4">
                   {pendingAssignments.map((assignment) => {
                     const quiz = quizDetails[assignment.quiz_id] || customQuizzes.find(q => q.id === assignment.quiz_id);
                     if (!quiz) return null;
 
                     return (
-                      <Card key={assignment.id} className="hover:shadow-lg transition-all">
+                      <Card key={assignment.id} className="hover:shadow-lg transition-all border-2 border-primary">
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -277,10 +258,10 @@ const Theory = () => {
                     );
                   })}
                 </div>
-              )}
-            </TabsContent>
+              </div>
+            )}
 
-            <TabsContent value="all">
+            {/* All theory passes for players */}
               {/* 5-manna */}
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-3">
@@ -444,8 +425,7 @@ const Theory = () => {
                   </div>
                 </div>
               )}
-            </TabsContent>
-          </Tabs>
+          </>
         ) : (
           <>
             {/* Coach view */}
