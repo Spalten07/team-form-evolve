@@ -133,7 +133,7 @@ const Theory = () => {
     } else {
       setIsLoading(false);
     }
-  }, [user, profile?.role]);
+  }, [user, userRole]);
 
   // Fetch custom quizzes for coaches
   useEffect(() => {
@@ -665,13 +665,17 @@ const Theory = () => {
         <SendMessageDialog
           open={isDialogOpen}
           onOpenChange={setIsDialogOpen}
-          quizId={selectedQuiz || undefined}
+          selectedPlayers={[]}
+          players={[]}
         />
 
-        {userRole === 'coach' && (
+        {userRole === 'coach' && user && (
           <CreateQuizDialog
             open={showCreateDialog}
             onOpenChange={setShowCreateDialog}
+            userId={user.id}
+            teamId={null}
+            onSuccess={fetchCustomQuizzes}
           />
         )}
       </main>

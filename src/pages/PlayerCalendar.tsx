@@ -320,16 +320,16 @@ const PlayerCalendar = () => {
                                 return (
                                   <div 
                                     key={activity.id}
-                                    className={`absolute left-0 right-0 ${bgColor} border-l-4 p-0.5 z-10 flex flex-col items-center justify-start overflow-hidden`}
-                                    style={style}
-                                  >
-                                    <p className="text-[7px] font-bold leading-tight truncate w-full text-center text-foreground">
-                                      {activity.title}
-                                    </p>
-                                    <p className="text-[5px] text-foreground leading-tight">
-                                      {startTime}-{endTime}
-                                    </p>
-                                  </div>
+                                     className={`absolute left-0 right-0 ${bgColor} border-l-4 p-0.5 z-10 flex flex-col items-center justify-start overflow-hidden`}
+                                     style={style}
+                                   >
+                                     <p className="text-[7px] font-bold leading-tight truncate w-full text-center text-foreground">
+                                       {activity.title}
+                                     </p>
+                                     <p className="text-[5px] text-black leading-tight">
+                                       {startTime}-{endTime}
+                                     </p>
+                                   </div>
                                 );
                               })}
                             </div>
@@ -398,12 +398,28 @@ const PlayerCalendar = () => {
                             </div>
                           </div>
                           
-                          <div className="flex gap-2 mt-3">
+                           <div className="flex gap-2 mt-3">
                             {callupResponses[activity.id]?.status !== 'confirmed' && (
                               <Button 
                                 size="sm" 
                                 variant="outline"
-                                onClick={() => handleResponseChange(activity.id, 'confirmed')}
+                                onClick={async () => {
+                                  try {
+                                    const { error } = await supabase
+                                      .from('callup_responses')
+                                      .upsert({
+                                        activity_id: activity.id,
+                                        player_id: user!.id,
+                                        status: 'confirmed'
+                                      });
+                                    
+                                    if (error) throw error;
+                                    toast.success("Du har bekräftat deltagande");
+                                  } catch (error: any) {
+                                    console.error('Error:', error);
+                                    toast.error("Kunde inte bekräfta");
+                                  }
+                                }}
                                 className="flex-1"
                               >
                                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -414,7 +430,23 @@ const PlayerCalendar = () => {
                               <Button 
                                 size="sm" 
                                 variant="outline"
-                                onClick={() => handleResponseChange(activity.id, 'declined')}
+                                onClick={async () => {
+                                  try {
+                                    const { error } = await supabase
+                                      .from('callup_responses')
+                                      .upsert({
+                                        activity_id: activity.id,
+                                        player_id: user!.id,
+                                        status: 'declined'
+                                      });
+                                    
+                                    if (error) throw error;
+                                    toast.success("Du har avsagt deltagande");
+                                  } catch (error: any) {
+                                    console.error('Error:', error);
+                                    toast.error("Kunde inte avsäga");
+                                  }
+                                }}
                                 className="flex-1"
                               >
                                 <XCircle className="w-3 h-3 mr-1" />

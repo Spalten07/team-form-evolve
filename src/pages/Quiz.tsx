@@ -762,6 +762,8 @@ const Quiz = () => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [hasCompletedBefore, setHasCompletedBefore] = useState(false);
+  const [showRetakeDialog, setShowRetakeDialog] = useState(false);
 
   // Load quiz data (static or custom)
   useEffect(() => {
@@ -769,6 +771,23 @@ const Quiz = () => {
       if (!quizId) {
         setLoading(false);
         return;
+      }
+
+      // Check if player has already completed this quiz
+      if (user) {
+        const { data: assignmentData } = await supabase
+          .from('theory_assignments')
+          .select('completed')
+          .eq('assigned_to', user.id)
+          .eq('quiz_id', quizId)
+          .maybeSingle();
+
+        if (assignmentData?.completed) {
+          setHasCompletedBefore(true);
+          setShowRetakeDialog(true);
+          setLoading(false);
+          return;
+        }
       }
 
       // Check if it's a static quiz first
@@ -789,11 +808,12 @@ const Quiz = () => {
         if (error) throw error;
         
         if (data) {
+          const questions = Array.isArray(data.questions) ? data.questions : [];
           setQuiz({
             id: data.quiz_id,
             title: data.title,
             level: data.level,
-            questions: data.questions as any[]
+            questions: questions as unknown as QuizQuestion[]
           });
         }
       } catch (error) {
@@ -804,7 +824,7 @@ const Quiz = () => {
     };
 
     loadQuiz();
-  }, [quizId]);
+  }, [quizId, user]);
 
   // Mark theory assignment as completed when quiz is finished with 100%
   useEffect(() => {
@@ -909,6 +929,8 @@ const Quiz = () => {
     setHasCompletedBefore(false);
     // Load quiz normally
     const loadQuiz = async () => {
+      if (!quizId) return;
+      
       try {
         if (quizData[quizId]) {
           setQuiz(quizData[quizId]);
@@ -924,11 +946,12 @@ const Quiz = () => {
         if (error) throw error;
 
         if (data) {
+          const questions = Array.isArray(data.questions) ? data.questions : [];
           setQuiz({
             id: data.quiz_id,
             title: data.title,
             level: data.level,
-            questions: data.questions as QuizQuestion[]
+            questions: questions as unknown as QuizQuestion[]
           });
         }
       } catch (error: any) {
