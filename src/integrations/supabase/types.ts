@@ -242,6 +242,56 @@ export type Database = {
           },
         ]
       }
+      saved_trainings: {
+        Row: {
+          coach_id: string
+          created_at: string
+          deleted_at: string | null
+          duration: number
+          exercises: Json
+          focus: string
+          id: string
+          players: number
+          team_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          deleted_at?: string | null
+          duration: number
+          exercises?: Json
+          focus: string
+          id?: string
+          players: number
+          team_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          duration?: number
+          exercises?: Json
+          focus?: string
+          id?: string
+          players?: number
+          team_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_trainings_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scheduled_callups: {
         Row: {
           coach_id: string

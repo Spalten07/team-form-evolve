@@ -175,7 +175,6 @@ const PlayerCalendar = () => {
   const upcomingActivities = activities.filter(a => new Date(a.start_time) > new Date());
   const trainings = upcomingActivities.filter(a => a.activity_type === 'training');
   const matches = upcomingActivities.filter(a => a.activity_type === 'match');
-  const confirmedCount = upcomingActivities.filter(a => callupResponses[a.id]?.status === 'confirmed').length;
 
   const getStatusBadge = (activityId: string) => {
     const response = callupResponses[activityId];

@@ -20,6 +20,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { formatPhoneNumber } from "@/lib/phoneFormatter";
 
 interface Player {
   id: string;
@@ -35,12 +36,20 @@ interface Player {
   };
 }
 
+interface Coach {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
 const Players = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [sortBy, setSortBy] = useState<"name" | "attendance">("name");
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
+  const [coaches, setCoaches] = useState<Coach[]>([]);
   const [loadingPlayers, setLoadingPlayers] = useState(true);
 
   // Redirect to auth if not logged in
@@ -81,6 +90,15 @@ const Players = () => {
 
         if (playersError) throw playersError;
 
+        // Get all coaches in the same team
+        const { data: teamCoaches, error: coachesError } = await supabase
+          .from('profiles')
+          .select('id, email, full_name, phone')
+          .eq('team_id', coachProfile.team_id)
+          .eq('role', 'coach');
+
+        if (coachesError) throw coachesError;
+
         // Transform to Player interface
         const formattedPlayers: Player[] = (teamPlayers || []).map(player => ({
           id: player.id,
@@ -92,11 +110,20 @@ const Players = () => {
           upcomingTrainings: 0, // TODO: Calculate from activities
           guardian: {
             name: player.guardian_name || "Ej angivet",
-            phone: player.phone || "Ej angivet"
+            phone: formatPhoneNumber(player.guardian_phone) || "Ej angivet"
           }
         }));
 
+        // Transform to Coach interface
+        const formattedCoaches: Coach[] = (teamCoaches || []).map(coach => ({
+          id: coach.id,
+          name: coach.full_name || coach.email.split('@')[0],
+          email: coach.email,
+          phone: formatPhoneNumber(coach.phone) || "Ej angivet"
+        }));
+
         setPlayers(formattedPlayers);
+        setCoaches(formattedCoaches);
       } catch (error: any) {
         console.error('Error fetching players:', error);
         toast.error("Kunde inte hämta spelare");
@@ -153,7 +180,7 @@ const Players = () => {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
-              Mina spelare
+              Min trupp
             </h1>
             <p className="text-muted-foreground text-sm">
               Hantera dina spelare och följ deras utveckling
@@ -233,6 +260,41 @@ const Players = () => {
           </TabsList>
           
           <TabsContent value="overview">
+            {/* Coaches Section */}
+            {coaches.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-xl font-bold mb-3">Tränare</h2>
+                <div className="space-y-3">
+                  {coaches.map((coach) => (
+                    <Card key={coach.id} className="hover:shadow-md transition-all">
+                      <CardHeader className="py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
+                            <User className="w-5 h-5 text-primary-foreground" />
+                          </div>
+                          <div>
+                            <CardTitle className="text-base mb-1">{coach.name}</CardTitle>
+                            <CardDescription className="text-xs flex items-center gap-3">
+                              <span className="flex items-center gap-1">
+                                <Mail className="w-3 h-3" />
+                                {coach.email}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Phone className="w-3 h-3" />
+                                {coach.phone}
+                              </span>
+                            </CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Players Section */}
+            <h2 className="text-xl font-bold mb-3">Spelare</h2>
             <div className="space-y-3">
               {loadingPlayers ? (
                 <div className="text-center py-8 text-muted-foreground">

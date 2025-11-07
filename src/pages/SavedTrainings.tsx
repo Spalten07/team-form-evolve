@@ -2,63 +2,69 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Target, Edit, Trash2, Copy } from "lucide-react";
-import { useState } from "react";
+import { Clock, Users, Target, Edit, Trash2, Copy, Archive } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SavedTraining {
-  id: number;
+  id: string;
   title: string;
   duration: number;
   focus: string;
   players: number;
-  exercises: number;
-  createdDate: string;
+  exercises: any;
+  created_at: string;
+  deleted_at: string | null;
 }
-
-const mockSavedTrainings: SavedTraining[] = [
-  {
-    id: 1,
-    title: "Passningsteknik & Spelförståelse",
-    duration: 90,
-    focus: "Teknik & Passning",
-    players: 16,
-    exercises: 8,
-    createdDate: "2025-10-20"
-  },
-  {
-    id: 2,
-    title: "Avslutsfokus & Målskytte",
-    duration: 75,
-    focus: "Avslut",
-    players: 18,
-    exercises: 6,
-    createdDate: "2025-10-15"
-  },
-  {
-    id: 3,
-    title: "Taktisk träning - Positionsspel",
-    duration: 90,
-    focus: "Taktik & Positionsspel",
-    players: 20,
-    exercises: 7,
-    createdDate: "2025-10-10"
-  },
-  {
-    id: 4,
-    title: "Kondition & Snabbhet",
-    duration: 60,
-    focus: "Kondition",
-    players: 16,
-    exercises: 5,
-    createdDate: "2025-10-05"
-  }
-];
 
 const SavedTrainings = () => {
   const navigate = useNavigate();
-  const [trainings, setTrainings] = useState<SavedTraining[]>(mockSavedTrainings);
+  const { user, loading } = useAuth();
+  const [trainings, setTrainings] = useState<SavedTraining[]>([]);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [loadingTrainings, setLoadingTrainings] = useState(true);
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
+  // Fetch trainings
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchTrainings = async () => {
+      try {
+        setLoadingTrainings(true);
+        const query = supabase
+          .from('saved_trainings')
+          .select('*')
+          .eq('coach_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (!showDeleted) {
+          query.is('deleted_at', null);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+        setTrainings(data || []);
+      } catch (error: any) {
+        console.error('Error fetching trainings:', error);
+        toast.error("Kunde inte hämta träningspass");
+      } finally {
+        setLoadingTrainings(false);
+      }
+    };
+
+    fetchTrainings();
+  }, [user, showDeleted]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -69,21 +75,67 @@ const SavedTrainings = () => {
     }).format(date);
   };
 
-  const handleDelete = (id: number) => {
-    setTrainings(prev => prev.filter(t => t.id !== id));
-    toast.success("Träningspass borttaget");
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('saved_trainings')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      setTrainings(prev => prev.filter(t => t.id !== id));
+      toast.success("Träningspass arkiverat");
+    } catch (error: any) {
+      console.error('Error deleting training:', error);
+      toast.error("Kunde inte arkivera träningspass");
+    }
   };
 
-  const handleDuplicate = (training: SavedTraining) => {
-    const newTraining = {
-      ...training,
-      id: Math.max(...trainings.map(t => t.id)) + 1,
-      title: `${training.title} (kopia)`,
-      createdDate: new Date().toISOString().split('T')[0]
-    };
-    setTrainings(prev => [newTraining, ...prev]);
-    toast.success("Träningspass duplicerat");
+  const handleRestore = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('saved_trainings')
+        .update({ deleted_at: null })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      setTrainings(prev => prev.filter(t => t.id !== id));
+      toast.success("Träningspass återställt");
+    } catch (error: any) {
+      console.error('Error restoring training:', error);
+      toast.error("Kunde inte återställa träningspass");
+    }
   };
+
+  const handleDuplicate = async (training: SavedTraining) => {
+    try {
+      const { data: newTraining, error } = await supabase
+        .from('saved_trainings')
+        .insert({
+          coach_id: user!.id,
+          title: `${training.title} (kopia)`,
+          duration: training.duration,
+          focus: training.focus,
+          players: training.players,
+          exercises: training.exercises
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setTrainings(prev => [newTraining, ...prev]);
+      toast.success("Träningspass duplicerat");
+    } catch (error: any) {
+      console.error('Error duplicating training:', error);
+      toast.error("Kunde inte duplicera träningspass");
+    }
+  };
+
+  const activeTrainings = trainings.filter(t => !t.deleted_at);
+  const deletedTrainings = trainings.filter(t => t.deleted_at);
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,14 +155,16 @@ const SavedTrainings = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">{trainings.length}</CardTitle>
+              <CardTitle className="text-2xl">{activeTrainings.length}</CardTitle>
               <CardDescription>Sparade träningspass</CardDescription>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">
-                {Math.round(trainings.reduce((sum, t) => sum + t.duration, 0) / trainings.length)} min
+                {activeTrainings.length > 0 
+                  ? Math.round(activeTrainings.reduce((sum, t) => sum + t.duration, 0) / activeTrainings.length) 
+                  : 0} min
               </CardTitle>
               <CardDescription>Genomsnittlig längd</CardDescription>
             </CardHeader>
@@ -118,7 +172,7 @@ const SavedTrainings = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">
-                {trainings.reduce((sum, t) => sum + t.exercises, 0)}
+                {activeTrainings.reduce((sum, t) => sum + (t.exercises && Array.isArray(t.exercises) ? t.exercises.length : 0), 0)}
               </CardTitle>
               <CardDescription>Totalt antal övningar</CardDescription>
             </CardHeader>
@@ -127,17 +181,33 @@ const SavedTrainings = () => {
 
         {/* Training Sessions List */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Träningspass</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Träningspass</h2>
+            <Button 
+              variant={showDeleted ? "default" : "outline"}
+              className="gap-2"
+              onClick={() => setShowDeleted(!showDeleted)}
+            >
+              <Archive className="w-4 h-4" />
+              {showDeleted ? "Visa aktiva" : `Raderade (${deletedTrainings.length})`}
+            </Button>
+          </div>
           
-          {trainings.length === 0 ? (
+          {loadingTrainings ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Laddar träningspass...
+            </div>
+          ) : trainings.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <p className="text-muted-foreground text-lg">
-                  Inga sparade träningspass ännu
+                  {showDeleted ? "Inga raderade träningspass" : "Inga sparade träningspass ännu"}
                 </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Skapa ett nytt träningspass och spara det för att återanvända senare
-                </p>
+                {!showDeleted && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Skapa ett nytt träningspass och spara det för att återanvända senare
+                  </p>
+                )}
               </CardContent>
             </Card>
           ) : (
@@ -148,12 +218,12 @@ const SavedTrainings = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <Badge variant="outline">
-                          Sparad {formatDate(training.createdDate)}
+                          {showDeleted ? `Raderad ${formatDate(training.deleted_at!)}` : `Sparad ${formatDate(training.created_at)}`}
                         </Badge>
                       </div>
                       <CardTitle className="text-xl mb-1">{training.title}</CardTitle>
                       <CardDescription>
-                        {training.exercises} övningar • {training.focus}
+                        {training.exercises ? (Array.isArray(training.exercises) ? training.exercises.length : 0) : 0} övningar • {training.focus}
                       </CardDescription>
                     </div>
                   </div>
@@ -174,33 +244,45 @@ const SavedTrainings = () => {
                     </div>
                   </div>
                   
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="default" 
-                      className="flex-1 gap-2"
-                      onClick={() => {
-                        navigate('/create-training', { state: { editingTraining: training } });
-                      }}
-                    >
-                      <Edit className="w-4 h-4" />
-                      Redigera
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="gap-2"
-                      onClick={() => handleDuplicate(training)}
-                    >
-                      <Copy className="w-4 h-4" />
-                      Duplicera
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="gap-2 text-destructive hover:bg-destructive/10"
-                      onClick={() => handleDelete(training.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  {showDeleted ? (
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="default" 
+                        className="flex-1 gap-2"
+                        onClick={() => handleRestore(training.id)}
+                      >
+                        Återställ
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="default" 
+                        className="flex-1 gap-2"
+                        onClick={() => {
+                          navigate('/create-training', { state: { editingTraining: training } });
+                        }}
+                      >
+                        <Edit className="w-4 h-4" />
+                        Redigera
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="gap-2"
+                        onClick={() => handleDuplicate(training)}
+                      >
+                        <Copy className="w-4 h-4" />
+                        Duplicera
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="gap-2 text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDelete(training.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))
