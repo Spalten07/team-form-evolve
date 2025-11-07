@@ -2,7 +2,6 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   User, 
   Mail, 
@@ -12,8 +11,7 @@ import {
   Calendar,
   CheckCircle2,
   XCircle,
-  Phone,
-  CalendarDays
+  Phone
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -212,26 +210,6 @@ const Players = () => {
           </Card>
         </div>
 
-        {/* Action Buttons */}
-        {selectedPlayers.length > 0 && (
-          <div className="mb-6 flex gap-3">
-            <Button 
-              variant="default" 
-              className="gap-2"
-              onClick={() => navigate('/send-callup', { state: { selectedPlayers } })}
-            >
-              <Send className="w-4 h-4" />
-              Skicka kallelse ({selectedPlayers.length})
-            </Button>
-            <Button 
-              variant="outline" 
-              className="gap-2"
-              onClick={() => setSelectedPlayers([])}
-            >
-              Avmarkera alla
-            </Button>
-          </div>
-        )}
 
         {/* Sort Options */}
         <div className="flex gap-2 mb-4">
@@ -253,13 +231,7 @@ const Players = () => {
           </Button>
         </div>
 
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
-            <TabsTrigger value="overview">Översikt</TabsTrigger>
-            <TabsTrigger value="communication">Kommunikation</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="overview">
+        <div className="w-full">
             {/* Coaches Section */}
             {coaches.length > 0 && (
               <div className="mb-6">
@@ -342,17 +314,6 @@ const Players = () => {
                         <Badge className={`${getAttendanceColor(player.attendanceRate)} text-xs`}>
                           {player.attendanceRate}%
                         </Badge>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1 h-8 px-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/player-calendar/${player.id}`);
-                          }}
-                        >
-                          <CalendarDays className="w-3 h-3" />
-                        </Button>
                       </div>
                     </div>
                   </CardHeader>
@@ -360,80 +321,7 @@ const Players = () => {
                 ))
               )}
             </div>
-          </TabsContent>
-
-          <TabsContent value="communication">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Send className="w-6 h-6" />
-                  Skicka kallelser och quizer
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Välj spelare i översikten och skicka sedan kallelser eller quizer till dem
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {selectedPlayers.length > 0 ? (
-                  <>
-                    <div className="bg-secondary/30 rounded-lg p-4">
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Valda spelare ({selectedPlayers.length}):
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedPlayers.map(playerId => {
-                          const player = sortedPlayers.find(p => p.id === playerId);
-                          return player ? (
-                            <Badge key={playerId} variant="outline">
-                              {player.name}
-                            </Badge>
-                          ) : null;
-                        })}
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Button 
-                        variant="default" 
-                        className="gap-2"
-                        onClick={() => navigate('/send-callup', { state: { selectedPlayers } })}
-                      >
-                        <Mail className="w-4 h-4" />
-                        Skicka träningskallelse
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="gap-2"
-                        onClick={() => navigate('/theory')}
-                      >
-                        <ClipboardList className="w-4 h-4" />
-                        Skicka teoripass
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="gap-2"
-                        onClick={() => setSelectedPlayers(players.map(p => p.id))}
-                      >
-                        <Mail className="w-4 h-4" />
-                        Välj alla spelare
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-12">
-                    <XCircle className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground text-lg mb-2">
-                      Inga spelare valda
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Gå till översikten och klicka på spelarna du vill skicka till
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        </div>
       </main>
     </div>
   );

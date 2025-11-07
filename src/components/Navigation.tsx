@@ -1,9 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Home, Dumbbell, BookOpen, CalendarDays, Menu, X, Users, ClipboardList, Mail, Trophy, LogOut, User, Shield, Target } from "lucide-react";
+import { Home, Dumbbell, BookOpen, Menu, X, Users, ClipboardList, Trophy, LogOut, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Inbox } from "./Inbox";
 import { RoleSwitcher } from "./RoleSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,19 +18,9 @@ import { toast } from "sonner";
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState<"coach" | "player" | null>(null);
-  const [inboxOpen, setInboxOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-
-  useEffect(() => {
-    const stored = localStorage.getItem("inboxMessages");
-    if (stored) {
-      const messages = JSON.parse(stored);
-      setUnreadCount(messages.filter((m: any) => !m.read).length);
-    }
-  }, [inboxOpen]);
 
   // Fetch user role from database
   useEffect(() => {
@@ -69,7 +57,6 @@ export const Navigation = () => {
 const coachNavLinks = [
   { to: "/exercises", label: "Övningsbank", icon: Dumbbell },
   { to: "/theory", label: "Teoribank", icon: BookOpen },
-  { to: "/planner", label: "Planering", icon: CalendarDays },
   { to: "/players", label: "Min trupp", icon: Users },
   { to: "/my-team", label: "Mitt lag", icon: Shield },
   { to: "/league-tables", label: "Tabeller", icon: Trophy },
@@ -78,7 +65,6 @@ const coachNavLinks = [
 const playerNavLinks = [
   { to: "/exercises", label: "Övningar", icon: Dumbbell },
   { to: "/theory", label: "Teoribank", icon: BookOpen },
-  { to: "/player-calendar", label: "Kalender", icon: CalendarDays },
   { to: "/player-history", label: "Min träningshistorik", icon: ClipboardList },
 ];
 
@@ -121,23 +107,6 @@ const playerNavLinks = [
             
             {/* Role Switcher */}
             {user && <RoleSwitcher />}
-            
-            {/* Inbox Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              onClick={() => setInboxOpen(true)}
-            >
-              <Mail className="w-5 h-5" />
-              {unreadCount > 0 && (
-                <Badge 
-                  className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-destructive text-destructive-foreground text-xs"
-                >
-                  {unreadCount}
-                </Badge>
-              )}
-            </Button>
           </div>
 
           {/* Desktop Navigation */}
@@ -198,13 +167,6 @@ const playerNavLinks = [
           </div>
         )}
       </div>
-      
-      {/* Inbox Dialog */}
-      <Inbox 
-        open={inboxOpen} 
-        onOpenChange={setInboxOpen}
-        onUnreadCountChange={setUnreadCount}
-      />
     </nav>
   );
 };

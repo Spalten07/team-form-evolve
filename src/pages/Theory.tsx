@@ -2,8 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Send, Eye, Plus, Target, CheckCircle2 } from "lucide-react";
-import { SendMessageDialog } from "@/components/SendMessageDialog";
+import { BookOpen, Eye, Plus, Target, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -51,7 +50,6 @@ const Theory = () => {
   }, [user]);
   const navigate = useNavigate();
   const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [customQuizzes, setCustomQuizzes] = useState<QuizDetails[]>([]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [assignments, setAssignments] = useState<TheoryAssignment[]>([]);
@@ -472,17 +470,6 @@ const Theory = () => {
                             <Eye className="w-4 h-4 mr-2" />
                             Förhandsgranska
                           </Button>
-                          <Button 
-                            variant="default" 
-                            size="sm"
-                            onClick={() => {
-                              setSelectedQuiz(quiz.id);
-                              setIsDialogOpen(true);
-                            }}
-                          >
-                            <Send className="w-4 h-4 mr-2" />
-                            Skicka ut
-                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -521,17 +508,6 @@ const Theory = () => {
                             <Eye className="w-4 h-4 mr-2" />
                             Förhandsgranska
                           </Button>
-                          <Button 
-                            variant="default" 
-                            size="sm"
-                            onClick={() => {
-                              setSelectedQuiz(quiz.id);
-                              setIsDialogOpen(true);
-                            }}
-                          >
-                            <Send className="w-4 h-4 mr-2" />
-                            Skicka ut
-                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -569,17 +545,6 @@ const Theory = () => {
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             Förhandsgranska
-                          </Button>
-                          <Button 
-                            variant="default" 
-                            size="sm"
-                            onClick={() => {
-                              setSelectedQuiz(quiz.id);
-                              setIsDialogOpen(true);
-                            }}
-                          >
-                            <Send className="w-4 h-4 mr-2" />
-                            Skicka ut
                           </Button>
                         </div>
                       </CardContent>
@@ -621,17 +586,6 @@ const Theory = () => {
                             <Eye className="w-4 h-4 mr-2" />
                             Förhandsgranska
                           </Button>
-                          <Button 
-                            variant="default" 
-                            size="sm"
-                            onClick={() => {
-                              setSelectedQuiz(quiz.id);
-                              setIsDialogOpen(true);
-                            }}
-                          >
-                            <Send className="w-4 h-4 mr-2" />
-                            Skicka ut
-                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -641,13 +595,6 @@ const Theory = () => {
             )}
           </>
         )}
-
-        <SendMessageDialog
-          open={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          selectedPlayers={[]}
-          players={[]}
-        />
 
         {userRole === 'coach' && user && (
           <CreateQuizDialog
