@@ -16,22 +16,20 @@ const Auth = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    fullName: "",
-    role: "player" as "player" | "coach",
-    teamCode: ""
+    fullName: ""
   });
 
   useEffect(() => {
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        navigate("/exercises");
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/");
+        navigate("/exercises");
       }
     });
 
@@ -52,31 +50,18 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Inloggning lyckades!");
       } else {
-        const signUpData: any = {
+        const { error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
           options: {
             data: {
-              full_name: formData.fullName,
-              role: formData.role
+              full_name: formData.fullName
             },
-            emailRedirectTo: `${window.location.origin}/`
+            emailRedirectTo: `${window.location.origin}/exercises`
           }
-        };
-
-        // Add team_code for players
-        if (formData.role === "player" && formData.teamCode) {
-          signUpData.options.data.team_code = formData.teamCode.toUpperCase();
-        }
-
-        const { error } = await supabase.auth.signUp(signUpData);
+        });
 
         if (error) throw error;
-        
-        if (formData.role === "player" && !formData.teamCode) {
-          toast.error("Lagkod krävs för spelare");
-          return;
-        }
         
         toast.success("Konto skapat! Du kan nu logga in.");
         setIsLogin(true);
@@ -113,49 +98,17 @@ const Auth = () => {
             <CardContent>
               <form onSubmit={handleAuth} className="space-y-4">
                 {!isLogin && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="fullName">Fullständigt namn</Label>
-                      <Input
-                        id="fullName"
-                        type="text"
-                        required
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        placeholder="Ditt namn"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Roll</Label>
-                      <select
-                        id="role"
-                        value={formData.role}
-                        onChange={(e) => setFormData({ ...formData, role: e.target.value as "player" | "coach" })}
-                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                      >
-                        <option value="player">Spelare</option>
-                        <option value="coach">Tränare</option>
-                      </select>
-                    </div>
-                    {formData.role === "player" && (
-                      <div className="space-y-2">
-                        <Label htmlFor="teamCode">Lagkod</Label>
-                        <Input
-                          id="teamCode"
-                          type="text"
-                          required
-                          value={formData.teamCode}
-                          onChange={(e) => setFormData({ ...formData, teamCode: e.target.value.toUpperCase() })}
-                          placeholder="Ange lagkod från din tränare"
-                          maxLength={6}
-                          className="uppercase"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Fråga din tränare efter lagkoden
-                        </p>
-                      </div>
-                    )}
-                  </>
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Fullständigt namn</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      required
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      placeholder="Ditt namn"
+                    />
+                  </div>
                 )}
                 <div className="space-y-2">
                   <Label htmlFor="email">E-post</Label>

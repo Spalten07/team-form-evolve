@@ -4,22 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import RoleSelection from "./pages/RoleSelection";
 import Auth from "./pages/Auth";
-import Home from "./pages/Home";
 import Exercises from "./pages/Exercises";
 import Theory from "./pages/Theory";
 import Quiz from "./pages/Quiz";
-import CreateTraining from "./pages/CreateTraining";
-import Players from "./pages/Players";
-import PlayerHistory from "./pages/PlayerHistory";
-import PlayerPastActivities from "./pages/PlayerPastActivities";
-import SavedTrainings from "./pages/SavedTrainings";
-import CoachDashboard from "./pages/CoachDashboard";
-import PlayerDashboard from "./pages/PlayerDashboard";
-import LeagueTables from "./pages/LeagueTables";
-import MyTeam from "./pages/MyTeam";
-import PlayerTheoryTodo from "./pages/PlayerTheoryTodo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,22 +20,11 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<RoleSelection />} />
+            <Route path="/" element={<Exercises />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/coach-dashboard" element={<CoachDashboard />} />
-            <Route path="/player-dashboard" element={<PlayerDashboard />} />
             <Route path="/exercises" element={<Exercises />} />
             <Route path="/theory" element={<Theory />} />
             <Route path="/quiz/:quizId" element={<Quiz />} />
-            <Route path="/create-training" element={<CreateTraining />} />
-            <Route path="/players" element={<Players />} />
-            <Route path="/player-history" element={<PlayerHistory />} />
-            <Route path="/player-past-activities" element={<PlayerPastActivities />} />
-            <Route path="/saved-trainings" element={<SavedTrainings />} />
-            <Route path="/league-tables" element={<LeagueTables />} />
-            <Route path="/my-team" element={<MyTeam />} />
-            <Route path="/player-theory-todo" element={<PlayerTheoryTodo />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

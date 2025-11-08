@@ -1,10 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Dumbbell, BookOpen, Menu, X, Users, ClipboardList, Trophy, LogOut, Shield } from "lucide-react";
-import { useState, useEffect } from "react";
-import { RoleSwitcher } from "./RoleSwitcher";
+import { Dumbbell, BookOpen, Menu, X, LogOut } from "lucide-react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,32 +15,9 @@ import { toast } from "sonner";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [userRole, setUserRole] = useState<"coach" | "player" | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-
-  // Fetch user role from database
-  useEffect(() => {
-    if (!user) {
-      setUserRole(null);
-      return;
-    }
-
-    const fetchUserRole = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (data) {
-        setUserRole(data.role as "coach" | "player");
-      }
-    };
-
-    fetchUserRole();
-  }, [user]);
 
   const handleSignOut = async () => {
     try {
@@ -54,21 +29,10 @@ export const Navigation = () => {
     }
   };
 
-const coachNavLinks = [
-  { to: "/exercises", label: "Övningsbank", icon: Dumbbell },
-  { to: "/theory", label: "Teoribank", icon: BookOpen },
-  { to: "/players", label: "Min trupp", icon: Users },
-  { to: "/my-team", label: "Mitt lag", icon: Shield },
-  { to: "/league-tables", label: "Tabeller", icon: Trophy },
-];
-
-const playerNavLinks = [
-  { to: "/exercises", label: "Övningar", icon: Dumbbell },
-  { to: "/theory", label: "Teoribank", icon: BookOpen },
-  { to: "/player-history", label: "Min träningshistorik", icon: ClipboardList },
-];
-
-  const navLinks = userRole === "coach" ? coachNavLinks : playerNavLinks;
+  const navLinks = [
+    { to: "/exercises", label: "Övningar", icon: Dumbbell },
+    { to: "/theory", label: "Teori", icon: BookOpen },
+  ];
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -90,11 +54,6 @@ const playerNavLinks = [
                 <DropdownMenuLabel>
                   <div className="flex flex-col gap-1">
                     <p className="text-sm font-medium">{user?.email}</p>
-                    {userRole && (
-                      <p className="text-xs text-muted-foreground capitalize">
-                        {userRole === "coach" ? "Tränare" : "Spelare"}
-                      </p>
-                    )}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -104,9 +63,6 @@ const playerNavLinks = [
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
-            {/* Role Switcher */}
-            {user && <RoleSwitcher />}
           </div>
 
           {/* Desktop Navigation */}
